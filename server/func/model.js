@@ -1,14 +1,24 @@
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+require('dotenv').config({ path: './database/.env' });
+
 class Model{
   constructor(){
-
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
+    this.model = model
   }
 
-  proccess_input(input){
-    var out;
-
-    out = "Here are a few product names for a new app that helps people learn how to play the violin, with varying feels: Catchy & Playful: Fiddle Me This!Bowtiful (play on beautiful)ViolinSparkSimple & Descriptive:Learn ViolinViolin CoachPlayground ViolinElegant & Sophisticated:Maestro in the MakingVivace (Italian for lively)Crescendo (meaning to grow in music)Bonus:Venice Violin (plays on your location and the instrument)I hope this gives you some good options to choose from!"
-
-    return out;
+  async process_input(input) {
+    try {
+      const result = await this.model.generateContent(input);
+      const response = await result.response;
+      const out = await response.text();
+  
+      return out;
+    } catch (error) {
+      console.error('Error processing input:', error);
+      throw error;
+    }
   }
 }
 

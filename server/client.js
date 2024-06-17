@@ -10,7 +10,7 @@ wss.on('connection', function connection(ws) {
       const data = JSON.parse(message);
       console.log(data.pcm);
 
-      // play pcm
+
 
       ws.send(JSON.stringify({ response: 'Done' }));
     } catch (error) {
@@ -32,9 +32,10 @@ async function postData(url = '', data = {}) {
   return response.json();
 }
 
+
 postData("http://localhost:8000/api/input/", {
   access_key: 'HghVcPRAzR6n1YUiy0rGTX3DoqxgydA',
-  input: 'Come up with a product name for a new app that helps people learn how to play the violin.',
+  input: 'What is three plus three',
   ip: '172.28.16.2'
 }).then(data => {
   console.log(data);

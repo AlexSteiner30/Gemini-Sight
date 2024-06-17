@@ -2,6 +2,7 @@
   "dependencies": {
     "@google-cloud/firestore": "^7.8.0",
     "@google-cloud/vertexai": "^1.2.0",
+    "@google/generative-ai": "^0.12.0",
     "@resemble/node": "^3.4.0",
     "body-parser": "^1.20.2",
     "crypto": "^1.0.1",
@@ -12,7 +13,15 @@
     "firebase-admin": "^12.1.1",
     "fs": "^0.0.1-security",
     "gtts": "^0.2.1",
+<<<<<<< Updated upstream
     "path": "^0.12.7",
+=======
+<<<<<<< HEAD
+    "node-global-proxy": "^1.0.1",
+=======
+    "path": "^0.12.7",
+>>>>>>> 63f2d39817521b32064b9e257e7a9cbefa0fbaf6
+>>>>>>> Stashed changes
     "playht": "^0.9.8",
     "say": "^0.16.0",
     "uuid": "^10.0.0",
