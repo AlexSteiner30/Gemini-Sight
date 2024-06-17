@@ -1,43 +1,44 @@
-const { initializeApp } = require('firebase/app');
+const { initializeApp, getApps, getApp } = require('firebase/app');
+const { getFirestore, collection, doc, addDoc, getDoc, getDocs, updateDoc, deleteDoc, } = require('firebase/firestore');
+
+require('dotenv').config({ path: './database/.env' });
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBiWsYKmk6cZopIAwxjle0j8Vpk3zX2PPc",
-  authDomain: "sinuous-branch-426313-q6.firebaseapp.com",
-  projectId: "sinuous-branch-426313-q6",
-  storageBucket: "sinuous-branch-426313-q6.appspot.com",
-  messagingSenderId: "910242255946",
-  appId: "1:910242255946:web:d418dfe04fd3a47f7542b3",
-  measurementId: "G-DXGBG8VP0B"
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID,
+  measurementId: process.env.MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig);
+class Database {
+  constructor() {
+    this.data = [];
 
-class Database{
-    constructor(path){
-        this.path = path;
-        this.data = this.parseData();
+    this.firebase = initializeApp(firebaseConfig);
+    this.db = getFirestore();
 
-        this.app = initializeApp(firebaseConfig);
-    }
+    console.log('Successfully connected to DB!');
+  }
 
-    async parseData(){
-        const snapshot = await firebase.firestore().collection('events').get()
-        console.log(snapshot.docs.map(doc => doc.data()));
+  async parseData() {
+    const products = await getDocs(collection(this.db, 'api'));
+    const productArray = [];
 
-        return JSON.parse(fs.readFileSync(this.path, 'utf8'));
-    }
+    products.forEach((doc) => {
+        productArray.push(doc);
+    });
 
-    find(filter, value){
-        for(var i=0; i < this.data.length; i++){
-            if(this.data[i][filter] == value){
-                return this.data[i];
-            }
-        }
+    return productArray;
+  }
 
-        return;
-    }
+  find(filter, value) {
+    return this.data.find(item => item[filter] === value);
+  }
 }
 
 module.exports = {
-    Database
+  Database
 };

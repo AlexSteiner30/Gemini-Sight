@@ -1,11 +1,10 @@
 const express = require('express');
-const bodyParser = require('body-parser')
 const helper = require('./func/helper.js')
 const { Database } = require('./func/db.js');
 const { Audio } = require('./func/audio.js');
 
 const app = express();
-const db = new Database('./database/key_access.json')
+const db = new Database();
 const audio = new Audio('./audio/');
 const PORT = 8000;
 
@@ -17,21 +16,27 @@ app.get('/', function(req, res){
 });
 
 app.post('/api/input/', async function(req, res){
-    if(db.find('access_key', req.body.access_key)){
+    const access_key = "uhv3Mu2Jo1CbTiNnetXbYdPfZdy4m93oWRYVej4eD1rmkIpgKDzNh8tT8Jn4BooNFcyBP8Dx34NQ2rzyzYKhleMDdYptC39kGjFqYWYEkycdMNhwSr7sLpQhEMyLAx2E";
+
+    db.parseData().then(() => {
+        const result = db.find('access_key', 'uhv3Mu2Jo1CbTiNnetXbYdPfZdy4m93oWRYVej4eD1rmkIpgKDzNh8tT8Jn4BooNFcyBP8Dx34NQ2rzyzYKhleMDdYptC39kGjFqYWYEkycdMNhwSr7sLpQhEMyLAx2E');
+
+    });
+      
+    if(!db.find('access_key', access_key)){
         var input = req.body.input;
         // run model
         var response = "I'd be glad to help! 3 plus 3 equals 6.";
         var uuid = helper.uuidv4();
 
-        for(var i=0; i<response.match(/.{1,150}/g).length; i++){
-            var path = './audio/' + req.body.access_key + '/' + uuid + '_' + i + '.wav';
+        var pcm_data = [];
 
-            await audio.pcm(response.match(/.{1,150}/g)[i], req.body.access_key, i, uuid);
+        for(var i=0; i<response.match(/.{1,150}/g).length; i++){
+            const result = await audio.pcm(response.match(/.{1,150}/g)[i], access_key, i, uuid);
+            pcm_data = pcm_data.concat(Array.from(result[0]));
         }
 
-        var hz = 128;
-
-        res.send({'response': '127 275 589 382'});
+        res.send({'response': pcm_data});
     }else{
         res.send({'response': 'Use a valid access key in order to access the API'});
     }
