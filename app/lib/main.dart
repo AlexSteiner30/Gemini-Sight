@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,13 +10,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Device Configuration',
+      title: 'Gemini Sight',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.grey,
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.grey, // Adjust primarySwatch if needed
           brightness: Brightness.dark,
         ),
-        useMaterial3: true,
+        scaffoldBackgroundColor: Colors.grey[900],
       ),
       home: const SignInPage(),
     );
@@ -32,11 +31,10 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
   void _login() async {
     try {
-      //await _googleSignIn.signIn();
+      // Simulate login
+      await Future.delayed(Duration(seconds: 1));
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const DeviceListPage()),
@@ -51,9 +49,43 @@ class _SignInPageState extends State<SignInPage> {
     return Scaffold(
       backgroundColor: Colors.grey[900],
       body: Center(
-        child: ElevatedButton(
-          onPressed: _login,
-          child: const Text('Login with Google'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Your logo image here
+            Image.asset(
+              'assets/images/logo.png', // Adjust the path and file name as necessary
+              width: 100, // Adjust the size as necessary
+              height: 100,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _login,
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+                  return states.contains(MaterialState.pressed)
+                      ? Colors.grey[800]!
+                      : Colors.grey[800]!;
+                }),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.account_circle, size: 24),
+                  SizedBox(width: 12),
+                  Text(
+                    'Login with Google',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -89,18 +121,65 @@ class _DeviceListPageState extends State<DeviceListPage> {
     });
   }
 
+  Future<void> _confirmDelete(int index) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button to dismiss dialog
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text('Confirm Delete'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to delete ${_devices[index].name}?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () {
+                _deleteDevice(index);
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _deleteDevice(int index) {
     setState(() {
       _devices.removeAt(index);
     });
   }
 
+  void _logout() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => SignInPage()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text('Devices'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: Container(
         color: Colors.grey[800],
@@ -128,7 +207,7 @@ class _DeviceListPageState extends State<DeviceListPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.devices, size: 50, color: Colors.grey[300]),
+                    Icon(Icons.important_devices, size: 50, color: Colors.grey[300]), // smart glasses icon
                     const SizedBox(height: 16),
                     Text(
                       _devices[index].name,
@@ -143,14 +222,9 @@ class _DeviceListPageState extends State<DeviceListPage> {
                       style: TextStyle(fontSize: 14, color: Colors.grey[300]),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      _devices[index].isOnline ? 'Online' : 'Offline',
-                      style: TextStyle(fontSize: 14, color: _devices[index].isOnline ? Colors.green : Colors.red),
-                    ),
-                    const SizedBox(height: 8),
                     IconButton(
                       icon: Icon(Icons.delete, color: Colors.red[300]),
-                      onPressed: () => _deleteDevice(index),
+                      onPressed: () => _confirmDelete(index), // show confirmation dialog
                     ),
                   ],
                 ),
@@ -180,7 +254,7 @@ class DeviceConfigPage extends StatefulWidget {
 class _DeviceConfigPageState extends State<DeviceConfigPage> {
   final TextEditingController _ssidController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isEnabled = false;
+  bool _blindPeopleSupport = false; // Updated state for blind people support
   double _volume = 50;
 
   @override
@@ -193,17 +267,16 @@ class _DeviceConfigPageState extends State<DeviceConfigPage> {
   void _submitConfiguration() {
     final ssid = _ssidController.text;
     final password = _passwordController.text;
-    final isEnabled = _isEnabled;
+    final isEnabled = _blindPeopleSupport;
     final volume = _volume;
     // Handle the configuration submission logic here
-    print('Device: ${widget.device.name}, SSID: $ssid, Password: $password, Enabled: $isEnabled, Volume: $volume');
+    print('Device: ${widget.device.name}, SSID: $ssid, Password: $password, Blind People Support: $isEnabled, Volume: $volume');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text('Configure ${widget.device.name}'),
       ),
       body: Container(
@@ -239,11 +312,11 @@ class _DeviceConfigPageState extends State<DeviceConfigPage> {
             ),
             const SizedBox(height: 16.0),
             SwitchListTile(
-              title: const Text('Enable Device'),
-              value: _isEnabled,
+              title: const Text('Blind People Support'), // Updated title
+              value: _blindPeopleSupport, // Updated value
               onChanged: (bool value) {
                 setState(() {
-                  _isEnabled = value;
+                  _blindPeopleSupport = value;
                 });
               },
             ),
