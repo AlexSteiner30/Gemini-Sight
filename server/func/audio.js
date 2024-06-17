@@ -54,7 +54,6 @@ class Audio {
                         const ws = new WebSocket(`ws://${ip}:9000`);
 
                         ws.on('open', function open() {
-                            console.log('WebSocket client connected');
                             ws.send(JSON.stringify({ pcm: pcmData.toString() }));
                         });
 
