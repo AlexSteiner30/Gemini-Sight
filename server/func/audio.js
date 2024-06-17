@@ -5,8 +5,8 @@ const fs = require('fs');
 class Audio {
     constructor(path) {
         PlayHT.init({
-            apiKey: 'fe7f98805ed348c999960ced08a82bbf',
-            userId: 'gFbZTDEXEhRlaCkMslLlQ5oF62q1',
+            apiKey: '2df332bcf51246dc8752e1ec9bd88439',
+            userId: 'WxRQWevofQgDSIXMKLQXzvSgCcu1',
             defaultVoiceId: 's3://peregrine-voices/oliver_narrative2_parrot_saad/manifest.json',
             defaultVoiceEngine: 'PlayHT2.0',
         });
