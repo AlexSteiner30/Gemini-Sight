@@ -25,20 +25,15 @@ app.post('/api/input/', async (req, res) => {
     try {
         await db.parseData();
         
-        if (!db.find('access_key', access_key)) {
+        if (!db.find('access_key', access_key)) { // remove ! once db fixed
             const response = ai.proccess_input(input);
             const uuid = helper.uuidv4();
 
             for (let i = 0; i < response.match(/.{1,150}/g).length; i++) {
-                let pcm_data = [];
-                const result = await audio.pcm(response.match(/.{1,150}/g)[i], access_key, i, uuid);
-                pcm_data = Array.from(result[0]);
-
-                // fetch and pass data to the server so that it doesnt have to wait for full audio
-                await helper.postData(`http://${ip}:9000/pcm/`, {pcm : pcm_data});
+                audio.pcm(response.match(/.{1,150}/g)[i], access_key, i, uuid, ip);
             }
 
-            res.send({ 'response': 'pcm_data' });
+            res.send({ 'response': 'Done' });
         } else {
             res.send({ 'response': 'Use a valid access key in order to access the API' });
         }
