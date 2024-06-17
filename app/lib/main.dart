@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'Gemini Sight',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.grey, // Adjust primarySwatch if needed
+          primarySwatch: Colors.grey,
           brightness: Brightness.dark,
         ),
         scaffoldBackgroundColor: Colors.grey[900],
@@ -31,14 +32,19 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  void _login() async {
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: '910242255946-3okgle3e78inrabcm39807h21cumhvkj.apps.googleusercontent.com', // Replace with your actual client ID
+  );
+
+  Future<void> _login() async {
     try {
-      // Simulate login
-      await Future.delayed(Duration(seconds: 1));
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const DeviceListPage()),
-      );
+      final GoogleSignInAccount? account = await _googleSignIn.signIn();
+      if (account != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DeviceListPage()),
+        );
+      }
     } catch (error) {
       print('Login failed: $error');
     }
@@ -52,21 +58,22 @@ class _SignInPageState extends State<SignInPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Your logo image here
             Image.asset(
-              'assets/images/logo.png', // Adjust the path and file name as necessary
-              width: 100, // Adjust the size as necessary
+              'assets/images/logo.png',
+              width: 100,
               height: 100,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _login,
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-                  return states.contains(MaterialState.pressed)
-                      ? Colors.grey[800]!
-                      : Colors.grey[800]!;
-                }),
+                backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                  (Set<MaterialState> states) {
+                    return states.contains(MaterialState.pressed)
+                        ? Colors.grey[800]!
+                        : Colors.grey[800]!;
+                  },
+                ),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
@@ -75,7 +82,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: [
+                children: const [
                   Icon(Icons.account_circle, size: 24),
                   SizedBox(width: 12),
                   Text(
@@ -124,7 +131,7 @@ class _DeviceListPageState extends State<DeviceListPage> {
   Future<void> _confirmDelete(int index) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button to dismiss dialog
+      barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Text('Confirm Delete'),
@@ -164,7 +171,7 @@ class _DeviceListPageState extends State<DeviceListPage> {
   void _logout() {
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => SignInPage()),
+      MaterialPageRoute(builder: (context) => const SignInPage()),
       (route) => false,
     );
   }
@@ -207,7 +214,7 @@ class _DeviceListPageState extends State<DeviceListPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.important_devices, size: 50, color: Colors.grey[300]), // smart glasses icon
+                    Icon(Icons.important_devices, size: 50, color: Colors.grey[300]),
                     const SizedBox(height: 16),
                     Text(
                       _devices[index].name,
@@ -224,7 +231,7 @@ class _DeviceListPageState extends State<DeviceListPage> {
                     const SizedBox(height: 8),
                     IconButton(
                       icon: Icon(Icons.delete, color: Colors.red[300]),
-                      onPressed: () => _confirmDelete(index), // show confirmation dialog
+                      onPressed: () => _confirmDelete(index),
                     ),
                   ],
                 ),
@@ -254,7 +261,7 @@ class DeviceConfigPage extends StatefulWidget {
 class _DeviceConfigPageState extends State<DeviceConfigPage> {
   final TextEditingController _ssidController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _blindPeopleSupport = false; // Updated state for blind people support
+  bool _blindPeopleSupport = false;
   double _volume = 50;
 
   @override
@@ -269,8 +276,33 @@ class _DeviceConfigPageState extends State<DeviceConfigPage> {
     final password = _passwordController.text;
     final isEnabled = _blindPeopleSupport;
     final volume = _volume;
-    // Handle the configuration submission logic here
-    print('Device: ${widget.device.name}, SSID: $ssid, Password: $password, Blind People Support: $isEnabled, Volume: $volume');
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Configuration Saved'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('SSID: $ssid'),
+                Text('Password: $password'),
+                Text('Blind People Support: ${_blindPeopleSupport ? 'Enabled' : 'Disabled'}'),
+                Text('Volume: $_volume'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -279,67 +311,60 @@ class _DeviceConfigPageState extends State<DeviceConfigPage> {
       appBar: AppBar(
         title: Text('Configure ${widget.device.name}'),
       ),
-      body: Container(
-        color: Colors.grey[800],
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: <Widget>[
-            Text(
-              'ID: ${widget.device.id}',
-              style: TextStyle(fontSize: 16, color: Colors.grey[300]),
-            ),
-            const SizedBox(height: 8.0),
-            Text(
-              'Model: ${widget.device.model}',
-              style: TextStyle(fontSize: 16, color: Colors.grey[300]),
-            ),
-            const SizedBox(height: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             TextField(
               controller: _ssidController,
               decoration: const InputDecoration(
-                labelText: 'Network SSID',
+                labelText: 'SSID',
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 16),
             TextField(
               controller: _passwordController,
               decoration: const InputDecoration(
                 labelText: 'Password',
                 border: OutlineInputBorder(),
               ),
-              obscureText: true,
             ),
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 16),
             SwitchListTile(
-              title: const Text('Blind People Support'), // Updated title
-              value: _blindPeopleSupport, // Updated value
+              title: const Text('Blind People Support'),
+              value: _blindPeopleSupport,
               onChanged: (bool value) {
                 setState(() {
                   _blindPeopleSupport = value;
                 });
               },
             ),
-            const SizedBox(height: 16.0),
-            ListTile(
-              title: const Text('Volume'),
-              subtitle: Slider(
-                value: _volume,
-                min: 0,
-                max: 100,
-                divisions: 100,
-                label: _volume.round().toString(),
-                onChanged: (double value) {
-                  setState(() {
-                    _volume = value;
-                  });
-                },
-              ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Text('Volume'),
+                Slider(
+                  value: _volume,
+                  min: 0,
+                  max: 100,
+                  divisions: 100,
+                  label: _volume.round().toString(),
+                  onChanged: (double value) {
+                    setState(() {
+                      _volume = value;
+                    });
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _submitConfiguration,
-              child: const Text('Submit'),
+            const SizedBox(height: 16),
+            Center(
+              child: ElevatedButton(
+                onPressed: _submitConfiguration,
+                child: const Text('Save Configuration'),
+              ),
             ),
           ],
         ),
