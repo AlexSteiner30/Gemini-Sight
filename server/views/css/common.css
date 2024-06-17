@@ -1,0 +1,87 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    --size--: 85vh;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgb(0, 13, 26);
+    line-height: 3rem;
+}
+
+header, section {
+    text-align: center;
+    padding: 8vh 5vw;
+}
+
+p, h1, h3, label {
+    color: white;
+    text-shadow: 1px 1px 2px rgb(0, 247, 255), 0 0 1rem blue, 0 0 0.2rem blue;
+}
+
+h3, p {
+    text-shadow: 0 0 2px rgb(0, 247, 255), 0 0 0.4rem blue, 0 0 0.1rem blue;
+}
+
+hr {
+    box-shadow: 0 0 5px 5px rgba(0, 0, 255, 0.2);
+    width: 90vw;
+    position: relative;
+    left: 5vw;
+    opacity: 0.5;
+    border: 0;
+    border-top: 1px ridge blue;
+}
+
+footer {
+    height: calc(100vh - var(--size--));
+    background: linear-gradient(rgb(0, 13, 26), rgb(5, 5, 10));
+    text-align: center;
+}
+
+nav {
+    position: fixed;
+    display: grid;
+    grid-template-columns: 5fr 1fr 1fr 1fr 1fr;
+    background-color: rgb(245, 245, 255);
+    opacity: 1;
+    width: 100%;
+}
+
+.scrolled {
+    opacity: 0.6;
+}
+
+nav a {
+    text-decoration: none;
+    color: black;
+}
+
+button {
+    padding: 20px 30px;
+    border: 1px ridge grey;
+    border-radius: 10px;
+    background-color: rgb(2, 14, 21);
+    color: white;
+    box-shadow: 0 0 5px 5px rgba(0, 0, 255, 0.12);
+    transition: all 300ms ease-in-out;
+}
+
+button:hover {
+    transform: scale(1.05);
+    cursor: grab;
+}
+
+#main {
+    margin: 0;
+    padding: 0;
+    min-height: var(--size--);
+}
+
+#title {
+    font-size: 300%;
+}

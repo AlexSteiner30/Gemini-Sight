@@ -3,18 +3,29 @@ const { Database } = require('./func/db.js');
 const { Audio } = require('./func/audio.js');
 const helper = require('./func/helper.js');
 const {Model} = require('./func/model.js');
+const path = require("path");
 
 const app = express();
 const db = new Database();
 const audio = new Audio('./audio/');
 const ai = new Model();
 const PORT = 8000;
+const allowedPages = ['index', 'admin', 'function', 'about'];
+
+
+app.set("views", path.join(__dirname, "/views"));
+app.use(express.static(path.join(__dirname, '/views')));
 
 app.set('view engine', 'ejs');
 app.use(express.json());
 
 app.get('/', (req, res) => {
     res.render('index');
+});
+
+app.get('/:id', (req, res) => {
+    if (allowedPages.includes(req.params.id)) res.render(req.params.id);
+    else res.render("notFound");
 });
 
 app.post('/api/input/', async (req, res) => {
