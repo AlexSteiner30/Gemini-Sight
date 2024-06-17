@@ -1,12 +1,14 @@
-const wav = require('wav-decoder');
+const wav = require('wav');
 const PlayHT = require('playht');
 const fs = require('fs');
+const helper = require('./helper.js');
+const WebSocket = require('ws');
 
 class Audio {
     constructor(path) {
         PlayHT.init({
-            apiKey: '2df332bcf51246dc8752e1ec9bd88439',
-            userId: 'WxRQWevofQgDSIXMKLQXzvSgCcu1',
+            apiKey: '96e73ab231164b3a8cdffb07d02c3092',
+            userId: '2FybridC37WMAVXVaTsjomh0GXb2',
             defaultVoiceId: 's3://peregrine-voices/oliver_narrative2_parrot_saad/manifest.json',
             defaultVoiceEngine: 'PlayHT2.0',
         });
@@ -14,7 +16,7 @@ class Audio {
         this.path = path;
     }
 
-    async pcm(input, key, i, uuid) {
+    async pcm(input, key, i, uuid, ip) {
         const path = `${this.path}${key}/${uuid}_${i}.wav`;
 
         if (!fs.existsSync(`${this.path}${key}`)) {
@@ -32,11 +34,33 @@ class Audio {
         return new Promise((resolve, reject) => {
             stream.pipe(fileStream).on('finish', async function () {
                 try {
-                    const buffer = fs.readFileSync(path);
-                    const audioData = await wav.decode(buffer);
-                    const pcmData = audioData.channelData;
+                    const file = fs.createReadStream(path);
+                    const reader = new wav.Reader();
 
-                    resolve(pcmData);
+                    const pcmData = [];
+
+                    reader.on('data', (chunk) => {
+                        for (let i = 0; i < chunk.length; i += 2) {
+                            const sample = chunk.readInt16LE(i);
+                            pcmData.push(sample);
+                        }
+                    });
+
+                    reader.on('error', (err) => {
+                        console.error('Error reading WAV file:', err);
+                    });
+
+                    reader.on('end',  () => {
+                        const ws = new WebSocket(`ws://${ip}:9000`);
+
+                        ws.on('open', function open() {
+                            console.log('WebSocket client connected');
+                            ws.send(JSON.stringify({ pcm: pcmData.toString() }));
+                        });
+
+                    });
+
+                    file.pipe(reader);
                 } catch (error) {
                     reject(error);
                 }

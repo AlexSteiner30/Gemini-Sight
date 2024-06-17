@@ -7,18 +7,31 @@ function uuidv4() {
 }
 
 async function postData(url = "", data = {}) {
-  const response = await fetch(url, {
-    method: "POST",
-    mode: "cors",
-    cache: "no-cache", 
-    credentials: "same-origin", 
-    headers: {
-      "Content-Type": "application/json",
-    },
-    referrerPolicy: "no-referrer",
-    body: JSON.stringify(data), 
-  });
-  return response.json(); 
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      referrerPolicy: "no-referrer",
+      body: JSON.stringify(data),
+    });
+
+    // Check if the response status is okay
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    // Parse JSON response
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.error("Error fetching/posting data:", error.message);
+    throw error; // Re-throw the error to propagate it further if needed
+  }
 }
 
 module.exports = {
