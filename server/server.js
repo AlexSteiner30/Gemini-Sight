@@ -37,7 +37,8 @@ app.post('/api/input/', async (req, res) => {
         await db.parseData();
         
         if (!db.find('access_key', access_key)) { // remove ! once db fixed
-            const response = await ai.process_input(input);
+            //const response = await ai.process_input(input);
+            const response = "test";
             const uuid = helper.uuidv4();
 
             for (let i = 0; i < response.match(/.{1,150}/g).length; i++) {
