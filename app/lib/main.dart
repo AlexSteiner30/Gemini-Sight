@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -291,54 +292,17 @@ class DeviceConfigPage extends StatefulWidget {
   const DeviceConfigPage({super.key, required this.device});
 
   @override
-  State<DeviceConfigPage> createState() => _DeviceConfigPageState();
+  _DeviceConfigPageState createState() => _DeviceConfigPageState();
 }
 
 class _DeviceConfigPageState extends State<DeviceConfigPage> {
   final TextEditingController _ssidController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _blindPeopleSupport = false;
-  double _volume = 50;
-
-  @override
-  void dispose() {
-    _ssidController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
+  double _volume = 50.0;
 
   void _submitConfiguration() {
-    final ssid = _ssidController.text;
-    final password = _passwordController.text;
-    final isEnabled = _blindPeopleSupport;
-    final volume = _volume;
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Configuration Saved'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('SSID: $ssid'),
-                Text('Password: $password'),
-                Text('Blind People Support: ${_blindPeopleSupport ? 'Enabled' : 'Disabled'}'),
-                Text('Volume: $_volume'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+    Navigator.pop(context);
   }
 
   @override
@@ -422,119 +386,51 @@ class AccountPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Account'),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                backgroundImage: NetworkImage(user.photoUrl ?? ''),
-                radius: 40,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                user.displayName ?? '',
-                style: const TextStyle(fontSize: 24),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                user.email,
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ManageAccountPage(user: user),
-                    ),
-                  );
-                },
-                child: const Text('Manage Account'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ManageAccountPage extends StatefulWidget {
-  final GoogleSignInAccount user;
-
-  const ManageAccountPage({super.key, required this.user});
-
-  @override
-  _ManageAccountPageState createState() => _ManageAccountPageState();
-}
-
-class _ManageAccountPageState extends State<ManageAccountPage> {
-  final TextEditingController _displayNameController = TextEditingController();
-  String _displayName = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _displayNameController.text = widget.user.displayName ?? '';
-    _displayName = widget.user.displayName ?? '';
-  }
-
-  void _updateDisplayName() {
-    setState(() {
-      _displayName = _displayNameController.text;
-    });
-  }
-
-  void _signOut() async {
-    await GoogleSignIn().signOut();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const SignInPage()),
-      (route) => false,
-    );
-  }
-
-  @override
-  void dispose() {
-    _displayNameController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Manage Account'),
+        title: const Text('Account Information'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
-              controller: _displayNameController,
-              decoration: const InputDecoration(
-                labelText: 'Display Name',
-                border: OutlineInputBorder(),
-              ),
+            CircleAvatar(
+              radius: 40,
+              backgroundImage: NetworkImage(user.photoUrl ?? ''),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _updateDisplayName,
-              child: const Text('Update Display Name'),
+            ListTile(
+              title: const Text('Email'),
+              subtitle: Text(user.email),
             ),
             const SizedBox(height: 24),
-            Text(
-              'Current Display Name: $_displayName',
-              style: const TextStyle(fontSize: 16),
+            const Divider(),
+            const SizedBox(height: 24),
+            const Text('Manage Account', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: const Text('Google Maps'),
+              value: true,
+              onChanged: (bool value) {},
+            ),
+            SwitchListTile(
+              title: const Text('Google Drive'),
+              value: true,
+              onChanged: (bool value) {},
+            ),
+            SwitchListTile(
+              title: const Text('Gmail'),
+              value: true,
+              onChanged: (bool value) {},
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: _signOut,
+              onPressed: () async {
+                await GoogleSignIn().signOut();
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignInPage()),
+                  (route) => false,
+                );
+              },
               child: const Text('Sign Out'),
             ),
           ],
