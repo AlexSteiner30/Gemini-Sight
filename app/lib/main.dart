@@ -19,7 +19,44 @@ class MyApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: Colors.grey[900],
       ),
-      home: const SignInPage(),
+      home: const SplashScreen(),
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _navigateToLogin();
+  }
+
+  _navigateToLogin() async {
+    await Future.delayed(const Duration(seconds: 3), () {});
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const SignInPage()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[900],
+      body: Center(
+        child: Image.asset(
+          'assets/images/logo.png',
+          width: 100,
+          height: 100,
+        ),
+      ),
     );
   }
 }
@@ -42,7 +79,7 @@ class _SignInPageState extends State<SignInPage> {
       if (account != null) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const DeviceListPage()),
+          MaterialPageRoute(builder: (context) => DeviceListPage(user: account)),
         );
       }
     } catch (error) {
@@ -58,12 +95,6 @@ class _SignInPageState extends State<SignInPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              'assets/images/logo.png',
-              width: 100,
-              height: 100,
-            ),
-            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _login,
               style: ButtonStyle(
@@ -109,7 +140,9 @@ class Device {
 }
 
 class DeviceListPage extends StatefulWidget {
-  const DeviceListPage({super.key});
+  final GoogleSignInAccount user;
+
+  const DeviceListPage({super.key, required this.user});
 
   @override
   State<DeviceListPage> createState() => _DeviceListPageState();
@@ -134,7 +167,7 @@ class _DeviceListPageState extends State<DeviceListPage> {
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text('Confirm Delete'),
+          title: const Text('Confirm Delete'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -144,13 +177,13 @@ class _DeviceListPageState extends State<DeviceListPage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
             ),
             TextButton(
-              child: Text('Delete'),
+              child: const Text('Delete'),
               onPressed: () {
                 _deleteDevice(index);
                 Navigator.of(dialogContext).pop();
@@ -168,11 +201,14 @@ class _DeviceListPageState extends State<DeviceListPage> {
     });
   }
 
-  void _logout() {
-    Navigator.pushAndRemoveUntil(
+  void _showAccountPage() {
+    Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const SignInPage()),
-      (route) => false,
+      MaterialPageRoute(
+        builder: (context) => AccountPage(
+          user: widget.user,
+        ),
+      ),
     );
   }
 
@@ -183,8 +219,8 @@ class _DeviceListPageState extends State<DeviceListPage> {
         title: const Text('Devices'),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: _logout,
+            icon: const Icon(Icons.account_circle),
+            onPressed: _showAccountPage,
           ),
         ],
       ),
@@ -330,10 +366,11 @@ class _DeviceConfigPageState extends State<DeviceConfigPage> {
                 labelText: 'Password',
                 border: OutlineInputBorder(),
               ),
+              obscureText: true,
             ),
             const SizedBox(height: 16),
             SwitchListTile(
-              title: const Text('Blind People Support'),
+              title: const Text('Support for blind people'),
               value: _blindPeopleSupport,
               onChanged: (bool value) {
                 setState(() {
@@ -343,19 +380,22 @@ class _DeviceConfigPageState extends State<DeviceConfigPage> {
             ),
             const SizedBox(height: 16),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Volume'),
-                Slider(
-                  value: _volume,
-                  min: 0,
-                  max: 100,
-                  divisions: 100,
-                  label: _volume.round().toString(),
-                  onChanged: (double value) {
-                    setState(() {
-                      _volume = value;
-                    });
-                  },
+                Expanded(
+                  child: Slider(
+                    value: _volume,
+                    min: 0,
+                    max: 100,
+                    divisions: 100,
+                    label: _volume.round().toString(),
+                    onChanged: (double value) {
+                      setState(() {
+                        _volume = value;
+                      });
+                    },
+                  ),
                 ),
               ],
             ),
@@ -365,6 +405,137 @@ class _DeviceConfigPageState extends State<DeviceConfigPage> {
                 onPressed: _submitConfiguration,
                 child: const Text('Save Configuration'),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AccountPage extends StatelessWidget {
+  final GoogleSignInAccount user;
+
+  const AccountPage({super.key, required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Account'),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                backgroundImage: NetworkImage(user.photoUrl ?? ''),
+                radius: 40,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                user.displayName ?? '',
+                style: const TextStyle(fontSize: 24),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                user.email,
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ManageAccountPage(user: user),
+                    ),
+                  );
+                },
+                child: const Text('Manage Account'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ManageAccountPage extends StatefulWidget {
+  final GoogleSignInAccount user;
+
+  const ManageAccountPage({super.key, required this.user});
+
+  @override
+  _ManageAccountPageState createState() => _ManageAccountPageState();
+}
+
+class _ManageAccountPageState extends State<ManageAccountPage> {
+  final TextEditingController _displayNameController = TextEditingController();
+  String _displayName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _displayNameController.text = widget.user.displayName ?? '';
+    _displayName = widget.user.displayName ?? '';
+  }
+
+  void _updateDisplayName() {
+    setState(() {
+      _displayName = _displayNameController.text;
+    });
+  }
+
+  void _signOut() async {
+    await GoogleSignIn().signOut();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const SignInPage()),
+      (route) => false,
+    );
+  }
+
+  @override
+  void dispose() {
+    _displayNameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Manage Account'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _displayNameController,
+              decoration: const InputDecoration(
+                labelText: 'Display Name',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _updateDisplayName,
+              child: const Text('Update Display Name'),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Current Display Name: $_displayName',
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _signOut,
+              child: const Text('Sign Out'),
             ),
           ],
         ),
