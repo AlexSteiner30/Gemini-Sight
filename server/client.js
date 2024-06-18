@@ -10,8 +10,6 @@ wss.on('connection', function connection(ws) {
       const data = JSON.parse(message);
       console.log(data.pcm);
 
-
-
       ws.send(JSON.stringify({ response: 'Done' }));
     } catch (error) {
       console.error('Error parsing message:', error);
@@ -33,10 +31,15 @@ async function postData(url = '', data = {}) {
 }
 
 
-postData("http://localhost:8000/api/input/", {
-  access_key: 'HghVcPRAzR6n1YUiy0rGTX3DoqxgydA',
-  input: 'What is three plus three',
-  ip: '172.28.16.2'
-}).then(data => {
-  console.log(data);
-});
+try{
+  postData("http://localhost:8000/api/input/", {
+    access_key: 'HghVcPRAzR6n1YUiy0rGTX3DoqxgydA',
+    input: 'What is three plus three',
+    ip: '172.28.16.2'
+  }).then(data => {
+    console.log(data);
+  });
+}
+catch{
+  // request executed no need to report anything -> ws
+}
