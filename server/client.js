@@ -30,12 +30,11 @@ async function postData(url = '', data = {}) {
   return response.json();
 }
 
-
 try{
   postData("http://localhost:8000/api/input/", {
-    access_key: 'HghVcPRAzR6n1YUiy0rGTX3DoqxgydA',
+    access_key: 'e6c2ce4f-7736-46f6-9693-6cb104c42b10',
     input: 'What is three plus three',
-    ip: '172.28.16.2'
+    ip: '172.20.10.2'
   }).then(data => {
     console.log(data);
   });
