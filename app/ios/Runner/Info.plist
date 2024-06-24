@@ -56,5 +56,35 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	 <!-- Location Services -->
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>We need your location to provide personalized experiences and location-based services even when the app is in the background.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location to provide personalized experiences and location-based services when the app is in use.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>We need your location to provide personalized experiences and location-based services always.</string>
+
+    <!-- Contacts -->
+    <key>NSContactsUsageDescription</key>
+    <string>We need access to your contacts to enhance your social experience by connecting you with your friends.</string>
+
+    <!-- Camera -->
+    <key>NSCameraUsageDescription</key>
+    <string>We need access to your camera to allow you to take and upload photos.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>We need access to your microphone to allow you to record videos with sound.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need access to your photo library to allow you to select and upload photos.</string>
+
+    <!-- Bluetooth -->
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>We need access to Bluetooth to connect to your Bluetooth devices.</string>
+
+    <!-- Background Modes -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>location</string>
+    </array>
 </dict>
 </plist>

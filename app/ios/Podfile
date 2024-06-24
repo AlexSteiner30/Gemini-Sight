@@ -40,5 +40,18 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+
+    target.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+
+        ## Add this line
+         'PERMISSION_LOCATION=1',
+         'PERMISSION_CONTACTS=1',
+         'PERMISSIO_PHONE=1',
+         'PERMISSION_CAMERA=1',
+         'PERMISSION_BLUETHOOTH=1'
+      ]
+    end
   end
 end
