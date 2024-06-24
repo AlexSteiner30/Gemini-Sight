@@ -30,6 +30,7 @@ async function postData(url = '', data = {}) {
   return response.json();
 }
 
+// HTTP POST Request Parallel to WebSocket, Running Separetly
 try{
   postData("http://localhost:8000/api/input/", {
     access_key: 'e6c2ce4f-7736-46f6-9693-6cb104c42b10',

@@ -1,10 +1,10 @@
 import 'package:app/pages/account.dart';
 import 'package:app/pages/device_config.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Device {
   String id;
@@ -162,7 +162,7 @@ class _DeviceListPageState extends State<DeviceListPage> {
     // ignore: no_leading_underscores_for_local_identifiers
     bool _youtube = false;
     // ignore: no_leading_underscores_for_local_identifiers
-    bool _gps = false;
+    bool _location = false;
     // ignore: no_leading_underscores_for_local_identifiers
     bool _contacts = false;
     // ignore: no_leading_underscores_for_local_identifiers
@@ -172,8 +172,17 @@ class _DeviceListPageState extends State<DeviceListPage> {
 
     // ignore: non_constant_identifier_names
     Future<void> load_var() async {
-      _gps = await Permission.location.status.isGranted;
-      _contacts = await Permission.contacts.status.isGranted;
+      final prefs = await SharedPreferences.getInstance();
+
+      _googleMaps = prefs.getBool('googleMaps') ?? false;
+      _googleDrive = prefs.getBool('googleDrive') ?? false;
+      _gmail = prefs.getBool('gmail') ?? false;
+      _googleCalendar = prefs.getBool('googleCalendar') ?? false;
+      _youtube = prefs.getBool('youtube') ?? false;
+      _location = prefs.getBool('location') ?? false;
+      _contacts = prefs.getBool('contacts') ?? false;
+      _health = prefs.getBool('health') ?? false;
+      _phone = prefs.getBool('phone') ?? false;
     }
 
     await load_var();
@@ -189,7 +198,7 @@ class _DeviceListPageState extends State<DeviceListPage> {
             gmail: _gmail,
             googleCalendar: _googleCalendar,
             youtube: _youtube,
-            gps: _gps,
+            location: _location,
             contacts: _contacts,
             health: _health,
             phone: _phone),

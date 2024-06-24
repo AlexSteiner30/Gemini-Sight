@@ -2,7 +2,6 @@ const wav = require('wav');
 const PlayHT = require('playht');
 const fs = require('fs');
 const helper = require('./helper.js');
-const WebSocket = require('ws');
 
 class Audio {
     constructor(path) {
@@ -16,7 +15,7 @@ class Audio {
         this.path = path;
     }
 
-    async pcm(input, key, i, uuid, ip) {
+    async pcm(input, key, i, uuid, ip, ws) {
         const path = `${this.path}${key}/${uuid}_${i}.wav`;
 
         if (!fs.existsSync(`${this.path}${key}`)) {
@@ -51,12 +50,7 @@ class Audio {
                     });
 
                     reader.on('end',  () => {
-                        const ws = new WebSocket(`ws://${ip}:9000`);
-
-                        ws.on('open', function open() {
-                            ws.send(JSON.stringify({ pcm: pcmData.toString() }));
-                        });
-
+                        ws.send(JSON.stringify({ pcm: pcmData.toString() }));
                     });
 
                     file.pipe(reader);
