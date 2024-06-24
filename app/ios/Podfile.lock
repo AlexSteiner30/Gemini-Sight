@@ -30,12 +30,20 @@ PODS:
   - GTMSessionFetcher/Core (3.4.1)
   - GTMSessionFetcher/Full (3.4.1):
     - GTMSessionFetcher/Core
+  - MTBBarcodeScanner (5.0.11)
+  - permission_handler_apple (9.3.0):
+    - Flutter
   - Protobuf (3.11.4)
+  - qr_code_scanner (0.2.0):
+    - Flutter
+    - MTBBarcodeScanner
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_blue (from `.symlinks/plugins/flutter_blue/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
 
 SPEC REPOS:
   trunk:
@@ -43,6 +51,7 @@ SPEC REPOS:
     - GoogleSignIn
     - GTMAppAuth
     - GTMSessionFetcher
+    - MTBBarcodeScanner
     - Protobuf
 
 EXTERNAL SOURCES:
@@ -52,6 +61,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_blue/ios"
   google_sign_in_ios:
     :path: ".symlinks/plugins/google_sign_in_ios/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  qr_code_scanner:
+    :path: ".symlinks/plugins/qr_code_scanner/ios"
 
 SPEC CHECKSUMS:
   AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
@@ -61,7 +74,10 @@ SPEC CHECKSUMS:
   GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 8000756fc1c19d2e5697b90311f7832d2e33f6cd
+  MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
+  qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
 
 PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
 

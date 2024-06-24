@@ -35,7 +35,6 @@ class Database {
   async find(filter, value) {
     try {
       const result = await this.Product.findOne({ [filter]: value });
-      console.log(result)
       return result;
     } catch (err) {
       console.error('Error finding product:', err);
