@@ -43,11 +43,12 @@ class _DeviceListPageState extends State<DeviceListPage> {
   }
 
   Future<void> _scanQRCode() async {
-    var status = await Permission.camera.status;
-    if (kDebugMode) {
-      print(status);
+    const permission = Permission.camera;
+    if (await permission.isDenied) {
+      await permission.request();
     }
-    if (!status.isDenied) {
+    var status = await Permission.camera.status;
+    if (status.isGranted) {
       Navigator.push(
         // ignore: use_build_context_synchronously
         context,
@@ -149,13 +150,49 @@ class _DeviceListPageState extends State<DeviceListPage> {
     });
   }
 
-  void _showAccountPage() {
+  Future<void> _showAccountPage() async {
+    // ignore: no_leading_underscores_for_local_identifiers
+    bool _googleMaps = false;
+    // ignore: no_leading_underscores_for_local_identifiers
+    bool _googleDrive = false;
+    // ignore: no_leading_underscores_for_local_identifiers
+    bool _gmail = false;
+    // ignore: no_leading_underscores_for_local_identifiers
+    bool _googleCalendar = false;
+    // ignore: no_leading_underscores_for_local_identifiers
+    bool _youtube = false;
+    // ignore: no_leading_underscores_for_local_identifiers
+    bool _gps = false;
+    // ignore: no_leading_underscores_for_local_identifiers
+    bool _contacts = false;
+    // ignore: no_leading_underscores_for_local_identifiers
+    bool _health = false;
+    // ignore: no_leading_underscores_for_local_identifiers
+    bool _phone = false;
+
+    // ignore: non_constant_identifier_names
+    Future<void> load_var() async {
+      _gps = await Permission.location.status.isGranted;
+      _contacts = await Permission.contacts.status.isGranted;
+    }
+
+    await load_var();
+
     Navigator.push(
+      // ignore: use_build_context_synchronously
       context,
       MaterialPageRoute(
         builder: (context) => AccountPage(
-          user: widget.user,
-        ),
+            user: widget.user,
+            googleMaps: _googleMaps,
+            googleDrive: _googleDrive,
+            gmail: _gmail,
+            googleCalendar: _googleCalendar,
+            youtube: _youtube,
+            gps: _gps,
+            contacts: _contacts,
+            health: _health,
+            phone: _phone),
       ),
     );
   }
