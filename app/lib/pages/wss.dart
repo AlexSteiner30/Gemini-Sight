@@ -4,7 +4,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 class _WebSocketClient {
   final TextEditingController _controller = TextEditingController();
   final _channel = WebSocketChannel.connect(
-    Uri.parse('ws://localhost:9000'),
+    Uri.parse('ws://192.168.88.9:9000'),
   );
 
   void _sendMessage() {

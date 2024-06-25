@@ -57,9 +57,22 @@ class _DeviceListPageState extends State<DeviceListPage> {
             appBar: AppBar(
               title: const Text('Scan QR Code'),
             ),
-            body: QRView(
-              key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
+            body: Stack(
+              children: [
+                QRView(
+                  key: qrKey,
+                  onQRViewCreated: _onQRViewCreated,
+                ),
+                Center(
+                  child: CustomPaint(
+                    painter: QrScannerOverlayPainter(),
+                    child: Container(
+                      width: 300,
+                      height: 300,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -76,7 +89,7 @@ class _DeviceListPageState extends State<DeviceListPage> {
               child: ListBody(
                 children: <Widget>[
                   Text(
-                      'In order to connect a new device is it necessary to grant cammera access to the Gemini Sight Application'),
+                      'In order to connect a new device is it necessary to grant camera access to the Gemini Sight Application'),
                 ],
               ),
             ),
@@ -284,5 +297,23 @@ class _DeviceListPageState extends State<DeviceListPage> {
         child: const Icon(Icons.qr_code_scanner),
       ),
     );
+  }
+}
+
+class QrScannerOverlayPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4.0;
+
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    canvas.drawRect(rect, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }
