@@ -1,5 +1,11 @@
 import 'package:app/pages/account.dart';
+import 'package:app/pages/bottom_nav_bar.dart';
+import 'package:app/pages/chat.dart';
 import 'package:app/pages/device_config.dart';
+import 'package:app/pages/explore.dart';
+import 'package:app/pages/gallery.dart';
+import 'package:app/pages/menu.dart';
+import 'package:app/pages/store.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -57,22 +63,9 @@ class _DeviceListPageState extends State<DeviceListPage> {
             appBar: AppBar(
               title: const Text('Scan QR Code'),
             ),
-            body: Stack(
-              children: [
-                QRView(
-                  key: qrKey,
-                  onQRViewCreated: _onQRViewCreated,
-                ),
-                Center(
-                  child: CustomPaint(
-                    painter: QrScannerOverlayPainter(),
-                    child: Container(
-                      width: 300,
-                      height: 300,
-                    ),
-                  ),
-                ),
-              ],
+            body: QRView(
+              key: qrKey,
+              onQRViewCreated: _onQRViewCreated,
             ),
           ),
         ),
@@ -89,7 +82,7 @@ class _DeviceListPageState extends State<DeviceListPage> {
               child: ListBody(
                 children: <Widget>[
                   Text(
-                      'In order to connect a new device is it necessary to grant camera access to the Gemini Sight Application'),
+                      'In order to connect a new device is it necessary to grant cammera access to the Gemini Sight Application'),
                 ],
               ),
             ),
@@ -163,157 +156,281 @@ class _DeviceListPageState extends State<DeviceListPage> {
     });
   }
 
-  Future<void> _showAccountPage() async {
-    // ignore: no_leading_underscores_for_local_identifiers
-    bool _googleMaps = false;
-    // ignore: no_leading_underscores_for_local_identifiers
-    bool _googleDrive = false;
-    // ignore: no_leading_underscores_for_local_identifiers
-    bool _gmail = false;
-    // ignore: no_leading_underscores_for_local_identifiers
-    bool _googleCalendar = false;
-    // ignore: no_leading_underscores_for_local_identifiers
-    bool _youtube = false;
-    // ignore: no_leading_underscores_for_local_identifiers
-    bool _location = false;
-    // ignore: no_leading_underscores_for_local_identifiers
-    bool _contacts = false;
-    // ignore: no_leading_underscores_for_local_identifiers
-    bool _health = false;
-    // ignore: no_leading_underscores_for_local_identifiers
-    bool _phone = false;
-
-    // ignore: non_constant_identifier_names
-    Future<void> load_var() async {
-      final prefs = await SharedPreferences.getInstance();
-
-      _googleMaps = prefs.getBool('googleMaps') ?? false;
-      _googleDrive = prefs.getBool('googleDrive') ?? false;
-      _gmail = prefs.getBool('gmail') ?? false;
-      _googleCalendar = prefs.getBool('googleCalendar') ?? false;
-      _youtube = prefs.getBool('youtube') ?? false;
-      _location = prefs.getBool('location') ?? false;
-      _contacts = prefs.getBool('contacts') ?? false;
-      _health = prefs.getBool('health') ?? false;
-      _phone = prefs.getBool('phone') ?? false;
-    }
-
-    await load_var();
-
-    Navigator.push(
-      // ignore: use_build_context_synchronously
-      context,
-      MaterialPageRoute(
-        builder: (context) => AccountPage(
-            user: widget.user,
-            googleMaps: _googleMaps,
-            googleDrive: _googleDrive,
-            gmail: _gmail,
-            googleCalendar: _googleCalendar,
-            youtube: _youtube,
-            location: _location,
-            contacts: _contacts,
-            health: _health,
-            phone: _phone),
-      ),
-    );
-  }
-
   @override
   void dispose() {
     controller?.dispose();
     super.dispose();
   }
 
+  int _currentIndex = 4;
+
+  Future<void> _onNavBarTap(int index) async {
+    /* 
+    Index 
+    0 -> Explore
+    1 -> Store
+    2 -> Gallery
+    3 -> Chats
+    4 -> Device
+    5 -> Menu 
+    */
+
+    setState(() {
+      _currentIndex = index;
+    });
+
+    if (_currentIndex == 0) {
+      Navigator.push(
+        // ignore: use_build_context_synchronously
+        context,
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => ExploreScreen(user: widget.user),
+          transitionDuration: const Duration(seconds: 0),
+        ),
+      );
+    } else if (_currentIndex == 1) {
+      Navigator.push(
+        // ignore: use_build_context_synchronously
+        context,
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => StoreScreen(user: widget.user),
+          transitionDuration: const Duration(seconds: 0),
+        ),
+      );
+    } else if (_currentIndex == 2) {
+      Navigator.push(
+        // ignore: use_build_context_synchronously
+        context,
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => GalleryScreen(user: widget.user),
+          transitionDuration: const Duration(seconds: 0),
+        ),
+      );
+    } else if (_currentIndex == 3) {
+      Navigator.push(
+        // ignore: use_build_context_synchronously
+        context,
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => ChatScreen(user: widget.user),
+          transitionDuration: const Duration(seconds: 0),
+        ),
+      );
+    } else if (_currentIndex == 5) {
+      final prefs = await SharedPreferences.getInstance();
+
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _googleMaps = prefs.getBool('googleMaps') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _googleDrive = prefs.getBool('googleDrive') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _gmail = prefs.getBool('gmail') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _googleCalendar = prefs.getBool('googleCalendar') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _youtube = prefs.getBool('youtube') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _location = prefs.getBool('location') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _contacts = prefs.getBool('contacts') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _health = prefs.getBool('health') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _phone = prefs.getBool('phone') ?? false;
+
+      Navigator.push(
+        // ignore: use_build_context_synchronously
+        context,
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => AccountPage(
+              user: widget.user,
+              googleMaps: _googleMaps,
+              googleDrive: _googleDrive,
+              gmail: _gmail,
+              googleCalendar: _googleCalendar,
+              youtube: _youtube,
+              location: _location,
+              contacts: _contacts,
+              health: _health,
+              phone: _phone),
+          transitionDuration: const Duration(seconds: 0),
+        ),
+      );
+    }
+  }
+
+  void _showPopupMenu(BuildContext context) async {
+    await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(25.0, 40.0, 0.0, 0.0),
+      items: [
+        PopupMenuItem<int>(
+          value: 0,
+          child: Text("Settings"),
+        ),
+        PopupMenuItem<int>(
+          value: 1,
+          child: Text("About"),
+        ),
+        PopupMenuItem<int>(
+          value: 2,
+          child: Text("Logout"),
+        ),
+      ],
+      elevation: 8.0,
+    ).then((value) {
+      if (value != null) {
+        switch (value) {
+          case 0:
+            // Handle Settings
+            break;
+          case 1:
+            // Handle About
+            break;
+          case 2:
+            // Handle Logout
+            break;
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Devices'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: _showAccountPage,
-          ),
-        ],
-      ),
-      body: Container(
-        color: Colors.grey[800],
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 1.0,
-            crossAxisSpacing: 8.0,
-            mainAxisSpacing: 8.0,
-          ),
-          itemCount: _devices.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        DeviceConfigPage(device: _devices[index]),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // ignore: prefer_const_constructors
+                Text(
+                  'Meta Quest Pro',
+                  // ignore: prefer_const_constructors
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
-                );
-              },
-              child: Card(
-                color: Colors.grey[700],
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.important_devices,
-                        size: 50, color: Colors.grey[300]),
-                    const SizedBox(height: 16),
-                    Text(
-                      _devices[index].name,
-                      style: TextStyle(fontSize: 18, color: Colors.grey[100]),
-                    ),
-                    Text(
-                      'ID: ${_devices[index].id}',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[300]),
-                    ),
-                    Text(
-                      'Model: ${_devices[index].model}',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[300]),
-                    ),
-                    const SizedBox(height: 8),
-                    IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red[300]),
-                      onPressed: () => _confirmDelete(index),
-                    ),
-                  ],
                 ),
+                GestureDetector(
+                  onTap: () => _showPopupMenu(context),
+                  // ignore: prefer_const_constructors
+                  child: Icon(Icons.more_vert, color: Colors.white),
+                ),
+              ],
+            ),
+            // ignore: prefer_const_constructors
+            SizedBox(height: 20),
+            // ignore: prefer_const_constructors
+            Text(
+              'Connected',
+              style: TextStyle(color: Colors.green, fontSize: 16),
+            ),
+            Text(
+              'Synced 3m ago',
+              style: TextStyle(color: Colors.grey, fontSize: 12),
+            ),
+            SizedBox(height: 20),
+            Center(
+              child: CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage(
+                    'assets/meta_quest_pro.png'), // Add your image asset here
               ),
-            );
-          },
+            ),
+            SizedBox(height: 20),
+            Center(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Icon(Icons.battery_charging_full,
+                              color: Colors.white),
+                          SizedBox(height: 5),
+                          Text('90%', style: TextStyle(color: Colors.white)),
+                        ],
+                      ),
+                      SizedBox(width: 40),
+                      Column(
+                        children: [
+                          Icon(Icons.volume_up, color: Colors.white),
+                          SizedBox(height: 5),
+                          Text('50%', style: TextStyle(color: Colors.white)),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Text('prettyflyforthewifi',
+                      style: TextStyle(color: Colors.white)),
+                  SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
+                    onPressed: () {},
+                    icon: Icon(Icons.cast),
+                    label: Text('Cast'),
+                  ),
+                  SizedBox(height: 10),
+                  TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      'Maximize your battery life',
+                      style: TextStyle(color: Colors.blueAccent),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(color: Colors.grey),
+            Expanded(
+              child: ListView(
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.apps, color: Colors.white),
+                    title: Text('App Library',
+                        style: TextStyle(color: Colors.white)),
+                    subtitle: Text('Install and launch apps on your device',
+                        style: TextStyle(color: Colors.grey)),
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.settings, color: Colors.white),
+                    title: Text('Headset settings',
+                        style: TextStyle(color: Colors.white)),
+                    subtitle: Text('Get info and configure your device',
+                        style: TextStyle(color: Colors.grey)),
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.keyboard, color: Colors.white),
+                    title:
+                        Text('Keyboard', style: TextStyle(color: Colors.white)),
+                    subtitle: Text('Type in VR from your Phone',
+                        style: TextStyle(color: Colors.grey)),
+                    onTap: () {},
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _scanQRCode,
-        tooltip: 'Scan QR Code',
-        child: const Icon(Icons.qr_code_scanner),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: _onNavBarTap,
       ),
     );
-  }
-}
-
-class QrScannerOverlayPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.0;
-
-    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
-    canvas.drawRect(rect, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
   }
 }
