@@ -45,10 +45,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       Navigator.push(
         // ignore: use_build_context_synchronously
         context,
-        MaterialPageRoute(
-            builder: (context) => StoreScreen(
-                  user: widget.user,
-                )),
+        MaterialPageRoute(builder: (context) => StoreScreen(user: widget.user)),
       );
     } else if (_currentIndex == 2) {
       Navigator.push(
@@ -73,7 +70,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
         // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(
-            builder: (context) => DeviceListPage(user: widget.user)),
+            builder: (context) =>
+                DevicePage(user: widget.user, connected: false)),
       );
     } else if (_currentIndex == 5) {
       final prefs = await SharedPreferences.getInstance();
