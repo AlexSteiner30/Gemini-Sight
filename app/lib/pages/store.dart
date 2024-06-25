@@ -8,8 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// ignore: must_be_immutable
 class StoreScreen extends StatefulWidget {
-  const StoreScreen({super.key, required this.user});
+  StoreScreen({super.key, required this.user});
 
   final GoogleSignInAccount user;
 
@@ -73,7 +74,10 @@ class _StoreScreenState extends State<StoreScreen> {
         // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(
-            builder: (context) => DeviceListPage(user: widget.user)),
+            builder: (context) => DevicePage(
+                  user: widget.user,
+                  connected: false,
+                )),
       );
     } else if (_currentIndex == 5) {
       final prefs = await SharedPreferences.getInstance();

@@ -25,16 +25,18 @@ class Device {
       this.isOnline = false});
 }
 
-class DeviceListPage extends StatefulWidget {
-  final GoogleSignInAccount user;
+// ignore: must_be_immutable
+class DevicePage extends StatefulWidget {
+  DevicePage({super.key, required this.user, required this.connected});
 
-  const DeviceListPage({super.key, required this.user});
+  final GoogleSignInAccount user;
+  bool connected;
 
   @override
-  State<DeviceListPage> createState() => _DeviceListPageState();
+  State<DevicePage> createState() => _DevicePageState();
 }
 
-class _DeviceListPageState extends State<DeviceListPage> {
+class _DevicePageState extends State<DevicePage> {
   final List<Device> _devices = [];
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
@@ -50,10 +52,13 @@ class _DeviceListPageState extends State<DeviceListPage> {
 
   Future<void> _scanQRCode() async {
     const permission = Permission.camera;
+
     if (await permission.isDenied) {
       await permission.request();
     }
+
     var status = await Permission.camera.status;
+
     if (status.isGranted) {
       Navigator.push(
         // ignore: use_build_context_synchronously
@@ -63,15 +68,29 @@ class _DeviceListPageState extends State<DeviceListPage> {
             appBar: AppBar(
               title: const Text('Scan QR Code'),
             ),
-            body: QRView(
-              key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
+            body: Stack(
+              children: [
+                QRView(
+                  key: qrKey,
+                  onQRViewCreated: _onQRViewCreated,
+                ),
+                Center(
+                  child: Container(
+                    width: 200,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white, width: 2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
       );
     } else {
-      return showDialog<void>(
+      showDialog<void>(
         // ignore: use_build_context_synchronously
         context: context,
         barrierDismissible: false,
@@ -82,7 +101,8 @@ class _DeviceListPageState extends State<DeviceListPage> {
               child: ListBody(
                 children: <Widget>[
                   Text(
-                      'In order to connect a new device is it necessary to grant cammera access to the Gemini Sight Application'),
+                    'In order to connect a new device, camera access is necessary.',
+                  ),
                 ],
               ),
             ),
@@ -104,6 +124,7 @@ class _DeviceListPageState extends State<DeviceListPage> {
     // Parse the QR code data to extract device details
     // For this example, assume the qrData is formatted as "id,name,model"
     final parts = qrData.split(',');
+    print(parts);
     if (parts.length == 3) {
       setState(() {
         _devices.add(Device(
@@ -308,7 +329,7 @@ class _DeviceListPageState extends State<DeviceListPage> {
               children: [
                 // ignore: prefer_const_constructors
                 Text(
-                  'Meta Quest Pro',
+                  'Gemini Sight Glasses',
                   // ignore: prefer_const_constructors
                   style: TextStyle(
                     color: Colors.white,
@@ -326,98 +347,153 @@ class _DeviceListPageState extends State<DeviceListPage> {
             // ignore: prefer_const_constructors
             SizedBox(height: 20),
             // ignore: prefer_const_constructors
-            Text(
-              'Connected',
-              style: TextStyle(color: Colors.green, fontSize: 16),
-            ),
-            Text(
-              'Synced 3m ago',
-              style: TextStyle(color: Colors.grey, fontSize: 12),
-            ),
-            SizedBox(height: 20),
-            Center(
+            if (widget.connected)
+              // ignore: prefer_const_constructors
+              Text(
+                'Connected',
+                // ignore: prefer_const_constructors
+                style: TextStyle(color: Colors.green, fontSize: 16),
+              ),
+            if (widget.connected)
+              // ignore: prefer_const_constructors
+              Text(
+                'Synced 3m ago',
+                // ignore: prefer_const_constructors
+                style: TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+            if (!widget.connected)
+              // ignore: prefer_const_constructors
+              Text(
+                'Not Connected',
+                // ignore: prefer_const_constructors
+                style: TextStyle(color: Colors.red, fontSize: 16),
+              ),
+            const SizedBox(height: 20),
+            const Center(
               child: CircleAvatar(
                 radius: 50,
                 backgroundImage: AssetImage(
                     'assets/meta_quest_pro.png'), // Add your image asset here
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Center(
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Column(
-                        children: [
-                          Icon(Icons.battery_charging_full,
-                              color: Colors.white),
-                          SizedBox(height: 5),
-                          Text('90%', style: TextStyle(color: Colors.white)),
-                        ],
-                      ),
-                      SizedBox(width: 40),
-                      Column(
-                        children: [
-                          Icon(Icons.volume_up, color: Colors.white),
-                          SizedBox(height: 5),
-                          Text('50%', style: TextStyle(color: Colors.white)),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Text('prettyflyforthewifi',
+                  if (widget.connected)
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            Icon(Icons.battery_charging_full,
+                                color: Colors.white),
+                            SizedBox(height: 5),
+                            Text('90%', style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                        SizedBox(width: 40),
+                        Column(
+                          children: [
+                            Icon(Icons.volume_up, color: Colors.white),
+                            SizedBox(height: 5),
+                            Text('50%', style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  if (!widget.connected)
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            Icon(Icons.battery_0_bar, color: Colors.red),
+                            SizedBox(height: 5),
+                          ],
+                        ),
+                        SizedBox(width: 40),
+                        Column(
+                          children: [
+                            Icon(Icons.volume_mute, color: Colors.red),
+                            SizedBox(height: 5),
+                          ],
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 20),
+                  Text(widget.user.email,
+                      // ignore: prefer_const_constructors
                       style: TextStyle(color: Colors.white)),
-                  SizedBox(height: 20),
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
+                  const SizedBox(height: 20),
+                  if (widget.connected)
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
+                      onPressed: () {},
+                      icon: const Icon(Icons.cast),
+                      label: const Text('Cast'),
+                    ),
+                  if (!widget.connected)
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
+                      onPressed: _scanQRCode,
+                      icon: const Icon(Icons.qr_code),
+                      label: const Text('Connect'),
+                    ),
+                  const SizedBox(height: 10),
+                  if (widget.connected)
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text(
+                        'Maximize your battery life',
+                        style: TextStyle(color: Colors.blueAccent),
                       ),
                     ),
-                    onPressed: () {},
-                    icon: Icon(Icons.cast),
-                    label: Text('Cast'),
-                  ),
-                  SizedBox(height: 10),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'Maximize your battery life',
+                  if (!widget.connected)
+                    const Text(
+                      'Scan the QR code to connect your device',
                       style: TextStyle(color: Colors.blueAccent),
                     ),
-                  ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
-            Divider(color: Colors.grey),
+            const Divider(color: Colors.grey),
             Expanded(
               child: ListView(
                 children: [
                   ListTile(
-                    leading: Icon(Icons.apps, color: Colors.white),
-                    title: Text('App Library',
+                    leading: const Icon(Icons.apps, color: Colors.white),
+                    title: const Text('App Library',
                         style: TextStyle(color: Colors.white)),
-                    subtitle: Text('Install and launch apps on your device',
+                    subtitle: const Text(
+                        'Install and launch apps on your device',
                         style: TextStyle(color: Colors.grey)),
                     onTap: () {},
                   ),
                   ListTile(
-                    leading: Icon(Icons.settings, color: Colors.white),
-                    title: Text('Headset settings',
+                    leading: const Icon(Icons.settings, color: Colors.white),
+                    title: const Text('Headset settings',
                         style: TextStyle(color: Colors.white)),
-                    subtitle: Text('Get info and configure your device',
+                    subtitle: const Text('Get info and configure your device',
                         style: TextStyle(color: Colors.grey)),
                     onTap: () {},
                   ),
                   ListTile(
-                    leading: Icon(Icons.keyboard, color: Colors.white),
-                    title:
-                        Text('Keyboard', style: TextStyle(color: Colors.white)),
-                    subtitle: Text('Type in VR from your Phone',
+                    leading: const Icon(Icons.keyboard, color: Colors.white),
+                    title: const Text('Keyboard',
+                        style: TextStyle(color: Colors.white)),
+                    subtitle: const Text('Type in VR from your Phone',
                         style: TextStyle(color: Colors.grey)),
                     onTap: () {},
                   ),
