@@ -1,6 +1,10 @@
+import 'package:app/pages/account.dart';
+import 'package:app/pages/bottom_nav_bar.dart';
+import 'package:app/pages/device.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryScreen extends StatefulWidget {
@@ -33,6 +37,75 @@ class _GalleryScreenState extends State<GalleryScreen> {
     setState(() {
       _filter = type;
     });
+  }
+
+  int _currentIndex = 1;
+
+  Future<void> _onNavBarTap(int index) async {
+    /* 
+    Index 
+    0 -> Device
+    1 -> Gallery
+    2 -> Menu
+    */
+
+    setState(() {
+      _currentIndex = index;
+    });
+
+    if (_currentIndex == 0) {
+      Navigator.push(
+        // ignore: use_build_context_synchronously
+        context,
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => DevicePage(
+            user: widget.user,
+            connected: false,
+          ),
+          transitionDuration: const Duration(seconds: 0),
+        ),
+      );
+    } else if (_currentIndex == 2) {
+      final prefs = await SharedPreferences.getInstance();
+
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _googleMaps = prefs.getBool('googleMaps') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _googleDrive = prefs.getBool('googleDrive') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _gmail = prefs.getBool('gmail') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _googleCalendar = prefs.getBool('googleCalendar') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _youtube = prefs.getBool('youtube') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _location = prefs.getBool('location') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _contacts = prefs.getBool('contacts') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _health = prefs.getBool('health') ?? false;
+      // ignore: no_leading_underscores_for_local_identifiers
+      bool _phone = prefs.getBool('phone') ?? false;
+
+      Navigator.push(
+        // ignore: use_build_context_synchronously
+        context,
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => AccountPage(
+              user: widget.user,
+              googleMaps: _googleMaps,
+              googleDrive: _googleDrive,
+              gmail: _gmail,
+              googleCalendar: _googleCalendar,
+              youtube: _youtube,
+              location: _location,
+              contacts: _contacts,
+              health: _health,
+              phone: _phone),
+          transitionDuration: const Duration(seconds: 0),
+        ),
+      );
+    }
   }
 
   @override
@@ -88,6 +161,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 : VideoPlayerWidget(url: media['url']),
           );
         },
+      ),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: _onNavBarTap,
       ),
     );
   }

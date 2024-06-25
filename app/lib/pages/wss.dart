@@ -1,24 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_client/web_socket_client.dart';
 
-class _WebSocketClient {
-  final TextEditingController _controller = TextEditingController();
-  final _channel = WebSocketChannel.connect(
+class WebSocketClient {
+  final socket = WebSocket(
     Uri.parse('ws://192.168.88.9:9000'),
   );
+}
 
-  void _sendMessage() {
-    if (_controller.text.isNotEmpty) {
-      _channel.sink.add(_controller.text);
-    }
-  }
+void main() async {
+  WebSocketClient client = WebSocketClient();
+  await client.socket.connection.firstWhere((state) => state is Connected);
 
-  void startListening() {
-    while (true) {
-      var heared = false;
-      if (heared == true) {
-        //
-      }
-    }
-  }
+  client.socket.send(
+      'e6c2ce4f-7736-46f6-9693-6cb104c42b10,hey gemini how do i go back home?');
+  client.socket.messages.listen((onData) {
+    print(onData);
+  });
 }

@@ -18,24 +18,12 @@ class BottomNavBar extends StatelessWidget {
       onTap: onTap,
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.explore),
-          label: 'Explore',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.store),
-          label: 'Store',
+          icon: Icon(Icons.devices),
+          label: 'Device',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.photo),
           label: 'Gallery',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.account_circle),
-          label: 'Account',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.devices),
-          label: 'Device',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.menu),
