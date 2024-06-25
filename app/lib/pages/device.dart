@@ -1,16 +1,12 @@
 import 'package:app/pages/account.dart';
 import 'package:app/pages/bottom_nav_bar.dart';
-import 'package:app/pages/chat.dart';
-import 'package:app/pages/device_config.dart';
-import 'package:app/pages/explore.dart';
 import 'package:app/pages/gallery.dart';
-import 'package:app/pages/menu.dart';
-import 'package:app/pages/store.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app/helper/commands.dart';
 
 class Device {
   String id;
@@ -40,6 +36,8 @@ class _DevicePageState extends State<DevicePage> {
   final List<Device> _devices = [];
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
+
+  // ignore: non_constant_identifier_names
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
@@ -178,47 +176,34 @@ class _DevicePageState extends State<DevicePage> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    send_data(
+        'Hey Gemma i m going to go on a bike trip till los angeles start recording my speed, write when done the average speed and time taken in a spread sheet named bike_trip');
+  }
+
+  @override
   void dispose() {
     controller?.dispose();
     super.dispose();
   }
 
-  int _currentIndex = 4;
+  int _currentIndex = 0;
 
   Future<void> _onNavBarTap(int index) async {
     /* 
     Index 
-    0 -> Explore
-    1 -> Store
-    2 -> Gallery
-    3 -> Chats
-    4 -> Device
-    5 -> Menu 
+    0 -> Device
+    1 -> Gallery
+    2 -> Menu
     */
 
     setState(() {
       _currentIndex = index;
     });
 
-    if (_currentIndex == 0) {
-      Navigator.push(
-        // ignore: use_build_context_synchronously
-        context,
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => ExploreScreen(user: widget.user),
-          transitionDuration: const Duration(seconds: 0),
-        ),
-      );
-    } else if (_currentIndex == 1) {
-      Navigator.push(
-        // ignore: use_build_context_synchronously
-        context,
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => StoreScreen(user: widget.user),
-          transitionDuration: const Duration(seconds: 0),
-        ),
-      );
-    } else if (_currentIndex == 2) {
+    if (_currentIndex == 1) {
       Navigator.push(
         // ignore: use_build_context_synchronously
         context,
@@ -227,16 +212,7 @@ class _DevicePageState extends State<DevicePage> {
           transitionDuration: const Duration(seconds: 0),
         ),
       );
-    } else if (_currentIndex == 3) {
-      Navigator.push(
-        // ignore: use_build_context_synchronously
-        context,
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => ChatScreen(user: widget.user),
-          transitionDuration: const Duration(seconds: 0),
-        ),
-      );
-    } else if (_currentIndex == 5) {
+    } else if (_currentIndex == 2) {
       final prefs = await SharedPreferences.getInstance();
 
       // ignore: no_leading_underscores_for_local_identifiers
@@ -279,42 +255,6 @@ class _DevicePageState extends State<DevicePage> {
     }
   }
 
-  void _showPopupMenu(BuildContext context) async {
-    await showMenu(
-      context: context,
-      position: RelativeRect.fromLTRB(25.0, 40.0, 0.0, 0.0),
-      items: [
-        PopupMenuItem<int>(
-          value: 0,
-          child: Text("Settings"),
-        ),
-        PopupMenuItem<int>(
-          value: 1,
-          child: Text("About"),
-        ),
-        PopupMenuItem<int>(
-          value: 2,
-          child: Text("Logout"),
-        ),
-      ],
-      elevation: 8.0,
-    ).then((value) {
-      if (value != null) {
-        switch (value) {
-          case 0:
-            // Handle Settings
-            break;
-          case 1:
-            // Handle About
-            break;
-          case 2:
-            // Handle Logout
-            break;
-        }
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -324,7 +264,7 @@ class _DevicePageState extends State<DevicePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 40),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // ignore: prefer_const_constructors
@@ -336,11 +276,6 @@ class _DevicePageState extends State<DevicePage> {
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
-                GestureDetector(
-                  onTap: () => _showPopupMenu(context),
-                  // ignore: prefer_const_constructors
-                  child: Icon(Icons.more_vert, color: Colors.white),
                 ),
               ],
             ),
