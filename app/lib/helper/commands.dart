@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:app/helper/parse.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -167,6 +168,7 @@ Future<void> get_events() async {
 }
 
 Future<void> get_emails() async {
+  search_emails('chess');
   final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
   gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
@@ -196,4 +198,102 @@ Future<void> get_emails() async {
       await process(information);
     }
   }
+}
+
+Future<List<String>> search_emails(String query) async {
+  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
+
+  var messagesResponse = await gmailAPI.users.messages.list('me', q: query);
+
+  List<String> emailInfos = [];
+
+  if (messagesResponse.messages != null) {
+    for (var message in messagesResponse.messages!) {
+      var msg = await gmailAPI.users.messages.get('me', message.id!);
+      String subject = '';
+      String from = '';
+      String snippet = msg.snippet ?? 'No snippet';
+
+      if (msg.payload != null && msg.payload!.headers != null) {
+        for (var header in msg.payload!.headers!) {
+          if (header.name == 'Subject') {
+            subject = header.value ?? '';
+          } else if (header.name == 'From') {
+            from = header.value ?? '';
+          }
+        }
+      }
+
+      String information =
+          'Email From: $from\nSubject: $subject\nSnippet: $snippet\nID: ${message.id!}';
+      print(information);
+      emailInfos.add(information);
+    }
+  }
+
+  return emailInfos;
+}
+
+Future<void> reply_to_email(String messageId, String replyText) async {
+  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
+
+  var message = await gmailAPI.users.messages.get('me', messageId);
+  var threadId = message.threadId;
+  var headers = message.payload?.headers;
+
+  String subject = '';
+  String from = '';
+
+  if (headers != null) {
+    for (var header in headers) {
+      if (header.name == 'Subject') {
+        subject = header.value ?? '';
+      } else if (header.name == 'From') {
+        from = header.value ?? '';
+      }
+    }
+  }
+
+  String replyTo = from;
+
+  var emailContent = '''
+  Content-Type: text/plain; charset="UTF-8"
+  Content-Transfer-Encoding: 7bit
+  to: $replyTo
+  subject: Re: $subject
+  in-reply-to: $messageId
+  references: $messageId
+
+  $replyText
+  ''';
+
+  var encodedEmail = base64Url.encode(utf8.encode(emailContent));
+
+  var replyMessage = gmail.Message()
+    ..raw = encodedEmail
+    ..threadId = threadId;
+
+  await gmailAPI.users.messages.send(replyMessage, 'me');
+}
+
+Future<void> send_email(String to, String subject, String body) async {
+  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
+
+  var emailContent = '''
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+to: $to
+subject: $subject
+
+$body
+''';
+
+  var encodedEmail = base64Url.encode(utf8.encode(emailContent));
+
+  var message = gmail.Message()..raw = encodedEmail;
+
+  await gmailAPI.users.messages.send(message, 'me');
 }

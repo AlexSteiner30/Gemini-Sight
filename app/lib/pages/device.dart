@@ -179,7 +179,8 @@ class _DevicePageState extends State<DevicePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    send_data('Hey Gemma what are my current emails?');
+    send_data(
+        'Hey Gemma write an email to alex.steiner@student.h-is.com saying his laptop will arrive within the next two hours');
   }
 
   @override
