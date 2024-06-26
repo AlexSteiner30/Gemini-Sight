@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
+import 'package:googleapis/gmail/v1.dart' as gmail;
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 
@@ -20,13 +21,16 @@ class _SignInPageState extends State<SignInPage> {
           '910242255946-b70mhjrb2225nmapdvsgrr0mk66r9pid.apps.googleusercontent.com',
       scopes: [
         calendar.CalendarApi.calendarScope,
+        gmail.GmailApi.gmailReadonlyScope,
+        gmail.GmailApi.gmailSendScope,
+        gmail.GmailApi.gmailComposeScope,
+        gmail.GmailApi.gmailModifyScope,
       ]);
 
   Future<void> _login() async {
     try {
       final GoogleSignInAccount? account = await _googleSignIn.signIn();
       user = account!;
-      get_events();
       if (account != null) {
         Navigator.pushReplacement(
           // ignore: use_build_context_synchronously

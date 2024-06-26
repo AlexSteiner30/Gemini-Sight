@@ -29,6 +29,8 @@ Future<void> executeFunction(functionName, args) async {
       await start_route(args);
     case 'stop_route':
       await stop_route();
+    case 'read_email':
+      await get_emails();
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:app/pages/sign_in.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
+import 'package:googleapis/gmail/v1.dart' as gmail;
 import 'package:intl/intl.dart';
 
 late GoogleSignInAccount user;
@@ -161,6 +162,38 @@ Future<void> get_events() async {
           }
         }
       }
+    }
+  }
+}
+
+Future<void> get_emails() async {
+  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
+
+  var profile = await gmailAPI.users.getProfile('me');
+  var messagesResponse =
+      await gmailAPI.users.messages.list('me', maxResults: 10);
+
+  if (messagesResponse.messages != null) {
+    for (var message in messagesResponse.messages!) {
+      var msg = await gmailAPI.users.messages.get('me', message.id!);
+      String subject = '';
+      String from = '';
+      String snippet = msg.snippet ?? 'No snippet';
+
+      if (msg.payload != null && msg.payload!.headers != null) {
+        for (var header in msg.payload!.headers!) {
+          if (header.name == 'Subject') {
+            subject = header.value ?? '';
+          } else if (header.name == 'From') {
+            from = header.value ?? '';
+          }
+        }
+      }
+
+      String information =
+          'Email From: $from\nSubject: $subject\nSnippet: $snippet\n';
+      await process(information);
     }
   }
 }
