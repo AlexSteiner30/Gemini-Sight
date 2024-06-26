@@ -1,45 +1,69 @@
 import 'package:app/helper/commands.dart';
 
-void parse(String input) {
-  input = input.replaceAll('\\"', '"');
-  input = input.replaceAll('[', '').replaceAll(']', '');
+Future<void> parse(String input) async {
+  List<Future<void> Function()> instructions = parseInstructions(input);
+  await executeInstructions(instructions);
+}
 
-  List<String> actions = input.split('¬');
-  for (String action in actions) {
-    RegExp regex = RegExp(r'(\w+)\((.*)\)');
-    RegExpMatch? match = regex.firstMatch(action);
-    if (match != null) {
-      String functionName = match.group(1)!;
-      String arguments = match.group(2)!;
-
-      executeFunction(functionName, arguments);
-    }
+Future<void> executeInstructions(
+    List<Future<void> Function()> instructions) async {
+  for (var instruction in instructions) {
+    await instruction();
   }
 }
 
-Future<void> executeFunction(functionName, args) async {
-  switch (functionName) {
-    case 'speak':
-      await speak(args);
-    case 'start_recording':
-      await start_recording();
-    case 'stop_recording':
-      await stop_recording();
-    case 'start_route':
-      await start_route(args);
-    case 'stop_route':
-      await stop_route();
-    case 'read_email':
-      await get_emails();
-  }
-}
-
-dynamic resolveVariable(String variable) {
-  print(variable);
-  var context = {
-    'avg_speed': 15,
-    'time_taken': '1 hour',
+List<Future<void> Function()> parseInstructions(String input) {
+  List<Future<void> Function()> instructions = [];
+  Map<String, Future<void> Function(Map<String, dynamic>)> functionMap = {
+    'send_email': (args) async =>
+        await send_email(args['to'], args['subject'], args['body']),
   };
 
-  return context[variable] ?? variable;
+  RegExp exp = RegExp(r"(\w+)\(([^)]+)\)");
+  Iterable<RegExpMatch> matches = exp.allMatches(input);
+
+  for (var match in matches) {
+    String functionName = match.group(1)!;
+    String argumentsString = match.group(2)!;
+    Map<String, dynamic> args = parseNamedArguments(argumentsString);
+
+    if (functionMap.containsKey(functionName)) {
+      print(args);
+      instructions.add(() => functionMap[functionName]!(args));
+    }
+  }
+
+  return instructions;
+}
+
+Map<String, dynamic> parseNamedArguments(String argumentsString) {
+  Map<String, dynamic> args = {};
+  RegExp argExp = RegExp(
+      "(\\w+):\\s*'([^']*)'|(\\w+):\\s*\"([^\"]*)\"|(\\w+):\\s*(\\d+(?:\\.\\d+)?)|(\\w+):\\s*(true|false)");
+  Iterable<RegExpMatch> argMatches = argExp.allMatches(argumentsString);
+
+  for (var argMatch in argMatches) {
+    String key = argMatch.group(1) ??
+        argMatch.group(3) ??
+        argMatch.group(5) ??
+        argMatch.group(7)!;
+    String? value = argMatch.group(2) ??
+        argMatch.group(4) ??
+        argMatch.group(6) ??
+        argMatch.group(8);
+
+    if (value != null) {
+      if (RegExp(r'^\d+$').hasMatch(value)) {
+        args[key] = int.parse(value);
+      } else if (RegExp(r'^\d+\.\d+$').hasMatch(value)) {
+        args[key] = double.parse(value);
+      } else if (value == 'true' || value == 'false') {
+        args[key] = value == 'true';
+      } else {
+        args[key] = value;
+      }
+    }
+  }
+
+  return args;
 }
