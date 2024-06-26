@@ -1,134 +1,166 @@
+import 'dart:async';
+import 'package:app/helper/parse.dart';
+import 'package:app/pages/sign_in.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:web_socket_client/web_socket_client.dart';
+import 'package:googleapis/calendar/v3.dart' as calendar;
+import 'package:intl/intl.dart';
+
+late GoogleSignInAccount user;
 
 final socket = WebSocket(
   Uri.parse('ws://192.168.88.9:9000'),
 );
 
-// ignore: non_constant_identifier_names
-void send_data(String data) async {
+Future<void> process(String data) async {
   await socket.connection.firstWhere((state) => state is Connected);
 
-  socket.send('e6c2ce4f-7736-46f6-9693-6cb104c42b10,$data');
+  final Completer<void> completer = Completer<void>();
 
-  socket.messages.listen((commands_list) {
-    // play pcm over ble
-    // ignore: avoid_print
-    print(commands_list);
+  socket.send('process¬e6c2ce4f-7736-46f6-9693-6cb104c42b10¬$data');
+
+  final subscription = socket.messages.listen((response) {
+    if (response[0] == 'r') {
+      speak(response.toString().substring(1)).then((_) {
+        completer.complete();
+      });
+    }
   });
+
+  await completer.future;
+  await subscription.cancel();
 }
 
-void speak(data) async {
+Future<void> send_data(String data) async {
   await socket.connection.firstWhere((state) => state is Connected);
 
-  socket.send(
-      // ignore: prefer_interpolation_to_compose_strings
-      'speak,' + data);
+  final Completer<void> completer = Completer<void>();
 
-  socket.messages.listen((pcm) {
-    // play pcm over ble
-    // ignore: avoid_print
-    print(pcm);
+  socket.send('e6c2ce4f-7736-46f6-9693-6cb104c42b10¬$data');
+
+  final subscription = socket.messages.listen((commands_list) {
+    parse(commands_list);
+    completer.complete();
   });
+
+  await completer.future;
+  await subscription.cancel();
 }
 
-// ignore: non_constant_identifier_names
-void start_recording() {
-  // ignore: avoid_print
+Future<void> speak(String data) async {
+  print('Speaking $data');
+
+  await socket.connection.firstWhere((state) => state is Connected);
+
+  final Completer<void> completer = Completer<void>();
+
+  socket.send('speak¬e6c2ce4f-7736-46f6-9693-6cb104c42b10¬' + data);
+
+  final subscription = socket.messages.listen((pcm) {
+    // play pcm over ble
+    //print(pcm);
+    completer.complete();
+  });
+
+  await completer.future;
+  await subscription.cancel();
+}
+
+Future<void> start_recording() async {
   print('Started Recording');
 }
 
-// ignore: non_constant_identifier_names
-void stop_recording() {
-  // ignore: avoid_print
+Future<void> stop_recording() async {
   print('Stop Recording');
 }
 
-// ignore: non_constant_identifier_names
-void start_route(route) {
-  // search route then speak
-  // ignore: avoid_print
+Future<void> start_route(route) async {
   print('Started Route');
 }
 
-// ignore: non_constant_identifier_names
-void stop_route(route) {
-  // search route then speak
-  // ignore: avoid_print
+Future<void> stop_route() async {
   print('Stopped Route');
 }
 
-// ignore: non_constant_identifier_names
-void get_document(document) {
-  // ignore: avoid_print
+Future<void> get_document(document) async {
   print(document);
 }
 
-// ignore: non_constant_identifier_names
-void write_document(document, data) {
-  // ignore: avoid_print
+Future<void> write_document(document, Map<String, dynamic> data) async {
   print(document);
-  // ignore: avoid_print
   print(data);
 }
 
-// ignore: non_constant_identifier_names
-void get_sheet(sheet) {
-  // ignore: avoid_print
+Future<void> get_sheet(sheet) async {
   print(sheet);
 }
 
-// ignore: non_constant_identifier_names
-void write_sheet(sheet, data) {
-  // ignore: avoid_print
+Future<void> write_sheet(String sheet, Map<String, dynamic> data) async {
   print(sheet);
-  // ignore: avoid_print
   print(data);
 }
 
-// ignore: non_constant_identifier_names
-void change_volume(volume) {
-  // ignore: avoid_print
+Future<void> change_volume(volume) async {
   print(volume);
 }
 
-// ignore: non_constant_identifier_names
-void drive_get_file(file) {
-  // ignore: avoid_print
+Future<void> drive_get_file(file) async {
   print(file);
 }
 
-// ignore: non_constant_identifier_names
-void drive_push_file(file, data) {
-  // ignore: avoid_print
+Future<void> drive_push_file(file, data) async {
   print(file);
-  // ignore: avoid_print
   print(data);
 }
 
-void wait(int seconds) {
-  //sleep(const Duration(seconds: 1)); // fix seconds
+Future<void> wait(int seconds) async {
+  await Future.delayed(Duration(seconds: seconds));
 }
 
-// ignore: non_constant_identifier_names
-void record_speed() {
-  // record speed
-  // ignore: avoid_print
+Future<void> record_speed() async {
   print('Recording Speed');
 }
 
-// ignore: non_constant_identifier_names
-void stop_speed() {
-  // ignore: avoid_print
+Future<void> stop_speed() async {
   print('Stop Recording Speed');
 }
 
-// ignore: non_constant_identifier_names
-void play_song(String song) {
-  // ignore: avoid_print
+Future<void> play_song(String song) async {
   print('Playing song: $song');
 }
 
-void main() {
-  send_data(
-      'Hey Gemma i m going to go on a bike trip till los angeles start recording my speed, write when done the average speed and time taken in a spread sheet named bike_trip');
+Future<void> get_events() async {
+  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
+
+  var calendarList = await calendarAPI.calendarList.list();
+
+  if (calendarList.items != null) {
+    for (var cal in calendarList.items!) {
+      var events = await calendarAPI.events.list(cal.id!);
+      if (events.items != null) {
+        for (var event in events.items!) {
+          if (event.start?.dateTime != null &&
+              event.start!.dateTime!.isAfter(DateTime.now())) {
+            String information = '';
+
+            information += 'Event Summary: ${event.summary} ';
+            information +=
+                'Event Description: ${event.description ?? 'No description'} ';
+            information +=
+                'Event Start: ${DateFormat('yyyy-MM-dd – kk:mm').format(event.start!.dateTime!)}\n';
+            information +=
+                'Event End: ${event.end != null ? DateFormat('yyyy-MM-dd – kk:mm').format(event.end!.dateTime!) : 'No end time'} ';
+            information +=
+                'Event Location: ${event.location ?? 'No location'} ';
+            information +=
+                'Event Attendees: ${event.attendees?.map((attendee) => attendee.email).join(', ') ?? 'No attendees'} ';
+            information += '\n';
+
+            await process(information);
+          }
+        }
+      }
+    }
+  }
 }
