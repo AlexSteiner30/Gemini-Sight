@@ -87,6 +87,10 @@
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>We will sync your data with the Apple Health app to give you better insights</string>
 
+	<!-- SMS -->
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Our app needs permission to send SMS messages for [reason]</string>
+
     <!-- Background Modes -->
     <key>UIBackgroundModes</key>
     <array>
