@@ -44,6 +44,12 @@ dependencies:
   googleapis: ^13.2.0
   googleapis_auth: ^1.6.0
   intl: ^0.19.0
+  url_launcher: ^6.3.0
+  flutter_sms: ^2.3.3
+  contacts_service: ^0.6.3
+  function_tree: ^0.9.1
+  dart_eval: ^0.7.9
+  vm_service: ^14.2.1
 
 
 dev_dependencies:

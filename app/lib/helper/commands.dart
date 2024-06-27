@@ -2,11 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:app/helper/parse.dart';
 import 'package:app/pages/sign_in.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:googleapis/gmail/v1.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
 import 'package:intl/intl.dart';
+import 'package:flutter_sms/flutter_sms.dart';
 
 late GoogleSignInAccount user;
 
@@ -131,11 +136,46 @@ Future<void> play_song(String song) async {
   print('Playing song: $song');
 }
 
-Future<void> get_events() async {
+Future<String> contacts(String name) async {
+  if (await Permission.contacts.request().isGranted) {
+    Iterable<Contact> contacts = await ContactsService.getContacts();
+    Contact? contact = contacts.firstWhere(
+        (contact) => contact.displayName?.toLowerCase() == name.toLowerCase());
+
+    if (contact != null && contact.phones!.isNotEmpty) {
+      print(contact.phones?.first.value);
+      return contact.phones?.first.value ?? 'No number found';
+    } else {
+      return 'Contact not found';
+    }
+  } else {
+    return 'No permission granted';
+  }
+}
+
+Future<void> call(String phone_number) async {
+  launchUrlString("tel://$phone_number");
+
+  await speak(
+      'Not having access to your phone, you will have to click on the button to confirm the action on your own.');
+}
+
+Future<void> text(String phone_number, message) async {
+  await sendSMS(message: message, recipients: [phone_number])
+      .catchError((onError) {
+    print(onError);
+  });
+
+  await speak(
+      'Not having access to your phone, you will have to click on the button to confirm the action on your own.');
+}
+
+Future<String> get_calendar_events() async {
   final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
   calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
 
   var calendarList = await calendarAPI.calendarList.list();
+  String complete_information = '';
 
   if (calendarList.items != null) {
     for (var cal in calendarList.items!) {
@@ -159,22 +199,25 @@ Future<void> get_events() async {
                 'Event Attendees: ${event.attendees?.map((attendee) => attendee.email).join(', ') ?? 'No attendees'} ';
             information += '\n';
 
+            complete_information = complete_information + information;
+
             await process(information);
           }
         }
       }
     }
   }
+  return complete_information;
 }
 
-Future<void> get_emails() async {
-  search_emails('chess');
+Future<void> read_email() async {
   final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
   gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
   var profile = await gmailAPI.users.getProfile('me');
+
   var messagesResponse =
-      await gmailAPI.users.messages.list('me', maxResults: 10);
+      await gmailAPI.users.messages.list('me', maxResults: 10, q: 'is:unread');
 
   if (messagesResponse.messages != null) {
     for (var message in messagesResponse.messages!) {
@@ -196,6 +239,8 @@ Future<void> get_emails() async {
       String information =
           'Email From: $from\nSubject: $subject\nSnippet: $snippet\n';
       await process(information);
+
+      // change email to read
     }
   }
 }
@@ -278,22 +323,42 @@ Future<void> reply_to_email(String messageId, String replyText) async {
   await gmailAPI.users.messages.send(replyMessage, 'me');
 }
 
-Future<void> send_email(String to, String subject, String body) async {
+Future<String> send_email(String to, String subject, String body) async {
   final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
   gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
+
+  body = body.substring(1, body.length - 1);
+  to = to.substring(1, to.length - 1);
+  subject = subject.substring(1, subject.length - 1);
+
+  final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+  if (!emailRegex.hasMatch(to)) {
+    return 'Invalid email address';
+  }
 
   var emailContent = '''
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-to: $to
-subject: $subject
+To: $to
+Subject: $subject
 
 $body
 ''';
+
+  print(emailContent);
 
   var encodedEmail = base64Url.encode(utf8.encode(emailContent));
 
   var message = gmail.Message()..raw = encodedEmail;
 
-  await gmailAPI.users.messages.send(message, 'me');
+  try {
+    await gmailAPI.users.messages.send(message, 'me');
+    return 'Email Sent';
+  } catch (e) {
+    print('Failed to send email: $e');
+    if (e is DetailedApiRequestError) {
+      return 'Failed to send email: ${e.message}';
+    }
+    return 'Failed to send email';
+  }
 }
