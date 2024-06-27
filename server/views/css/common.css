@@ -77,6 +77,10 @@ button:hover {
     cursor: grab;
 }
 
+.left {
+    text-align: left;
+}
+
 #main {
     margin: 0;
     padding: 0;
