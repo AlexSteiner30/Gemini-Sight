@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gemini Sight | Admin</title>
     <link rel="stylesheet" href="css/common.css" type="text/css">
+    <link rel="stylesheet" href="css/admin.css" type="text/css">
 </head>
 <body>
     <nav>
@@ -20,9 +21,11 @@
         </header>
         <main>
             <section>
-                <form>
+                <form action="/signin" method="POST">
                     <input type="text" placeholder="Username...">
-                    <input type="text" placeholder="Username...">
+                    <input type="text" placeholder="Password...">
+                    <p>Don't have an account? <a href="signup">Sign-Up</a></p>
+                    <button>Submit</button>
                 </form>
             </section>
         </main>

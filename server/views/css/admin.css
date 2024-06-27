@@ -1,0 +1,22 @@
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+    text-align: center;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    height: 30vh;
+}
+
+form input {
+    max-width: 12vw;
+    padding: 0.1vw;
+    transform: scale(1.2);
+}
+
+section {
+    padding: 0 !important;
+}
