@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Glasses Homepage</title>
+    <title>Gemini Sight | Admin</title>
     <link rel="stylesheet" href="css/common.css" type="text/css">
+    <link rel="stylesheet" href="css/admin.css" type="text/css">
 </head>
 <body>
     <nav>
@@ -16,17 +17,15 @@
     </nav>
     <div id="main">
         <header>
-            <h1 id="title">About Us</h1>
+            <h1 id="title">Sign-Up</h1>
         </header>
         <main>
             <section>
-                <h1>Purpose</h1>
-                <h3>Lorem Ipsum</h3>
-            </section>
-            <hr>
-            <section>
-                <h1>Who we are</h1>
-                <h3>Lorem Ipsum</h3>
+                <form action="/signup" method="POST">
+                    <input type="text" placeholder="Username...">
+                    <input type="text" placeholder="Password...">
+                    <button>Submit</button>
+                </form>
             </section>
         </main>
     </div>
