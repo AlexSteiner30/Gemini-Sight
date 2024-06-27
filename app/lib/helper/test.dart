@@ -1,101 +1,165 @@
-// Define your functions as before
-int multiplyBy2(int input, int x, int y) {
-  return input * 2 + x - y;
+import 'dart:async';
+
+// Define the functions
+Future<void> call(String contact) async {
+  print('Calling $contact');
 }
 
-int get_number() {
-  return 3;
+Future<String> contacts(String name) async {
+  print('Retrieving contact for $name');
+  return Future.delayed(
+      Duration(seconds: 1), () => '+39351517408'); // Example return value
 }
 
-String concatenate(String input1, String input2) {
-  return input1 + input2;
+Future<void> sendEmail(String recipient, String subject, String body) async {
+  print('Sending email to $recipient with subject "$subject" and body "$body"');
 }
 
-bool negate(bool input) {
-  return !input;
+// Function registry
+Map<String, Function> functionRegistry = {
+  'call': call,
+  'send_email': sendEmail,
+  'contacts': contacts
+};
+
+// Dispatcher function to call the appropriate function
+Future<dynamic> dispatcher(String functionName, List<dynamic> args) async {
+  if (functionRegistry.containsKey(functionName)) {
+    Function function = functionRegistry[functionName]!;
+    return await Function.apply(function, args);
+  } else {
+    print('Function not found: $functionName');
+    return null;
+  }
 }
 
-dynamic evaluate(String expression) {
-  expression = expression.trim();
+// Function to parse the input string and execute the functions
+Future<void> parseAndExecute(String input) async {
+  // Remove surrounding square brackets if they exist
+  if (input.startsWith('[') && input.endsWith(']')) {
+    input = input.substring(1, input.length - 1);
+  }
 
-  if (expression.contains('(') && expression.endsWith(')')) {
-    int indexOfOpenParen = expression.indexOf('(');
-    String functionName = expression.substring(0, indexOfOpenParen);
-    String argumentPart =
-        expression.substring(indexOfOpenParen + 1, expression.length - 1);
+  // Split the string by '),' but keep track of nested functions
+  List<String> calls = _splitCalls(input);
 
-    List<dynamic> arguments = _parseArguments(argumentPart);
+  for (String call in calls) {
+    await _parseFunction(call.trim());
+  }
+}
 
-    List<dynamic> evaluatedArgs = arguments.map((arg) {
-      if (arg is String && arg.contains('(') && arg.endsWith(')')) {
-        return evaluate(arg);
+// Function to split calls considering nested functions
+List<String> _splitCalls(String input) {
+  List<String> calls = [];
+  int nestedLevel = 0;
+  StringBuffer currentCall = StringBuffer();
+
+  for (int i = 0; i < input.length; i++) {
+    if (input[i] == '(') {
+      nestedLevel++;
+    } else if (input[i] == ')') {
+      nestedLevel--;
+    } else if (input[i] == ',' && nestedLevel == 0) {
+      calls.add(currentCall.toString());
+      currentCall.clear();
+      continue;
+    }
+    currentCall.write(input[i]);
+  }
+
+  if (currentCall.isNotEmpty) {
+    calls.add(currentCall.toString());
+  }
+
+  return calls;
+}
+
+// Recursive function to parse and execute the function calls
+Future<dynamic> _parseFunction(String input) async {
+  int index = 0;
+  while (index < input.length && input[index] != '(') {
+    index++;
+  }
+
+  if (index == input.length) {
+    throw FormatException('Invalid input string');
+  }
+
+  String functionName = input.substring(0, index).trim();
+  index++; // Skip '('
+
+  List<dynamic> args = [];
+  StringBuffer currentArg = StringBuffer();
+
+  int nestedLevel = 0;
+  while (index < input.length) {
+    if (input[index] == '(') {
+      nestedLevel++;
+      currentArg.write(input[index]);
+    } else if (input[index] == ')') {
+      if (nestedLevel == 0) {
+        if (currentArg.isNotEmpty) {
+          args.add(await _parseArgument(currentArg.toString().trim()));
+        }
+        break;
       } else {
-        return arg;
+        nestedLevel--;
+        currentArg.write(input[index]);
       }
-    }).toList();
-
-    switch (functionName) {
-      case 'multiplyBy2':
-        if (evaluatedArgs.length != 3) {
-          throw Exception('multiplyBy2 requires exactly 2 arguments');
-        }
-        int arg1 = evaluatedArgs[0];
-        int arg2 = evaluatedArgs[1];
-        int arg3 = evaluatedArgs[2];
-        return multiplyBy2(arg1, arg2, arg3);
-      case 'concatenate':
-        if (evaluatedArgs.length != 2) {
-          throw Exception('concatenate requires exactly 2 arguments');
-        }
-        String arg1 = evaluatedArgs[0];
-        String arg2 = evaluatedArgs[1];
-        return concatenate(arg1, arg2);
-      case 'negate':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('negate requires exactly 1 argument');
-        }
-        bool arg = evaluatedArgs[0];
-        return negate(arg);
-      default:
-        throw Exception('Function $functionName not found');
-    }
-  }
-
-  return expression;
-}
-
-List<dynamic> _parseArguments(String argumentsString) {
-  List<dynamic> arguments = [];
-
-  List<String> parts = argumentsString.split(',');
-  for (var part in parts) {
-    var trimmedPart = part.trim();
-
-    if (RegExp(r'^-?\d+$').hasMatch(trimmedPart)) {
-      arguments.add(int.parse(trimmedPart));
-    } else if (trimmedPart == 'true' || trimmedPart == 'false') {
-      arguments.add(trimmedPart == 'true');
+    } else if (input[index] == ',' && nestedLevel == 0) {
+      args.add(await _parseArgument(currentArg.toString().trim()));
+      currentArg.clear();
     } else {
-      arguments.add(trimmedPart);
+      currentArg.write(input[index]);
     }
+    index++;
   }
 
-  return arguments;
+  return await dispatcher(functionName, args);
 }
 
-void main() {
-  var number = 10;
-  List<String> expressions = [
-    'multiplyBy2(${get_number()}, 3, 5)',
-    'concatenate("hello", "world")',
-    'negate(negate(false))'
-  ];
+// Function to parse individual arguments
+Future<dynamic> _parseArgument(String arg) async {
+  arg = arg.trim();
+  if (arg.contains('(')) {
+    // It's a nested function call
+    return await _parseFunction(arg);
+  } else if (arg.startsWith("'") && arg.endsWith("'")) {
+    // It's a string argument
+    return arg.substring(1, arg.length - 1);
+  } else if (arg.contains('+')) {
+    // Handle string concatenation
+    return await _evaluateConcatenation(arg);
+  } else {
+    // It's a variable or simple value
+    return arg;
+  }
+}
 
-  for (var expression in expressions) {
-    try {
-      print(evaluate(expression));
-    } catch (e) {
-      print('Error evaluating expression: $e');
+// Function to evaluate string concatenation
+Future<String> _evaluateConcatenation(String expression) async {
+  List<String> parts = expression.split('+');
+  StringBuffer result = StringBuffer();
+
+  for (String part in parts) {
+    String trimmedPart = part.trim();
+    if (trimmedPart.contains('(')) {
+      // It's a nested function call
+      result.write(await _parseFunction(trimmedPart));
+    } else if (trimmedPart.startsWith("'") && trimmedPart.endsWith("'")) {
+      // It's a string argument
+      result.write(trimmedPart.substring(1, trimmedPart.length - 1));
+    } else {
+      // It's a variable or simple value
+      result.write(trimmedPart);
     }
   }
+
+  return result.toString();
+}
+
+Future<void> main() async {
+  String inputString =
+      "[call(contacts('Anna')), send_email('Alex.steiner@student.h-is.com', 'Meeting', 'You are required to attend this meeting'), call(contacts('John'))]";
+  await parseAndExecute(inputString);
 }
