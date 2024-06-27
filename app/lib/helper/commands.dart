@@ -19,23 +19,23 @@ final socket = WebSocket(
   Uri.parse('ws://192.168.88.9:9000'),
 );
 
-Future<void> process(String data) async {
+Future<String> process(String input, String context) async {
+  String data = input + context;
   await socket.connection.firstWhere((state) => state is Connected);
 
-  final Completer<void> completer = Completer<void>();
+  final Completer<String> completer = Completer<String>();
 
   socket.send('process¬e6c2ce4f-7736-46f6-9693-6cb104c42b10¬$data');
 
   final subscription = socket.messages.listen((response) {
     if (response[0] == 'r') {
-      speak(response.toString().substring(1)).then((_) {
-        completer.complete();
-      });
+      completer.complete(response);
     }
   });
 
-  await completer.future;
+  final result = await completer.future;
   await subscription.cancel();
+  return result.substring(0);
 }
 
 Future<void> send_data(String data) async {
@@ -65,7 +65,7 @@ Future<void> speak(String data) async {
 
   final subscription = socket.messages.listen((pcm) {
     // play pcm over ble
-    //print(pcm);
+    print(pcm);
     completer.complete();
   });
 
@@ -143,7 +143,6 @@ Future<String> contacts(String name) async {
         (contact) => contact.displayName?.toLowerCase() == name.toLowerCase());
 
     if (contact != null && contact.phones!.isNotEmpty) {
-      print(contact.phones?.first.value);
       return contact.phones?.first.value ?? 'No number found';
     } else {
       return 'Contact not found';
@@ -200,8 +199,6 @@ Future<String> get_calendar_events() async {
             information += '\n';
 
             complete_information = complete_information + information;
-
-            await process(information);
           }
         }
       }
@@ -238,7 +235,7 @@ Future<void> read_email() async {
 
       String information =
           'Email From: $from\nSubject: $subject\nSnippet: $snippet\n';
-      await process(information);
+      await process(information, '');
 
       // change email to read
     }
@@ -272,7 +269,6 @@ Future<List<String>> search_emails(String query) async {
 
       String information =
           'Email From: $from\nSubject: $subject\nSnippet: $snippet\nID: ${message.id!}';
-      print(information);
       emailInfos.add(information);
     }
   }
@@ -323,17 +319,17 @@ Future<void> reply_to_email(String messageId, String replyText) async {
   await gmailAPI.users.messages.send(replyMessage, 'me');
 }
 
-Future<String> send_email(String to, String subject, String body) async {
+Future<void> send_email(
+    String to, String subject, String body, String context) async {
+  String data = await process(
+      body, '$context do not include the subject just write the email body');
+  data = data.substring(1);
   final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
   gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
-  body = body.substring(1, body.length - 1);
-  to = to.substring(1, to.length - 1);
-  subject = subject.substring(1, subject.length - 1);
-
   final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
   if (!emailRegex.hasMatch(to)) {
-    return 'Invalid email address';
+    print('Invalid email address');
   }
 
   var emailContent = '''
@@ -342,10 +338,8 @@ Content-Transfer-Encoding: 7bit
 To: $to
 Subject: $subject
 
-$body
+$data
 ''';
-
-  print(emailContent);
 
   var encodedEmail = base64Url.encode(utf8.encode(emailContent));
 
@@ -353,12 +347,12 @@ $body
 
   try {
     await gmailAPI.users.messages.send(message, 'me');
-    return 'Email Sent';
+    print('Email Sent');
   } catch (e) {
     print('Failed to send email: $e');
     if (e is DetailedApiRequestError) {
-      return 'Failed to send email: ${e.message}';
+      print('Failed to send email: ${e.message}');
     }
-    return 'Failed to send email';
+    print('Failed to send email');
   }
 }

@@ -1,241 +1,157 @@
 import 'package:app/helper/commands.dart';
 
-// Define your functions as before
-int multiplyBy2(int input, int x) {
-  return input * 2 + x;
+typedef DynamicFunction = Future<dynamic> Function(List<dynamic>);
+
+Map<String, Function> functionRegistry = {
+  'process': process,
+  'send_data': send_data,
+  'speak': speak,
+  'start_recording': start_recording,
+  'stop_recording': stop_recording,
+  'start_route': start_route,
+  'stop_route': stop_route,
+  'get_document': get_document,
+  'write_document': write_document,
+  'get_sheet': get_sheet,
+  'write_sheet': write_sheet,
+  'change_volume': change_volume,
+  'drive_get_file': drive_get_file,
+  'drive_push_file': drive_push_file,
+  'wait': wait,
+  'record_speed': record_speed,
+  'stop_speed': stop_speed,
+  'play_song': play_song,
+  'contacts': contacts,
+  'call': call,
+  'text': text,
+  'get_calendar_events': get_calendar_events,
+  'read_email': read_email,
+  'search_emails': search_emails,
+  'reply_to_email': reply_to_email,
+  'send_email': send_email,
+};
+
+Future<dynamic> dispatcher(String functionName, List<dynamic> args) async {
+  if (functionRegistry.containsKey(functionName)) {
+    Function function = functionRegistry[functionName]!;
+    return await Function.apply(function, args);
+  } else {
+    print('Function not found: $functionName');
+    return null;
+  }
 }
 
-String concatenate(String input1, String input2) {
-  return input1 + input2;
+Future<void> parseAndExecute(String input) async {
+  if (input.startsWith('[') && input.endsWith(']')) {
+    input = input.substring(1, input.length - 1);
+  }
+
+  List<String> calls = _splitCalls(input);
+
+  for (String call in calls) {
+    await _parseFunction(call.trim());
+  }
 }
 
-bool negate(bool input) {
-  return !input;
+List<String> _splitCalls(String input) {
+  List<String> calls = [];
+  int nestedLevel = 0;
+  StringBuffer currentCall = StringBuffer();
+
+  for (int i = 0; i < input.length; i++) {
+    if (input[i] == '(') {
+      nestedLevel++;
+    } else if (input[i] == ')') {
+      nestedLevel--;
+    } else if (input[i] == ',' && nestedLevel == 0) {
+      calls.add(currentCall.toString());
+      currentCall.clear();
+      continue;
+    }
+    currentCall.write(input[i]);
+  }
+
+  if (currentCall.isNotEmpty) {
+    calls.add(currentCall.toString());
+  }
+
+  return calls;
 }
 
-dynamic evaluate(String expression) async {
-  expression = expression.trim();
+Future<dynamic> _parseFunction(String input) async {
+  int index = 0;
+  while (index < input.length && input[index] != '(') {
+    index++;
+  }
 
-  if (expression.contains('(') && expression.endsWith(')')) {
-    int indexOfOpenParen = expression.indexOf('(');
-    String functionName = expression.substring(0, indexOfOpenParen);
-    String argumentPart =
-        expression.substring(indexOfOpenParen + 1, expression.length - 1);
+  if (index == input.length) {
+    throw FormatException('Invalid input string');
+  }
 
-    List<dynamic> arguments = _parseArguments(argumentPart);
+  String functionName = input.substring(0, index).trim();
+  index++;
 
-    List<Future<dynamic>> futures = arguments.map((arg) async {
-      if (arg is String && arg.contains('(') && arg.endsWith(')')) {
-        return await evaluate(arg);
+  List<dynamic> args = [];
+  StringBuffer currentArg = StringBuffer();
+
+  int nestedLevel = 0;
+  while (index < input.length) {
+    if (input[index] == '(') {
+      nestedLevel++;
+      currentArg.write(input[index]);
+    } else if (input[index] == ')') {
+      if (nestedLevel == 0) {
+        if (currentArg.isNotEmpty) {
+          args.add(await _parseArgument(currentArg.toString().trim()));
+        }
+        break;
       } else {
-        return arg;
+        nestedLevel--;
+        currentArg.write(input[index]);
       }
-    }).toList();
-
-    List<dynamic> evaluatedArgs = await Future.wait(futures);
-
-    switch (functionName) {
-      case 'process':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('process requires exactly 1 argument');
-        }
-        String data = evaluatedArgs[0];
-        return await process(data);
-
-      case 'send_data':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('send_data requires exactly 1 argument');
-        }
-        String data = evaluatedArgs[0];
-        return await send_data(data);
-
-      case 'speak':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('speak requires exactly 1 argument');
-        }
-        String data = evaluatedArgs[0];
-        return await speak(data);
-
-      case 'start_recording':
-        return await start_recording();
-
-      case 'stop_recording':
-        return await stop_recording();
-
-      case 'start_route':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('start_route requires exactly 1 argument');
-        }
-        dynamic route = evaluatedArgs[0];
-        return await start_route(route);
-
-      case 'stop_route':
-        return await stop_route();
-
-      case 'get_document':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('get_document requires exactly 1 argument');
-        }
-        dynamic document = evaluatedArgs[0];
-        return await get_document(document);
-
-      case 'write_document':
-        if (evaluatedArgs.length != 2) {
-          throw Exception('write_document requires exactly 2 arguments');
-        }
-        dynamic document = evaluatedArgs[0];
-        Map<String, dynamic> data = evaluatedArgs[1];
-        return await write_document(document, data);
-
-      case 'get_sheet':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('get_sheet requires exactly 1 argument');
-        }
-        dynamic sheet = evaluatedArgs[0];
-        return await get_sheet(sheet);
-
-      case 'write_sheet':
-        if (evaluatedArgs.length != 2) {
-          throw Exception('write_sheet requires exactly 2 arguments');
-        }
-        String sheet = evaluatedArgs[0];
-        Map<String, dynamic> data = evaluatedArgs[1];
-        return await write_sheet(sheet, data);
-
-      case 'change_volume':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('change_volume requires exactly 1 argument');
-        }
-        dynamic volume = evaluatedArgs[0];
-        return await change_volume(volume);
-
-      case 'drive_get_file':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('drive_get_file requires exactly 1 argument');
-        }
-        dynamic file = evaluatedArgs[0];
-        return await drive_get_file(file);
-
-      case 'drive_push_file':
-        if (evaluatedArgs.length != 2) {
-          throw Exception('drive_push_file requires exactly 2 arguments');
-        }
-        dynamic file = evaluatedArgs[0];
-        dynamic data = evaluatedArgs[1];
-        return await drive_push_file(file, data);
-
-      case 'wait':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('wait requires exactly 1 argument');
-        }
-        int seconds = evaluatedArgs[0];
-        return await wait(seconds);
-
-      case 'record_speed':
-        return await record_speed();
-
-      case 'stop_speed':
-        return await stop_speed();
-
-      case 'play_song':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('play_song requires exactly 1 argument');
-        }
-        String song = evaluatedArgs[0];
-        return await play_song(song);
-
-      case 'contacts':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('contacts requires exactly 1 argument');
-        }
-        String name = evaluatedArgs[0];
-        return await contacts(name);
-
-      case 'call':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('call requires exactly 1 argument');
-        }
-        String phone_number = evaluatedArgs[0];
-        return await call(phone_number);
-
-      case 'text':
-        if (evaluatedArgs.length != 2) {
-          throw Exception('text requires exactly 2 arguments');
-        }
-        String phone_number = evaluatedArgs[0];
-        String message = evaluatedArgs[1];
-        return await text(phone_number, message);
-
-      case 'get_calendar_events':
-        return await get_calendar_events();
-
-      case 'read_email':
-        return await read_email();
-
-      case 'search_emails':
-        if (evaluatedArgs.length != 1) {
-          throw Exception('search_emails requires exactly 1 argument');
-        }
-        String query = evaluatedArgs[0];
-        return await search_emails(query);
-
-      case 'reply_to_email':
-        if (evaluatedArgs.length != 2) {
-          throw Exception('reply_to_email requires exactly 2 arguments');
-        }
-        String messageId = evaluatedArgs[0];
-        String replyText = evaluatedArgs[1];
-        return await reply_to_email(messageId, replyText);
-
-      case 'send_email':
-        if (evaluatedArgs.length != 3) {
-          throw Exception('send_email requires exactly 3 arguments');
-        }
-        String to = evaluatedArgs[0];
-        String subject = evaluatedArgs[1];
-        String body = evaluatedArgs[2];
-
-        return await send_email(to, subject, body);
-
-      default:
-        throw Exception('Function $functionName not found');
+    } else if (input[index] == ',' && nestedLevel == 0) {
+      args.add(await _parseArgument(currentArg.toString().trim()));
+      currentArg.clear();
+    } else {
+      currentArg.write(input[index]);
     }
+    index++;
   }
 
-  return expression;
+  return await dispatcher(functionName, args);
 }
 
-List<dynamic> _parseArguments(String argumentsString) {
-  List<dynamic> arguments = [];
+Future<dynamic> _parseArgument(String arg) async {
+  arg = arg.trim();
+  if (arg.contains('(')) {
+    return await _parseFunction(arg);
+  } else if (arg.startsWith("'") && arg.endsWith("'")) {
+    return arg.substring(1, arg.length - 1);
+  } else if (arg.contains('+')) {
+    return await _evaluateConcatenation(arg);
+  } else {
+    return arg;
+  }
+}
 
-  List<String> parts = argumentsString.split(',');
-  for (var part in parts) {
-    var trimmedPart = part.trim();
+Future<String> _evaluateConcatenation(String expression) async {
+  List<String> parts = expression.split('+');
+  StringBuffer result = StringBuffer();
 
-    if (RegExp(r'^-?\d+$').hasMatch(trimmedPart)) {
-      arguments.add(int.parse(trimmedPart));
-    } else if (trimmedPart == 'true' || trimmedPart == 'false') {
-      arguments.add(trimmedPart == 'true');
+  for (String part in parts) {
+    String trimmedPart = part.trim();
+    if (trimmedPart.contains('(')) {
+      result.write(await _parseFunction(trimmedPart));
+    } else if (trimmedPart.startsWith("'") && trimmedPart.endsWith("'")) {
+      result.write(trimmedPart.substring(1, trimmedPart.length - 1));
     } else {
-      arguments.add(trimmedPart);
+      result.write(trimmedPart);
     }
   }
 
-  return arguments;
+  return result.toString();
 }
 
 Future<void> parse(String input) async {
-  input = input.replaceAll('[', '').replaceAll(']', '');
-
-  List<String> expressions = [
-    'send_email("alex.steiner@student.h-is.com", "My Events", "${await get_calendar_events()}")'
-  ];
-
-  for (var expression in expressions) {
-    try {
-      evaluate(expression);
-    } catch (e) {
-      print('Error evaluating expression: $e');
-    }
-  }
+  parseAndExecute(input);
 }
