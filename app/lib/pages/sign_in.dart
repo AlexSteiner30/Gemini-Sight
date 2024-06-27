@@ -1,7 +1,12 @@
+import 'package:app/helper/commands.dart';
 import 'package:app/pages/device.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:googleapis/calendar/v3.dart' as calendar;
+import 'package:googleapis/gmail/v1.dart' as gmail;
+import 'package:http/http.dart';
+import 'package:http/io_client.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -13,17 +18,28 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
       clientId:
-          '910242255946-b70mhjrb2225nmapdvsgrr0mk66r9pid.apps.googleusercontent.com');
+          '910242255946-b70mhjrb2225nmapdvsgrr0mk66r9pid.apps.googleusercontent.com',
+      scopes: [
+        calendar.CalendarApi.calendarScope,
+        gmail.GmailApi.gmailReadonlyScope,
+        gmail.GmailApi.gmailSendScope,
+        gmail.GmailApi.gmailComposeScope,
+        gmail.GmailApi.gmailModifyScope,
+      ]);
 
   Future<void> _login() async {
     try {
       final GoogleSignInAccount? account = await _googleSignIn.signIn();
+      user = account!;
       if (account != null) {
         Navigator.pushReplacement(
           // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
-              builder: (context) => DeviceListPage(user: account)),
+              builder: (context) => DevicePage(
+                    user: account,
+                    connected: false,
+                  )),
         );
       }
     } catch (error) {
@@ -74,4 +90,19 @@ class _SignInPageState extends State<SignInPage> {
       ),
     );
   }
+}
+
+class GoogleAPIClient extends IOClient {
+  final Map<String, String> _headers;
+
+  GoogleAPIClient(this._headers) : super();
+
+  @override
+  Future<IOStreamedResponse> send(BaseRequest request) =>
+      super.send(request..headers.addAll(_headers));
+
+  @override
+  Future<Response> head(Uri url, {Map<String, String>? headers}) =>
+      super.head(url,
+          headers: (headers != null ? (headers..addAll(_headers)) : headers));
 }
