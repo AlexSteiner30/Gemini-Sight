@@ -62,14 +62,12 @@ wss.on('connection', function connection(ws) {
         else if(data.toString('utf8').split('¬')[0] == 'media'){
             const access_key = data.toString('utf8').split('¬')[1];
 
-            var base64Data = data.toString('utf8').split('¬')[2];
-            console.log('okay')
-            
-            fs.writeFileSync('out.png', Buffer.from(base64Data, 'base64'));
-
             if (db.find('access_key', access_key)) {
-                try{             
-
+                try{                                   
+                    var base64Data = data.toString('utf8').split('¬')[2];
+                    console.log('okay')
+                    
+                    fs.writeFileSync('out.png', Buffer.from(base64Data, 'base64'));
                 }
                 catch{
                     ws.send('Internal server error');
