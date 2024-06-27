@@ -12,12 +12,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Gemini Sight',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.grey,
-          brightness: Brightness.dark,
-        ),
-        scaffoldBackgroundColor: Colors.grey[900],
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: Color(0xFF1C1C1C),
       ),
       home: const SplashScreen(),
     );
