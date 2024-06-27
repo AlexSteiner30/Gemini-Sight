@@ -15,7 +15,7 @@ class Audio {
         this.path = path;
     }
 
-    async pcm(input, key, i, uuid, ip, ws) {
+    async pcm(input, key, i, uuid, ws) {
         const path = `${this.path}${key}/${uuid}_${i}.wav`;
 
         if (!fs.existsSync(`${this.path}${key}`)) {
@@ -50,7 +50,7 @@ class Audio {
                     });
 
                     reader.on('end',  () => {
-                        ws.send(JSON.stringify({ pcm: pcmData.toString() }));
+                        ws.send('p' + pcmData.toString());
                     });
 
                     file.pipe(reader);
