@@ -3,6 +3,9 @@ require('dotenv').config({ path: './database/.env' });
 
 const mongoURI = process.env.MONGODB_URI;
 
+/*
+Flutter App - Login google - send auth code to ws - check in db - exist okay doesnt no
+*/
 class Database {
   constructor() {
     this.data = [];
@@ -17,6 +20,8 @@ class Database {
     const productSchema = new mongoose.Schema({
       access_key: String,
       model: Number,
+      auth: String,
+      query: String
     });
 
     this.Product = mongoose.model('Product', productSchema);
