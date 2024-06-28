@@ -195,11 +195,14 @@ class _DevicePageState extends State<DevicePage> {
     Index 
     0 -> Device
     1 -> Gallery
-    2 -> Menu
+    2 - QR Code
+    3 -> Menu
     */
 
     setState(() {
-      _currentIndex = index;
+      if (index != 2 || index != 3) {
+        _currentIndex = index;
+      }
     });
 
     if (_currentIndex == 1) {
@@ -212,6 +215,8 @@ class _DevicePageState extends State<DevicePage> {
         ),
       );
     } else if (_currentIndex == 2) {
+      _scanQRCode();
+    } else if (_currentIndex == 3) {
       final prefs = await SharedPreferences.getInstance();
 
       // ignore: no_leading_underscores_for_local_identifiers
