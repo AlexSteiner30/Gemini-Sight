@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Sight | Order</title>
+    <link rel="stylesheet" href="css/common.css" type="text/css">
+    <link rel="stylesheet" href="css/order.css" type="text/css">
+</head>
+<body>
+    <nav>
+        <div></div>
+        <a href="index">Home</a>
+        <a href="about">About Us</a>
+        <a href="function">Functioning</a>
+        <a href="order">Order</a>
+        <a href="admin">Sign In</a>
+    </nav>
+    <div id="main">
+        <header>
+            <h1 id="title">Order</h1>
+        </header>
+        <main>
+            <section id="bying-section">
+                <div>
+                    <input id="input-address" placeholder="Address...">
+                    <div id="paypal-button-container"></div>
+                    <p id="result-message"></p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <footer>
+        <p>Copyright (c) 2024 Alex Steiner</p>
+    </footer>
+    <script src="https://www.paypal.com/sdk/js?client-id=AQWg9WACiJoyKew9hmooJuzU9RxkN04eGuMILz6pAxcE1_S0XFE-ErLkgumIbaIwPY3zuPrL_s2KXIrB&buyer-country=US&currency=USD&components=buttons&enable-funding=venmo" data-sdk-integration-source="developer-studio"></script>
+    <script src="../js/order.js"></script>
+</body>
+</html>

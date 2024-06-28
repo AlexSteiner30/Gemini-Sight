@@ -4,7 +4,7 @@ const path = require("path");
 
 const app = express();
 const PORT = 8080;
-const allowedPages = ['index', 'admin', 'function', 'about', 'signup'];
+const allowedPages = ['index', 'admin', 'function', 'about', 'signup', 'order'];
 
 app.set("views", path.join(__dirname, "/views/ejs"));
 app.use(express.static(path.join(__dirname, '/views')));
