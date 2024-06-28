@@ -2,11 +2,10 @@ const fs = require('fs');
 const { Database } = require('./func/db.js');
 const { Audio } = require('./func/audio.js');
 const helper = require('./func/helper.js');
-const {Model} = require('./func/model.js');
-const {Authentication} = require('./func/auth.js');
+const { Model } = require('./func/model.js');
+const { Authentication } = require('./func/auth.js');
 const path = require("path");
 const { WebSocketServer } = require('ws');
-
 
 const db = new Database();
 const audio = new Audio('./audio/');
@@ -20,134 +19,127 @@ console.log('Websocket running on port 9000');
 
 wss.on('connection', function connection(ws) {  
     ws.on('message', async function message(data) {
-        try{
-            if(data.toString('utf8').split('¬')[0] == 'authentication'){
-                const idToken = data.toString('utf8').split('¬')[1];
-                const email = await auth.verifyIdToken(idToken);
-                if(await db.find('email', email)){
-                    ws.send((await db.find('email', email)).access_key);
-                }
-                else{
-                    ws.send('');
-                }
-            }
-            else if(data.toString('utf8').split('¬')[0] == 'speak'){
-                const access_key = data.toString('utf8').split('¬')[1];
-    
-                if (await db.find('access_key', access_key)) {
-                    const text = data.toString('utf8').split('¬')[2];
-                    const uuid = helper.uuidv4();
+        try {
+            const messageParts = data.toString('utf8').split('¬');
+            const command = messageParts[0];
 
-                    try{
-                        for (let i = 0; i < text.match(/.{1,150}/g).length; i++) {
-                            //await audio.pcm(text.match(/.{1,150}/g)[i], access_key, i, uuid, ws);
-                            ws.send('Audio created'); // FIND OTHER FREE API
-                        }
+            switch (command) {
+                case 'authentication':
+                    {
+                        const idToken = messageParts[1];
+                        const email = await auth.verifyIdToken(idToken);
+                        const user = await db.find('email', email);
+                        ws.send(user ? user.access_key : '');
                     }
-                    catch{
+                    break;
 
-                        ws.send('Internal server error');
-                    }
-                } else {
-                    ws.send('Use a valid access key in order to access the API');
-                }
-            }
-            else if(data.toString('utf8').split('¬')[0] == 'process'){
-                const access_key = data.toString('utf8').split('¬')[1];
-
-                if (await db.find('access_key', access_key)) {
-                    try{             
-                        const text = data.toString('utf8').split('¬')[2];
-                        const response = (await ai.process_data(text));
-
-                        ws.send('r' + response);
-                    }
-                    catch{
-                        ws.send('Internal server error');
-                    }
-                } else {
-                    ws.send('Use a valid access key in order to access the API');
-                }
-            }
-            else if(data.toString('utf8').split('¬')[0] == 'media'){
-                const access_key = data.toString('utf8').split('¬')[1];
-
-                if (await db.find('access_key', access_key)) {
-                    try{                                   
-                        var base64Data = data.toString('utf8').split('¬')[2];
-                        const uuid = helper.uuidv4();
-                        const path = `./media/${access_key}`;
-
-                        if (!fs.existsSync(`${path}`)) {
-                            fs.mkdirSync(`${path}`);
-                        }
-
-                        // Decrypt later on safety
-
-                        fs.writeFileSync(`${path}/${uuid}.png`, Buffer.from(base64Data, 'base64'));
-                    }
-                    catch{
-                        ws.send('Internal server error');
-                    }
-                } else {
-                    ws.send('Use a valid access key in order to access the API');
-                }
-            }
-            else if(data.toString('utf8').split('¬')[0] == 'vision'){
-                const access_key = data.toString('utf8').split('¬')[1];
-
-                if (await db.find('access_key', access_key)) {
-                    try{                                   
-                        const task = data.toString('utf8').split('¬')[2];
-                        const base64Data = data.toString('utf8').split('¬')[3].toString("base64");
-
-                        const response = await ai.model.generateContent([
-                            task,
-                            {inlineData: {data: Buffer.from(fs.readFileSync('out.png')).toString("base64"),
-                            mimeType: 'image/png'}}]
-                            );
-
-                        ws.send('v' + response.response.text());
-                    }
-                    catch{
-                        ws.send('Internal server error');
-                    }
-                } else {
-                    ws.send('Use a valid access key in order to access the API');
-                }
-            }
-            else{
-                const access_key = data.toString('utf8').split('¬')[0];
-                const input = data.toString('utf8').split('¬')[1];
-                
-                try {
-                    if (await db.find('access_key', access_key)) {
-                        const response = (await ai.process_input(input));
-                        const uuid = helper.uuidv4();
-
-                        try{
-                            console.log(response.split("```dart")[1].split("```")[0]);
-                            ws.send(response.split("```dart")[1].split("```")[0]);
-                        }
-                        catch{
-                            try{
-                                console.log(response);
-                                ws.send(response);
-                            }
-                            catch{
+                case 'speak':
+                    {
+                        const access_key = messageParts[1];
+                        if (await db.find('access_key', access_key)) {
+                            const text = messageParts[2];
+                            const uuid = helper.uuidv4();
+                            try {
+                                const textChunks = text.match(/.{1,150}/g) || [];
+                                for (let chunk of textChunks) {
+                                    // await audio.pcm(chunk, access_key, i, uuid, ws);
+                                    ws.send('Audio created'); // FIND OTHER FREE API
+                                }
+                            } catch {
                                 ws.send('Internal server error');
                             }
+                        } else {
+                            ws.send('Use a valid access key in order to access the API');
                         }
-                    } else {
-                        ws.send('Use a valid access key in order to access the API');
                     }
-                } catch (error) {
-                    console.error('Error processing request:', error);
-                    ws.send('Internal server error');
-                }
+                    break;
+
+                case 'process':
+                    {
+                        const access_key = messageParts[1];
+                        if (await db.find('access_key', access_key)) {
+                            try {
+                                const text = messageParts[2];
+                                const response = await ai.process_data(text);
+                                ws.send('r' + response);
+                            } catch {
+                                ws.send('Internal server error');
+                            }
+                        } else {
+                            ws.send('Use a valid access key in order to access the API');
+                        }
+                    }
+                    break;
+
+                case 'media':
+                    {
+                        const access_key = messageParts[1];
+                        if (await db.find('access_key', access_key)) {
+                            try {
+                                const base64Data = messageParts[2];
+                                const uuid = helper.uuidv4();
+                                const dirPath = `./media/${access_key}`;
+                                if (!fs.existsSync(dirPath)) {
+                                    fs.mkdirSync(dirPath);
+                                }
+                                fs.writeFileSync(`${dirPath}/${uuid}.png`, Buffer.from(base64Data, 'base64'));
+                            } catch {
+                                ws.send('Internal server error');
+                            }
+                        } else {
+                            ws.send('Use a valid access key in order to access the API');
+                        }
+                    }
+                    break;
+
+                case 'vision':
+                    {
+                        const access_key = messageParts[1];
+                        if (await db.find('access_key', access_key)) {
+                            try {
+                                const task = messageParts[2];
+                                const base64Data = messageParts[3];
+                                const response = await ai.model.generateContent([
+                                    task,
+                                    { inlineData: { data: Buffer.from(base64Data, 'base64').toString("base64"), mimeType: 'image/png' } }
+                                ]);
+                                ws.send('v' + response.response.text());
+                            } catch {
+                                ws.send('Internal server error');
+                            }
+                        } else {
+                            ws.send('Use a valid access key in order to access the API');
+                        }
+                    }
+                    break;
+
+                default:
+                    {
+                        const access_key = command;
+                        const input = messageParts[1];
+                        try {
+                            if (await db.find('access_key', access_key)) {
+                                const response = await ai.process_input(input);
+                                const uuid = helper.uuidv4();
+                                try {
+                                    const result = response.split("```dart")[1].split("```")[0];
+                                    console.log(result);
+                                    ws.send(result);
+                                } catch {
+                                    console.log(response);
+                                    ws.send(response);
+                                }
+                            } else {
+                                ws.send('Use a valid access key in order to access the API');
+                            }
+                        } catch (error) {
+                            console.error('Error processing request:', error);
+                            ws.send('Internal server error');
+                        }
+                    }
+                    break;
             }
-        }
-        catch(err){
+        } catch (err) {
             console.log(err);
             ws.send('Wrong connection');
         }
