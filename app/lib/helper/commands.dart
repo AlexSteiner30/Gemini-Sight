@@ -36,7 +36,7 @@ Future<String> process(String input, String context) async {
 
   final Completer<String> completer = Completer<String>();
 
-  socket.send('process¬e6c2ce4f-7736-46f6-9693-6cb104c42b10¬$data');
+  socket.send('process¬$authentication_key¬$data');
 
   final subscription = socket.messages.listen((response) {
     if (response[0] == 'r') {
@@ -54,7 +54,7 @@ Future<void> send_data(String data) async {
 
   final Completer<void> completer = Completer<void>();
 
-  socket.send('e6c2ce4f-7736-46f6-9693-6cb104c42b10¬$data');
+  socket.send('$authentication_key¬$data');
 
   final subscription = socket.messages.listen((commands_list) {
     parse(commands_list);
@@ -72,7 +72,7 @@ Future<void> speak(String data) async {
 
   final Completer<void> completer = Completer<void>();
 
-  socket.send('speak¬e6c2ce4f-7736-46f6-9693-6cb104c42b10¬' + data);
+  socket.send('speak¬$authentication_key¬' + data);
 
   final subscription = socket.messages.listen((pcm) {
     // play pcm over ble
@@ -95,7 +95,7 @@ Future<void> take_picture() async {
   await socket.connection.firstWhere((state) => state is Connected);
 
   socket.send(
-      'media¬e6c2ce4f-7736-46f6-9693-6cb104c42b10¬${last_recording[0]}'); // take picture and send
+      'media¬$authentication_key¬${last_recording[0]}'); // take picture and send
 
   last_recording = [];
 }
@@ -111,7 +111,7 @@ Future<void> stop_recording(String task) async {
 
   String data = last_recording[0].toString();
 
-  socket.send('vision¬e6c2ce4f-7736-46f6-9693-6cb104c42b10¬$task.¬$data');
+  socket.send('vision¬$authentication_key¬$task.¬$data');
 
   final subscription = socket.messages.listen((response) async {
     if (response[0] == 'v') {
