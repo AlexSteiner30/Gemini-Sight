@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_sms/flutter_sms.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis/docs/v1.dart' as docs;
+import 'package:markdown/markdown.dart' as md;
 
 late GoogleSignInAccount user;
 
@@ -135,17 +136,16 @@ Future<void> write_document(String document_name, String data) async {
   final docsApi = docs.DocsApi(httpClient);
 
   String document = await get_document_id(document_name);
+  document = document.trim();
 
-  if (document == '' || document == '404') {
-    final createResponse = await docsApi.documents.create(docs.Document(
-        title: document_name)); // change this process title w gemini
+  if (document == '404') {
+    final createResponse =
+        await docsApi.documents.create(docs.Document(title: document_name));
     document = createResponse.documentId!;
   }
 
-  document = document.trim();
-  print(document == "1OQ48TT38XXAipFOdyTPgxTHXx_Im8Sbhl3YjAHQrSmI");
   data = await process(data,
-      ' Format for a google doc, do no include the tile just write the body for it');
+      ' Format for a google doc, do no include the tile just write the body for it. Do not include expressions such as his event summary lacks crucial information like a description, location, and attendees.  Please update this information for a more comprehensive event summary.');
 
   final requests = [
     docs.Request(

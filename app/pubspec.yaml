@@ -51,6 +51,7 @@ dependencies:
   dart_eval: ^0.7.9
   vm_service: ^14.2.1
   flutter_local_notifications: ^9.1.5
+  flutter_markdown: ^0.6.4
 
 dev_dependencies:
   flutter_test:
