@@ -3,12 +3,15 @@ const { Database } = require('./func/db.js');
 const { Audio } = require('./func/audio.js');
 const helper = require('./func/helper.js');
 const {Model} = require('./func/model.js');
+const {Authentication} = require('./func/auth.js');
 const path = require("path");
 const { WebSocketServer } = require('ws');
+
 
 const db = new Database();
 const audio = new Audio('./audio/');
 const ai = new Model();
+const auth = new Authentication();
 
 db.parseData();
 
@@ -19,10 +22,10 @@ wss.on('connection', function connection(ws) {
     ws.on('message', async function message(data) {
         try{
             if(data.toString('utf8').split('¬')[0] == 'authentication'){
-                const auth = data.toString('utf8').split('¬')[1].split('.')[0];
-                console.log(auth);
-                if(await db.find('auth', auth)){
-                    ws.send((await db.find('auth', auth)).access_key);
+                const idToken = data.toString('utf8').split('¬')[1];
+                const email = await auth.verifyIdToken(idToken);
+                if(await db.find('email', email)){
+                    ws.send((await db.find('email', email)).access_key);
                 }
                 else{
                     ws.send('');
