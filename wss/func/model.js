@@ -22,7 +22,7 @@ class Model{
       stop_recording(): Stops recording.
       start_route(data): Initiates a route to the given address.
       stop_route(): Ends the current route.
-      get_document(document): Retrieves the specified document.
+      get_document(document): Retrieves document .
       write_document(document, data): Writes data to the specified document.
       get_sheet(document): Retrieves the specified spreadsheet.
       write_sheet(document, data): Writes data to the specified spreadsheet.

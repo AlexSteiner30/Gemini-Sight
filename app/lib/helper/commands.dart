@@ -49,7 +49,6 @@ Future<String> process(String input, String context) async {
 }
 
 Future<void> send_data(String data) async {
-  await write_document(await get_document('test'), 'Hello Wolrd');
   await socket.connection.firstWhere((state) => state is Connected);
 
   final Completer<void> completer = Completer<void>();
@@ -108,7 +107,9 @@ Future<void> change_volume(volume) async {
 }
 
 // Docs
-Future<String> get_document(document) async {
+Future<void> get_document(document) async {}
+
+Future<String> get_document_id(document) async {
   final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
   final drive.DriveApi driveApi = drive.DriveApi(httpClient);
 
@@ -129,34 +130,38 @@ Future<String> get_document(document) async {
       'Given the following Map {name of the document: id of the document} of file names with corresponding IDs, return only the ID of the document name that is most similar to "$document". Respond with only one document ID. If no similar document is found, reply with "404".');
 }
 
-Future<void> write_document(String document, String data) async {
+Future<void> write_document(String document_name, String data) async {
   final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
   final docsApi = docs.DocsApi(httpClient);
 
+  String document = await get_document_id(document_name);
+
   if (document == '' || document == '404') {
-    final createResponse =
-        await docsApi.documents.create(docs.Document(title: document));
+    final createResponse = await docsApi.documents.create(docs.Document(
+        title: document_name)); // change this process title w gemini
     document = createResponse.documentId!;
   }
 
-  print(document);
-
-  print('"$document"' == "1OQ48TT38XXAipFOdyTPgxTHXx_Im8Sbhl3YjAHQrSmI");
+  document = document.trim();
+  print(document == "1OQ48TT38XXAipFOdyTPgxTHXx_Im8Sbhl3YjAHQrSmI");
+  data = await process(data,
+      ' Format for a google doc, do no include the tile just write the body for it');
 
   final requests = [
     docs.Request(
       insertText: docs.InsertTextRequest(
-        text: "Hello, World!",
+        text: data,
         location: docs.Location(index: 1),
       ),
     ),
   ];
 
-  // Batch update the document
-  final batchUpdateResponse = await docsApi.documents.batchUpdate(
+  await docsApi.documents.batchUpdate(
     docs.BatchUpdateDocumentRequest(requests: requests),
-    "1OQ48TT38XXAipFOdyTPgxTHXx_Im8Sbhl3YjAHQrSmI",
+    document,
   );
+
+  print('Document Written');
 }
 
 Future<void> get_sheet(sheet) async {
