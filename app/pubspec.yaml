@@ -50,7 +50,7 @@ dependencies:
   function_tree: ^0.9.1
   dart_eval: ^0.7.9
   vm_service: ^14.2.1
-
+  flutter_local_notifications: ^9.1.5
 
 dev_dependencies:
   flutter_test:

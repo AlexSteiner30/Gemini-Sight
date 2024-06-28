@@ -232,6 +232,8 @@ class _AccountPageState extends State<AccountPage> {
             ElevatedButton(
               onPressed: () async {
                 await GoogleSignIn().signOut();
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setBool('logged', false);
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => const SignInPage()),

@@ -180,7 +180,7 @@ class _DevicePageState extends State<DevicePage> {
     // TODO: implement initState
     super.initState();
     send_data(
-        'Hey Gemma call Anna and send an email to alex.steiner@student.h-is.com with all my events saying that I am glad to join the family dinner execept for any days on my event schedule, then call Anna again');
+        'Hey Gemma call Anna and send an email to alex.steiner@student.h-is.com with all my events saying that I am glad to join the family dinner execept for any days on my event schedule, then text the same thing to Anna');
   }
 
   @override
