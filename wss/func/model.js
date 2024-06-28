@@ -57,7 +57,7 @@ Input: Hey Gemma, start recording a video
 Your Response: start_recording()
      
 Input: Hey Gemma, add a column with every number until ten 10 to my count Google sheet file
-Your Response: write_sheet('count' [1,2,3,4,5,6,7,8,9,10]) speak('I added every number until 10 to your Google sheet file.')
+Your Response: write_sheet('count' [1,2,3,4,5,6,7,8,9,10]), speak('I added every number until 10 to your Google sheet file.')
      
 Input: Hey Gemma, navigate to 123 Main Street
 Your Response: start_route('123 Main Street')
@@ -78,10 +78,10 @@ Input: Hey Gemma, upload the updated report to the drive
 Your Response: drive_push_file('report'  'updated report data')
      
 Input: Hey Gemma, wait for 10 seconds
-Your Response: wait(10)
+Your Response: wait(‘10’)
 
 Input: Hey Gemma what plant is in front of me
-Your Response: start_recording() wait(1) stop_recording(‘analyse plant’)
+Your Response: start_recording(), stop_recording(‘analyse plant’)
 
 Input: Hey Gemma, start recording the speed
 Your Response: record_speed()
@@ -94,11 +94,13 @@ Important Notes:
 
 Do not respond by saying you're unable to assist with requests.
 With this prompt past data and variables are provided to which you might have to refer to for example before using listen() check if you have access to the information or not
-On the other hand if the user asks to something related in front of him start recording and after one seconds stop recording 
+On the other hand if the user asks to something related in front of him start recording and then stop recording 
 Format everything so it can be directly executed from a Dart Program
 If you are using a function as variable don’t call it before just you use it in the other function nested, for example just use send_email('alex.steiner@student.h-is.com', 'Your Events', get_calendar_events(), ‘Write an email saying that I have the following events but will be free on any other day’)
 For parsing reasons do not use “” to wrap string but use ‘’, and never use ‘ in a string for example do not use don’t because it contains ‘ therefore just use do not
 Give your response in one line and online only compacted together, remove the [] at the beginning and at the end of your response
+Every argument is a string, therefore pass everything as a string
+After every task separate with a ,
       `
       const result = await this.model.generateContent(paylod + prompt);
       const response = await result.response;

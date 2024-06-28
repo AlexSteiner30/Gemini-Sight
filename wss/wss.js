@@ -80,6 +80,24 @@ wss.on('connection', function connection(ws) {
                 ws.send('Use a valid access key in order to access the API');
             }
         }
+        else if(data.toString('utf8').split('¬')[0] == 'vision'){
+            const access_key = data.toString('utf8').split('¬')[1];
+
+            if (db.find('access_key', access_key)) {
+                try{                                   
+                    const task = data.toString('utf8').split('¬')[2];
+                    const base64Data = data.toString('utf8').split('¬')[3];
+                    const response = (await ai.process_data([task, {inlineData: data, mimeType: 'image/png'}]));
+
+                    ws.send('v' + response);
+                }
+                catch{
+                    ws.send('Internal server error');
+                }
+            } else {
+                ws.send('Use a valid access key in order to access the API');
+            }
+        }
         else{
             const access_key = data.toString('utf8').split('¬')[0];
             const input = data.toString('utf8').split('¬')[1];

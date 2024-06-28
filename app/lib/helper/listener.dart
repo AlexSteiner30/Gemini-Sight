@@ -54,6 +54,8 @@ void onStart(ServiceInstance service) async {
 void recording_handler() async {
   var recording_temp = false;
 
+  /*
+
   while (true) {
     if (recording) {
       // pull request from device
@@ -73,6 +75,7 @@ void recording_handler() async {
       last_recording = [];
     }
 
-    stop_recording(); // to remove
+    stop_recording(''); // to remove
   }
+  */
 }
