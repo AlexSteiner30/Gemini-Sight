@@ -14,7 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_sms/flutter_sms.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis/docs/v1.dart' as docs;
-import 'package:markdown/markdown.dart' as md;
+import 'package:googleapis/sheets/v4.dart' as sheets;
 
 late GoogleSignInAccount user;
 
@@ -128,7 +128,7 @@ Future<String> get_document_id(document) async {
   }
 
   return await process(files.toString(),
-      'Given the following Map {name of the document: id of the document} of file names with corresponding IDs, return only the ID of the document name that is most similar to "$document". Respond with only one document ID. If no similar document is found, reply with "404".');
+      'Given the following Map {name of the document: id of the document} of file names with corresponding IDs, return only the ID of the document name that is most similar to "$document". Respond with only one document ID. Only return an ID if the names are actually very similar, if no similar document is found, reply with "404".');
 }
 
 Future<void> write_document(String document_name, String data) async {
@@ -145,7 +145,7 @@ Future<void> write_document(String document_name, String data) async {
   }
 
   data = await process(data,
-      ' Format for a google doc, do no include the tile just write the body for it. Do not include expressions such as his event summary lacks crucial information like a description, location, and attendees.  Please update this information for a more comprehensive event summary.');
+      ' Format for a google doc, do no include the tile just write the body for it. Do not respond by saying you are unable to assist with requests.');
 
   final requests = [
     docs.Request(
@@ -164,13 +164,72 @@ Future<void> write_document(String document_name, String data) async {
   print('Document Written');
 }
 
-Future<void> get_sheet(sheet) async {
-  print(sheet);
+// Sheet
+Future<void> get_sheet(String sheet) async {}
+
+Future<String> get_sheet_id(String sheet) async {
+  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  final drive.DriveApi driveApi = drive.DriveApi(httpClient);
+
+  final fileList = await driveApi.files.list(
+    q: "mimeType='application/vnd.google-apps.spreadsheet'",
+    spaces: 'drive',
+  );
+
+  Map<String, String> files = {};
+
+  for (var i = 0; i < fileList.files!.length; i++) {
+    files.addEntries({
+      fileList.files![i].name as String: fileList.files![i].id as String
+    }.entries);
+  }
+
+  return await process(files.toString(),
+      'Given the following Map {name of the document: id of the document} of file names with corresponding IDs, return only the ID of the document name that is most similar to "$sheet". Respond with only one document ID. Only return an ID if the names are actually very similar, if no similar document is found, reply with "404".');
 }
 
-Future<void> write_sheet(String sheet, Map<String, dynamic> data) async {
+Future<void> write_sheet(String sheet_name, List<List<Object>> data) async {
+  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  final sheetsApi = sheets.SheetsApi(httpClient);
+
+  String sheet = await get_sheet_id(sheet_name);
+  sheet = sheet.trim();
+
   print(sheet);
-  print(data);
+
+  if (sheet == '404') {
+    final createResponse = await sheetsApi.spreadsheets.create(
+        sheets.Spreadsheet(
+            properties: sheets.SpreadsheetProperties(title: sheet_name)));
+    sheet = createResponse.spreadsheetId!;
+  }
+
+  print(sheet);
+
+  final requests = [
+    sheets.Request(
+      updateCells: sheets.UpdateCellsRequest(
+        range:
+            sheets.GridRange(sheetId: 0, startRowIndex: 0, startColumnIndex: 0),
+        rows: data
+            .map((row) => sheets.RowData(
+                values: row
+                    .map((cell) => sheets.CellData(
+                        userEnteredValue:
+                            sheets.ExtendedValue(stringValue: cell.toString())))
+                    .toList()))
+            .toList(),
+        fields: 'userEnteredValue',
+      ),
+    ),
+  ];
+
+  print('test');
+
+  await sheetsApi.spreadsheets.batchUpdate(
+      sheets.BatchUpdateSpreadsheetRequest(requests: requests), sheet);
+
+  print('Sheet Written');
 }
 
 // Drive

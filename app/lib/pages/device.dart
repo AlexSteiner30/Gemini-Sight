@@ -179,8 +179,7 @@ class _DevicePageState extends State<DevicePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    send_data(
-        'Hey Gemma write to the document calendar envets my calendar events');
+    send_data('Hey Gemma solve this math problem which is right infront of me');
   }
 
   @override
