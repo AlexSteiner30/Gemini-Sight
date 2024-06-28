@@ -20,8 +20,8 @@ class Database {
     const productSchema = new mongoose.Schema({
       access_key: String,
       model: Number,
-      auth: String,
-      query: String
+      query: String,
+      email: String
     });
 
     this.Product = mongoose.model('Product', productSchema);
