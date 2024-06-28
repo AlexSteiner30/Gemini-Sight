@@ -26,7 +26,7 @@ List<String> last_recording = [
 ];
 
 final socket = WebSocket(
-  Uri.parse('ws://192.168.88.12:9000'),
+  Uri.parse('ws://192.168.88.9:9000'),
 );
 
 // General
@@ -111,7 +111,7 @@ Future<void> stop_recording(String task) async {
 
   String data = last_recording[0].toString();
 
-  socket.send('vision¬e6c2ce4f-7736-46f6-9693-6cb104c42b10¬$task¬$data');
+  socket.send('vision¬e6c2ce4f-7736-46f6-9693-6cb104c42b10¬$task.¬$data');
 
   final subscription = socket.messages.listen((response) async {
     if (response[0] == 'v') {
