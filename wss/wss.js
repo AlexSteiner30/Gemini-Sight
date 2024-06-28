@@ -20,7 +20,7 @@ wss.on('connection', function connection(ws) {
     try{
         if(data.toString('utf8').split('¬')[0] == 'speak'){
             const access_key = data.toString('utf8').split('¬')[1];
-
+   
             if (db.find('access_key', access_key)) {
                 const text = data.toString('utf8').split('¬')[2];
                 const uuid = helper.uuidv4();
@@ -86,10 +86,16 @@ wss.on('connection', function connection(ws) {
             if (db.find('access_key', access_key)) {
                 try{                                   
                     const task = data.toString('utf8').split('¬')[2];
-                    const base64Data = data.toString('utf8').split('¬')[3];
-                    const response = (await ai.process_data([task, {inlineData: data, mimeType: 'image/png'}]));
+                    const base64Data = data.toString('utf8').split('¬')[3].toString("base64");
 
-                    ws.send('v' + response);
+                    const response = await ai.model.generateContent([
+                        task,
+                        {inlineData: {data: Buffer.from(fs.readFileSync('out.png')).toString("base64"),
+                        mimeType: 'image/png'}}]
+                        );
+                    console.log(response.response.text());
+
+                    ws.send('v' + response.response.text());
                 }
                 catch{
                     ws.send('Internal server error');

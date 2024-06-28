@@ -1,5 +1,5 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-
+const fs = require('fs');
 const genAI = new GoogleGenerativeAI("AIzaSyACQrBmFCeftrHn5zJ0JMiqF80nFn7Xycg");
 
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
@@ -96,6 +96,13 @@ Format everything so it can be directly executed from a Dart Program, hence when
     const response = await result.response;
     const text = response.text();
     console.log(text);
+
+    const result2 = await model.generateContent([
+      "What is in this photo?",
+      {inlineData: {data: Buffer.from(fs.readFileSync('out.png')).toString("base64"),
+      mimeType: 'image/png'}}]
+      );
+      console.log(result2.response.text());
   }
   
   run();
