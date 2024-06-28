@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app/helper/commands.dart';
 import 'package:app/pages/device.dart';
 import 'package:flutter/foundation.dart';
@@ -9,6 +11,9 @@ import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_client/web_socket_client.dart';
+
+String authentication_key = '';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -30,35 +35,76 @@ class _SignInPageState extends State<SignInPage> {
         drive.DriveApi.driveScope,
       ]);
 
-  Future<void> check_login() async {
-    final prefs = await SharedPreferences.getInstance();
-    bool logged = prefs.getBool('logged') as bool;
-
-    if (logged) {
-      final GoogleSignInAccount? account = await _googleSignIn.signInSilently();
-      user = account!;
-      Navigator.pushReplacement(
-        // ignore: use_build_context_synchronously
-        context,
-        MaterialPageRoute(
-            builder: (context) => DevicePage(
-                  user: account,
-                  connected: false,
-                )),
-      );
-    }
-  }
-
   @override
   initState() {
     super.initState();
-    check_login();
   }
 
   Future<void> _login() async {
     try {
       final GoogleSignInAccount? account = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication auth = await account!.authentication;
       user = account!;
+
+      await verification(auth.idToken, account);
+    } catch (error) {
+      if (kDebugMode) {
+        print('Login failed: $error');
+      }
+    }
+  }
+
+  Future<void> verification(
+      String? auth_code, GoogleSignInAccount? account) async {
+    final socket = WebSocket(
+      Uri.parse('ws://192.168.88.9:9000'),
+    );
+
+    final Completer<String> completer = Completer<String>();
+    await socket.connection.firstWhere((state) => state is Connected);
+
+    socket.send('authentication¬$auth_code');
+
+    final subscription = socket.messages.listen((response) {
+      print(response);
+      completer.complete(response);
+    });
+
+    final result = await completer.future;
+    await subscription.cancel();
+
+    authentication_key = result;
+
+    if (authentication_key == '') {
+      await _googleSignIn.signOut();
+      showDialog<void>(
+        // ignore: use_build_context_synchronously
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Authentication failed'),
+            content: const SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text(
+                    'In order to access this app to log in with an account that bought the Gemini Sight Glasses',
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Okay'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('logged', true);
 
@@ -67,14 +113,10 @@ class _SignInPageState extends State<SignInPage> {
         context,
         MaterialPageRoute(
             builder: (context) => DevicePage(
-                  user: account,
+                  user: account!,
                   connected: false,
                 )),
       );
-    } catch (error) {
-      if (kDebugMode) {
-        print('Login failed: $error');
-      }
     }
   }
 

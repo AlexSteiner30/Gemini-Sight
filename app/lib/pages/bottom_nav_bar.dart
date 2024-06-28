@@ -26,6 +26,10 @@ class BottomNavBar extends StatelessWidget {
           label: 'Gallery',
         ),
         BottomNavigationBarItem(
+          icon: Icon(Icons.qr_code),
+          label: 'Connection',
+        ),
+        BottomNavigationBarItem(
           icon: Icon(Icons.menu),
           label: 'Menu',
         ),

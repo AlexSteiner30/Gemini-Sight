@@ -1,3 +1,4 @@
+import 'package:app/pages/device.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -21,11 +22,33 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToLogin() async {
+    final prefs = await SharedPreferences.getInstance();
     await Future.delayed(const Duration(seconds: 3), () {});
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const SignInPage()),
-    );
+    if (prefs.getBool('logged') as bool) {
+      final GoogleSignIn _googleSignIn = GoogleSignIn(
+          clientId:
+              '910242255946-b70mhjrb2225nmapdvsgrr0mk66r9pid.apps.googleusercontent.com',
+          scopes: [
+            calendar.CalendarApi.calendarScope,
+            gmail.GmailApi.gmailReadonlyScope,
+            gmail.GmailApi.gmailSendScope,
+            gmail.GmailApi.gmailComposeScope,
+            gmail.GmailApi.gmailModifyScope,
+            drive.DriveApi.driveScope,
+          ]);
+
+      final GoogleSignInAccount? account = await _googleSignIn.signInSilently();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DevicePage(user: account!, connected: false)),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SignInPage()),
+      );
+    }
   }
 
   @override

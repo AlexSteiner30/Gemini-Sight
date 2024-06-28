@@ -232,6 +232,7 @@ class _AccountPageState extends State<AccountPage> {
             ElevatedButton(
               onPressed: () async {
                 await GoogleSignIn().signOut();
+                authentication_key = '';
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.setBool('logged', false);
                 Navigator.pushAndRemoveUntil(
