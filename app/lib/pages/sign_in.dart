@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
+import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -25,23 +27,50 @@ class _SignInPageState extends State<SignInPage> {
         gmail.GmailApi.gmailSendScope,
         gmail.GmailApi.gmailComposeScope,
         gmail.GmailApi.gmailModifyScope,
+        drive.DriveApi.driveScope,
       ]);
+
+  Future<void> check_login() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool logged = prefs.getBool('logged') as bool;
+
+    if (logged) {
+      final GoogleSignInAccount? account = await _googleSignIn.signInSilently();
+      user = account!;
+      Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
+        context,
+        MaterialPageRoute(
+            builder: (context) => DevicePage(
+                  user: account,
+                  connected: false,
+                )),
+      );
+    }
+  }
+
+  @override
+  initState() {
+    super.initState();
+    check_login();
+  }
 
   Future<void> _login() async {
     try {
       final GoogleSignInAccount? account = await _googleSignIn.signIn();
       user = account!;
-      if (account != null) {
-        Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(
-              builder: (context) => DevicePage(
-                    user: account,
-                    connected: false,
-                  )),
-        );
-      }
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('logged', true);
+
+      Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
+        context,
+        MaterialPageRoute(
+            builder: (context) => DevicePage(
+                  user: account,
+                  connected: false,
+                )),
+      );
     } catch (error) {
       if (kDebugMode) {
         print('Login failed: $error');

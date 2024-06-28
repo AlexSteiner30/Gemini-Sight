@@ -25,8 +25,6 @@ wss.on('connection', function connection(ws) {
                 const text = data.toString('utf8').split('¬')[2];
                 const uuid = helper.uuidv4();
 
-                const response = (await ai.process_input(input));
-
                 try{
                     for (let i = 0; i < text.match(/.{1,150}/g).length; i++) {
                         //await audio.pcm(text.match(/.{1,150}/g)[i], access_key, i, uuid, ws);
@@ -47,9 +45,8 @@ wss.on('connection', function connection(ws) {
             if (db.find('access_key', access_key)) {
                 try{             
                     const text = data.toString('utf8').split('¬')[2];
-
                     const response = (await ai.process_data(text));
-                    console.log(response);
+
                     ws.send('r' + response);
                 }
                 catch{
@@ -65,9 +62,16 @@ wss.on('connection', function connection(ws) {
             if (db.find('access_key', access_key)) {
                 try{                                   
                     var base64Data = data.toString('utf8').split('¬')[2];
-                    console.log('okay')
-                    
-                    fs.writeFileSync('out.png', Buffer.from(base64Data, 'base64'));
+                    const uuid = helper.uuidv4();
+                    const path = `./media/${access_key}`;
+
+                    if (!fs.existsSync(`${path}`)) {
+                        fs.mkdirSync(`${path}`);
+                    }
+
+                    // Decrypt later on safety
+
+                    fs.writeFileSync(`${path}/${uuid}.png`, Buffer.from(base64Data, 'base64'));
                 }
                 catch{
                     ws.send('Internal server error');

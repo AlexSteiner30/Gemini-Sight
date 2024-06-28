@@ -1,8 +1,11 @@
+import 'package:app/helper/listener.dart';
 import 'package:app/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeService();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

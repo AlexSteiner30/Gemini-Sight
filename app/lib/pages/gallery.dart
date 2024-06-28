@@ -16,7 +16,7 @@ class GalleryScreen extends StatefulWidget {
 }
 
 class _GalleryScreenState extends State<GalleryScreen> {
-  List<Map<String, dynamic>> _mediaItems = [
+  final List<Map<String, dynamic>> _mediaItems = [
     {'type': 'image', 'url': 'https://via.placeholder.com/150'},
     {
       'type': 'video',
