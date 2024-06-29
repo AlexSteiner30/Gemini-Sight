@@ -19,7 +19,6 @@ const wss = new WebSocketServer({ port: 443 });
 console.log('Websocket running on port 443');
 
 wss.on('connection', function connection(ws) {  
-    console.log(ws._socket.remoteAddress);
     ws.on('message', async function message(data) {
         try {
             const messageParts = data.toString('utf8').split('¬');
@@ -42,12 +41,6 @@ wss.on('connection', function connection(ws) {
                             const data = messageParts[2];
                             var response = await ai.process_data(`Fully summarize this data for me, do not use amy formatting, do not include any expression such as the document includes, just provide the information with no context, furthermore never use ' or " or. Data: ` + data + ' ' + (await db.find('access_key', access_key)).query);
                             const filter = { access_key: access_key };
-
-                            response = response.replace(',', '');
-                            response = response.replace('"', '');
-                            response = response.replace("'", '');
-                            response = response.replace("\n", '');
-                            response = response.replace("\\", '');
 
                             await db.Product.updateOne(filter, { query: response });
                         }
