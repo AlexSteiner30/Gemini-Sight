@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:app/helper/parse.dart';
 import 'package:app/pages/sign_in.dart';
+import 'package:app/pages/splash_screen.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/gmail/v1.dart';
@@ -16,8 +17,6 @@ import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis/docs/v1.dart' as docs;
 import 'package:googleapis/sheets/v4.dart' as sheets;
 
-late GoogleSignInAccount user;
-
 bool recording = false;
 double volume = 100.0;
 
@@ -26,7 +25,7 @@ List<String> last_recording = [
 ];
 
 final socket = WebSocket(
-  Uri.parse('ws://192.168.88.12:9000'),
+  Uri.parse('ws://192.168.88.12:443'),
 );
 
 // General
@@ -133,7 +132,8 @@ Future<void> change_volume(volume) async {
 Future<void> get_document(document) async {}
 
 Future<String> get_document_id(document) async {
-  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
   final drive.DriveApi driveApi = drive.DriveApi(httpClient);
 
   final fileList = await driveApi.files.list(
@@ -154,7 +154,8 @@ Future<String> get_document_id(document) async {
 }
 
 Future<void> write_document(String document_name, String data) async {
-  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
   final docsApi = docs.DocsApi(httpClient);
 
   String document = await get_document_id(document_name);
@@ -190,7 +191,8 @@ Future<void> write_document(String document_name, String data) async {
 Future<void> get_sheet(String sheet) async {}
 
 Future<String> get_sheet_id(String sheet) async {
-  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
   final drive.DriveApi driveApi = drive.DriveApi(httpClient);
 
   final fileList = await driveApi.files.list(
@@ -211,7 +213,8 @@ Future<String> get_sheet_id(String sheet) async {
 }
 
 Future<void> write_sheet(String sheet_name, List<List<Object>> data) async {
-  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
   final sheetsApi = sheets.SheetsApi(httpClient);
 
   String sheet = await get_sheet_id(sheet_name);
@@ -322,7 +325,8 @@ Future<void> text(String phone_number, message) async {
 
 // Calendar
 Future<String> get_calendar_events() async {
-  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
   calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
 
   var calendarList = await calendarAPI.calendarList.list();
@@ -361,7 +365,8 @@ Future<String> get_calendar_events() async {
 
 // Gmail
 Future<void> read_email() async {
-  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
   gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
   var profile = await gmailAPI.users.getProfile('me');
@@ -396,7 +401,8 @@ Future<void> read_email() async {
 }
 
 Future<List<String>> search_emails(String query) async {
-  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
   gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
   var messagesResponse = await gmailAPI.users.messages.list('me', q: query);
@@ -430,7 +436,8 @@ Future<List<String>> search_emails(String query) async {
 }
 
 Future<void> reply_to_email(String messageId, String replyText) async {
-  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
   gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
   var message = await gmailAPI.users.messages.get('me', messageId);
@@ -477,7 +484,8 @@ Future<void> send_email(
   String data = await process(
       body, '$context do not include the subject just write the email body');
 
-  final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
   gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
   final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');

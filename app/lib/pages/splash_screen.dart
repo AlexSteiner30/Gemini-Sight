@@ -11,6 +11,8 @@ import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 
+GoogleSignInAccount? account;
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -43,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
             drive.DriveApi.driveScope,
           ]);
 
-      final GoogleSignInAccount? account = await _googleSignIn.signInSilently();
+      account = await _googleSignIn.signInSilently();
       final GoogleSignInAuthentication auth = await account!.authentication;
 
       final Completer<String> completer = Completer<String>();
@@ -63,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => DevicePage(user: account, connected: false)),
+            builder: (context) => DevicePage(user: account!, connected: false)),
       );
     } else {
       Navigator.pushReplacement(

@@ -16,7 +16,7 @@ Future<void> get_query(GoogleSignInAccount user, context) async {
   final gmailApi = gmail.GmailApi(httpClient);
   bool successful = false;
   String result =
-      "Data update successful. Gemini can now hold more personalized conversations to enhance your experience and assist with daily tasks.";
+      "Gemini can now hold more personalized conversations to enhance your experience and assist with daily tasks.";
   try {
     /*
         final List<gmail.Message> messages =
@@ -53,8 +53,8 @@ Future<void> get_query(GoogleSignInAccount user, context) async {
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
-        title:
-            Text(successful ? 'Data updated uccessful' : 'Error getting data'),
+        title: Text(
+            successful ? 'Data updated successfully' : 'Error getting data'),
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[

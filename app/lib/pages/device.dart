@@ -179,7 +179,8 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void initState() {
     super.initState();
-    send_data('Hey Gemma call Anna');
+    send_data(
+        'Hey Gemma, what are some infos about the new project i am working on');
   }
 
   @override
@@ -209,7 +210,7 @@ class _DevicePageState extends State<DevicePage> {
         // ignore: use_build_context_synchronously
         context,
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) => GalleryScreen(user: widget.user),
+          pageBuilder: (_, __, ___) => GalleryPage(), // add user
           transitionDuration: const Duration(seconds: 0),
         ),
       );
