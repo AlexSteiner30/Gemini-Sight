@@ -109,7 +109,7 @@ Future<dynamic> _parseFunction(String input) async {
         nestedLevel--;
         currentArg.write(input[index]);
       }
-    } else if (input[index] == ',' && nestedLevel == 0) {
+    } else if (input[index] == '¬' && nestedLevel == 0) {
       args.add(await _parseArgument(currentArg.toString().trim()));
       currentArg.clear();
     } else {

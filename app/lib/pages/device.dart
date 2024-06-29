@@ -179,8 +179,7 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void initState() {
     super.initState();
-    send_data(
-        'Hey Gemma, what are some infos about the new project i am working on');
+    send_data('Hey Gemma, what are the next tasks for the project');
   }
 
   @override
