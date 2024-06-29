@@ -10,6 +10,7 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/helper/commands.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Device device = Device(auth: authentication_key, model: '0.1', status: "false");
 
@@ -200,22 +201,22 @@ class _DevicePageState extends State<DevicePage> {
     */
 
     setState(() {
-      if (index != 1 || index != 2) {
-        _currentIndex = index;
-      }
+      _currentIndex = index;
     });
 
     if (_currentIndex == 1) {
-      Navigator.push(
-        // ignore: use_build_context_synchronously
-        context,
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => GalleryPage(), // add user
-          transitionDuration: const Duration(seconds: 0),
-        ),
-      );
+      final prefs = await SharedPreferences.getInstance();
+      String folder_url =
+          "https://drive.google.com/drive/u/2/folders/${prefs.getString('folder_id')}";
+      if (await canLaunch(folder_url)) {
+        _currentIndex = 0;
+        await launch(folder_url);
+      } else {
+        throw 'Could not launch $folder_url';
+      }
     } else if (_currentIndex == 2) {
       _scanQRCode();
+      _currentIndex = 0;
     }
   }
 

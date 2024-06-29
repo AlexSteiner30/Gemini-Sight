@@ -55,8 +55,6 @@ Future<void> send_data(String data) async {
 
   final Completer<void> completer = Completer<void>();
 
-  await drive_push_file('test.png', last_recording[0]);
-
   socket.send(
       'send_data¬$authentication_key¬General Information about the user, complete name ${account!.displayName}, email ${account!.email} additional data $data');
 
@@ -115,18 +113,25 @@ Future<void> stop_recording(String task) async {
 
   String data = last_recording[0].toString();
 
-  socket.send('vision¬$authentication_key¬$task.¬$data');
+  if (task == '') {
+    DateTime _now = DateTime.now();
+    String file_name =
+        'RECORDING_${_now.year}-${_now.month}-${_now.day}_${_now.hour}-${_now.minute}-${_now.second}.${_now.millisecond}';
+    await drive_push_file(file_name, last_recording.join(''));
+  } else {
+    socket.send('vision¬$authentication_key¬$task.¬$data');
 
-  final subscription = socket.messages.listen((response) async {
-    if (response[0] == 'v') {
-      await speak(response.toString().substring(1));
-      completer.complete(response);
-    }
-  });
+    final subscription = socket.messages.listen((response) async {
+      if (response[0] == 'v') {
+        await speak(response.toString().substring(1));
+        completer.complete(response);
+      }
+    });
 
-  await completer.future;
-  await subscription.cancel();
-  recording = false;
+    await completer.future;
+    await subscription.cancel();
+    recording = false;
+  }
 }
 
 Future<void> change_volume(volume) async {
@@ -263,10 +268,6 @@ Future<void> write_sheet(String sheet_name, List<List<Object>> data) async {
 }
 
 // Drive
-Future<void> drive_get_file(file) async {
-  print(file);
-}
-
 Future<void> drive_push_file(file_name, data) async {
   final GoogleAPIClient httpClient =
       GoogleAPIClient((await account?.authHeaders)!);
@@ -281,7 +282,7 @@ Future<void> drive_push_file(file_name, data) async {
   final file = File(filePath);
   await file.writeAsBytes(decodedBytes);
 
-  var folderId = await getOrCreateFolderById(
+  var folderId = await get_or_create_folder_id(
       driveApi,
       prefs.getString('folder_id') != null ? prefs.getString('folder_id')! : '',
       'Gemini Sight Media');
@@ -298,21 +299,21 @@ Future<void> drive_push_file(file_name, data) async {
   print('Uploaded file ID: ${response.id}');
 }
 
-Future<String> getOrCreateFolderById(
+Future<String> get_or_create_folder_id(
     drive.DriveApi driveApi, String folderId, String folderName) async {
-  var existingFolder = await getFolderById(driveApi, folderId);
+  var existingFolder = await get_folder_id(driveApi, folderId);
   final prefs = await SharedPreferences.getInstance();
 
   if (existingFolder != null) {
     return folderId;
   } else {
-    var createdFolder = await createFolder(driveApi, folderName);
+    var createdFolder = await create_folder(driveApi, folderName);
     await prefs.setString('folder_id', createdFolder.id!);
     return createdFolder.id!;
   }
 }
 
-Future<drive.File?> getFolderById(
+Future<drive.File?> get_folder_id(
     drive.DriveApi driveApi, String folderId) async {
   var folder = await driveApi.files.get(folderId) as drive.File;
   if (folder.mimeType == 'application/vnd.google-apps.folder') {
@@ -322,7 +323,7 @@ Future<drive.File?> getFolderById(
   }
 }
 
-Future<drive.File> createFolder(
+Future<drive.File> create_folder(
     drive.DriveApi driveApi, String folderName) async {
   var folder = drive.File()
     ..name = folderName
