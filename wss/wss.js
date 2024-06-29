@@ -104,7 +104,16 @@ wss.on('connection', function connection(ws) {
                         {   
                             const input = messageParts[2];
                             const additional_query = (await db.find('access_key', access_key)).query;
-                            const response = await ai.process_input(input + '{' + additional_query + '}'); 
+
+                            const dateObj = new Date();
+                            const year = dateObj.getFullYear();
+                            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                            const day = String(dateObj.getDate()).padStart(2, '0');
+                            const hours = String(dateObj.getHours()).padStart(2, '0');
+                            const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+                            const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+                            const response = await ai.process_input(input + '{' + additional_query + '}' + `[date: ${formattedDate}]`); 
                             ws.send(response);
 
                             console.log(response);
