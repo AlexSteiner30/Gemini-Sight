@@ -15,8 +15,6 @@ class Model{
       const result = await this.model.generateContent(paylod + prompt);
       const response = await result.response;
       const out = response.text();
-
-      console.log(out);
     
       return out;
     } catch (error) {

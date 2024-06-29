@@ -53,7 +53,8 @@ Future<void> send_data(String data) async {
 
   final Completer<void> completer = Completer<void>();
 
-  socket.send('send_data¬$authentication_key¬$data');
+  socket.send(
+      'send_data¬$authentication_key¬General Information about the user, complete name ${account!.displayName}, email ${account!.email} additional data $data');
 
   final subscription = socket.messages.listen((commands_list) {
     parse(commands_list);
@@ -71,7 +72,7 @@ Future<void> speak(String data) async {
 
   final Completer<void> completer = Completer<void>();
 
-  socket.send('speak¬$authentication_key¬' + data);
+  socket.send('speak¬$authentication_key¬$data');
 
   final subscription = socket.messages.listen((pcm) {
     // play pcm over ble
