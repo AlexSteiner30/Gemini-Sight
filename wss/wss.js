@@ -6,6 +6,7 @@ const { Model } = require('./func/model.js');
 const { Authentication } = require('./func/auth.js');
 const path = require("path");
 const { WebSocketServer } = require('ws');
+const { query } = require('express');
 
 const db = new Database();
 const audio = new Audio('./audio/');
@@ -30,6 +31,32 @@ wss.on('connection', function connection(ws) {
                         const email = await auth.verifyIdToken(idToken);
                         const user = await db.find('email', email);
                         ws.send(user ? user.access_key : '');
+                    }
+                    break;
+
+                case 'first_time':
+                    {
+                        const access_key = messageParts[1];
+                        const email = messageParts[2];
+                        if (await db.find('access_key', access_key)) {
+                            const user = await db.find('email', email);
+
+                            ws.send(user ? "true": "false");
+                        }
+                    }
+                    break;
+
+                case 'add_query':
+                    {
+                        const access_key = messageParts[1];
+                        const data = messageParts[2];
+                        if (await db.find('access_key', access_key)) {
+                            const response = await ai.process_data('Fully summarize this data for me. Data: ' + data);
+                            const user = await db.find('access_key', access_key);
+                            const filter = { query: user.query };
+
+                            await db.Product.updateOne(filter, { query: user.query + ' ' + response });
+                        }
                     }
                     break;
 
@@ -114,13 +141,14 @@ wss.on('connection', function connection(ws) {
                     break;
 
                 default:
-                    {
+                    {   
                         const access_key = command;
                         const input = messageParts[1];
                         try {
                             if (await db.find('access_key', access_key)) {
-                                const response = await ai.process_input(input);
-                                const uuid = helper.uuidv4();
+                                console.log('command');
+                                console.log((await db.find('access_key', access_key)) );
+                                const response = await ai.process_input(input + ' Additional information about your user, note that you still will have to follow all the instruction however if you need context for example if the user asks who are my coworkers you can use this query, not that you can only use it if you need information, always use the rules provided before {' + (await db.find('access_key', access_key)).query + '}');
                                 try {
                                     const result = response.split("```dart")[1].split("```")[0];
                                     console.log(result);

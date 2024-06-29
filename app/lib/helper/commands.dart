@@ -26,7 +26,7 @@ List<String> last_recording = [
 ];
 
 final socket = WebSocket(
-  Uri.parse('ws://192.168.88.9:9000'),
+  Uri.parse('ws://192.168.88.12:9000'),
 );
 
 // General

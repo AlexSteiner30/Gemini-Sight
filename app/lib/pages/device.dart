@@ -177,9 +177,8 @@ class _DevicePageState extends State<DevicePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    send_data('Hey Gemma solve this math problem which is right infront of me');
+    send_data('Hey Gemma who are my co-workers');
   }
 
   @override
