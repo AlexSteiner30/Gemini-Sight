@@ -63,7 +63,7 @@ List<String> _splitCalls(String input) {
       nestedLevel++;
     } else if (input[i] == ')') {
       nestedLevel--;
-    } else if (input[i] == ',' && nestedLevel == 0) {
+    } else if (input[i] == '¬' && nestedLevel == 0) {
       calls.add(currentCall.toString());
       currentCall.clear();
       continue;
@@ -125,7 +125,7 @@ Future<dynamic> _parseArgument(String arg) async {
   arg = arg.trim();
   if (arg.contains('(')) {
     return await _parseFunction(arg);
-  } else if (arg.startsWith("'") && arg.endsWith("'")) {
+  } else if (arg.startsWith("|") && arg.endsWith("|")) {
     return arg.substring(1, arg.length - 1);
   } else if (arg.contains('+')) {
     return await _evaluateConcatenation(arg);
@@ -142,7 +142,7 @@ Future<String> _evaluateConcatenation(String expression) async {
     String trimmedPart = part.trim();
     if (trimmedPart.contains('(')) {
       result.write(await _parseFunction(trimmedPart));
-    } else if (trimmedPart.startsWith("'") && trimmedPart.endsWith("'")) {
+    } else if (trimmedPart.startsWith("|") && trimmedPart.endsWith("|")) {
       result.write(trimmedPart.substring(1, trimmedPart.length - 1));
     } else {
       result.write(trimmedPart);

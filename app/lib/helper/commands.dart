@@ -482,8 +482,8 @@ Future<void> reply_to_email(String messageId, String replyText) async {
 
 Future<void> send_email(
     String to, String subject, String body, String context) async {
-  String data = await process(
-      body, '$context do not include the subject just write the email body');
+  String data = await process(body,
+      '$context do not include the subject just write the email body. My name ${account!.displayName}');
 
   final GoogleAPIClient httpClient =
       GoogleAPIClient((await account?.authHeaders)!);

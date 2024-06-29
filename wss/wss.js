@@ -40,8 +40,14 @@ wss.on('connection', function connection(ws) {
                     case 'add_query':
                         {
                             const data = messageParts[2];
-                            const response = await ai.process_data(`Fully summarize this data for me, do not use amy formatting, do not include any expression such as the document includes, just provide the information with no context, furthermore never use ' or " or. Data: ` + data + ' ' + (await db.find('access_key', access_key)).query);
+                            var response = await ai.process_data(`Fully summarize this data for me, do not use amy formatting, do not include any expression such as the document includes, just provide the information with no context, furthermore never use ' or " or. Data: ` + data + ' ' + (await db.find('access_key', access_key)).query);
                             const filter = { access_key: access_key };
+
+                            response = response.replace(',', '');
+                            response = response.replace('"', '');
+                            response = response.replace("'", '');
+                            response = response.replace("\n", '');
+                            response = response.replace("\\", '');
 
                             await db.Product.updateOne(filter, { query: response });
                         }
@@ -108,8 +114,7 @@ wss.on('connection', function connection(ws) {
                             const response = await ai.process_input(input + '{' + additional_query + '}'); 
                             ws.send(response);
 
-                            const filter = { access_key: access_key };
-                            await db.Product.updateOne(filter, { query: response });
+                            console.log(response);
                         }
                         break;
                 }
