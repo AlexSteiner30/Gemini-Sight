@@ -54,7 +54,7 @@ Future<void> send_data(String data) async {
 
   final Completer<void> completer = Completer<void>();
 
-  socket.send('$authentication_key¬$data');
+  socket.send('send_data¬$authentication_key¬$data');
 
   final subscription = socket.messages.listen((commands_list) {
     parse(commands_list);
