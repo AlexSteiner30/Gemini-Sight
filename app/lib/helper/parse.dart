@@ -27,6 +27,10 @@ Map<String, Function> functionRegistry = {
   'search_emails': search_emails,
   'reply_to_email': reply_to_email,
   'send_email': send_email,
+  'get_tasks': get_tasks,
+  'add_task': add_task,
+  'update_task': update_task,
+  'delete_task': delete_task
 };
 
 Future<dynamic> dispatcher(String functionName, List<dynamic> args) async {

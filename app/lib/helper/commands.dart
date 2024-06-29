@@ -6,6 +6,7 @@ import 'package:app/pages/sign_in.dart';
 import 'package:app/pages/splash_screen.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:googleapis/gmail/v1.dart';
+import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -78,7 +79,6 @@ Future<void> speak(String data) async {
 
   final subscription = socket.messages.listen((pcm) {
     // play pcm over ble
-    print(pcm);
     completer.complete();
   });
 
@@ -427,6 +427,102 @@ Future<String> get_calendar_events() async {
     }
   }
   return complete_information;
+}
+
+// Tasks
+Future<String> get_tasks() async {
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
+  tasks.TasksApi tasksAPI = tasks.TasksApi(httpClient);
+
+  var taskLists = await tasksAPI.tasklists.list();
+  String complete_information = '';
+
+  if (taskLists.items != null) {
+    for (var taskList in taskLists.items!) {
+      var tasks = await tasksAPI.tasks.list(taskList.id!);
+      if (tasks.items != null) {
+        for (var task in tasks.items!) {
+          if (task.due != null) {
+            String information = '';
+
+            information += 'Task Title: ${task.title} ';
+            information += 'Task Notes: ${task.notes ?? 'No notes'} ';
+            information += 'Task Due: ${task.due} ';
+            information += 'Task Status: ${task.status} ';
+            information += '\n';
+
+            complete_information = complete_information + information;
+          }
+        }
+      }
+    }
+  }
+  return complete_information;
+}
+
+Future<void> add_task(String title, String due, String notes) async {
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
+  tasks.TasksApi tasksAPI = tasks.TasksApi(httpClient);
+
+  var taskLists = await tasksAPI.tasklists.list();
+
+  if (notes.trim() == "|''") notes = '';
+
+  var newTask = tasks.Task()
+    ..title = title
+    ..due = DateTime.parse(due).toUtc().toIso8601String()
+    ..notes = notes;
+
+  await tasksAPI.tasks.insert(newTask, taskLists.items![0].id!);
+}
+
+Future<void> delete_task(String taskName) async {
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
+  tasks.TasksApi tasksAPI = tasks.TasksApi(httpClient);
+
+  var taskLists = await tasksAPI.tasklists.list();
+
+  var tasksResult = await tasksAPI.tasks.list(taskLists.items![0].id!);
+  if (tasksResult.items != null) {
+    for (var task in tasksResult.items!) {
+      if (task.title == taskName) {
+        await tasksAPI.tasks.delete(taskLists.items![0].id!, task.id!);
+        break;
+      }
+    }
+  }
+
+  print('Task deleted');
+}
+
+Future<void> update_task(String taskName, String newTitle, String newNotes,
+    String newDue, String newStatus) async {
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
+  tasks.TasksApi tasksAPI = tasks.TasksApi(httpClient);
+
+  var taskLists = await tasksAPI.tasklists.list();
+  var tasksResult = await tasksAPI.tasks.list(taskLists.items![0].id!);
+  if (tasksResult.items != null) {
+    for (var task in tasksResult.items!) {
+      if (task.title == taskName) {
+        if (newTitle.trim() != "''") task.title = newTitle;
+        if (newNotes.trim() != "''") task.notes = newNotes;
+        if (newDue.trim() != "''") {
+          task.due = DateTime.parse(newDue).toUtc().toIso8601String();
+        }
+        if (newStatus.trim() != "''") task.status = newStatus;
+
+        await tasksAPI.tasks.update(task, taskLists.items![0].id!, task.id!);
+        break;
+      }
+    }
+  }
+
+  print('Task updated');
 }
 
 // Gmail

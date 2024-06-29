@@ -2,7 +2,6 @@ import 'package:app/helper/loading_screen.dart';
 import 'package:app/helper/query.dart';
 import 'package:app/pages/settings.dart';
 import 'package:app/pages/bottom_nav_bar.dart';
-import 'package:app/pages/gallery.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -180,8 +179,7 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void initState() {
     super.initState();
-    send_data(
-        'Hey Gemma, text hello to Anna and ask her how shes doing inform her about my project');
+    send_data('Hey Gemma, mark task test as completed');
   }
 
   @override
