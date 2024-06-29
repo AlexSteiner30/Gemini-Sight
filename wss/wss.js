@@ -15,8 +15,8 @@ const auth = new Authentication();
 
 db.parseData();
 
-const wss = new WebSocketServer({ port: 9000 });
-console.log('Websocket running on port 9000');
+const wss = new WebSocketServer({ port: 443 });
+console.log('Websocket running on port 443');
 
 wss.on('connection', function connection(ws) {  
     console.log(ws._socket.remoteAddress);
@@ -40,10 +40,10 @@ wss.on('connection', function connection(ws) {
                     case 'add_query':
                         {
                             const data = messageParts[2];
-                            const response = await ai.process_data('Fully summarize this data for me. Data: ' + data);
+                            const response = await ai.process_data(`Fully summarize this data for me, do not use amy formatting, do not include any expression such as the document includes, just provide the information with no context, furthermore never use ' or " or ,. Data: ` + data + ' ' + (await db.find('access_key', access_key)).query);
                             const filter = { access_key: access_key };
 
-                            await db.Product.updateOne(filter, { query: await db.find('access_key', access_key).query + ' ' + response });
+                            await db.Product.updateOne(filter, { query: response });
                         }
                         break;
 
@@ -104,13 +104,9 @@ wss.on('connection', function connection(ws) {
                     case 'send_data':
                         {   
                             const input = messageParts[2];
-                            const response = await ai.process_input(input); // + ' Additional information about your user, note that you still will have to follow all the instruction however if you need context for example if the user asks who are my coworkers you can use this query, not that you can only use it if you need information, always use the rules provided before {' + (await db.find('access_key', access_key)).query + '}'
-                            try {
-                                const result = response.split("```dart")[1].split("```")[0];
-                                ws.send(result);
-                            } catch {
-                                ws.send(response);
-                            }
+                            const additional_query = (await db.find('access_key', access_key)).query;
+                            const response = await ai.process_input(input + '{' + additional_query + '}'); 
+                            ws.send(response);
                         }
                         break;
                 }

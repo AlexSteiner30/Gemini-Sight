@@ -1,126 +1,198 @@
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 import 'package:video_player/video_player.dart';
 
-class GalleryScreen extends StatefulWidget {
-  const GalleryScreen({super.key, required this.user});
-  final GoogleSignInAccount user;
+class GalleryPage extends StatefulWidget {
+  GalleryPage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
-  _GalleryScreenState createState() => _GalleryScreenState();
+  _GalleryPageState createState() => _GalleryPageState();
 }
 
-class _GalleryScreenState extends State<GalleryScreen> {
-  final List<Map<String, dynamic>> _mediaItems = [
-    {'type': 'image', 'url': 'https://via.placeholder.com/150'},
-    {
-      'type': 'video',
-      'url':
-          'https://videocdn.cdnpk.net/cdn/content/video/premium/video0449/large_watermarked/295%20-%20Animated%20Horizontal%20Brush%20Strokes%20Pack_666_Brush_6_preview.mp4'
-    },
-    {'type': 'image', 'url': 'https://via.placeholder.com/150/0000FF/808080'},
-    {
-      'type': 'video',
-      'url': 'https://www.sample-videos.com/video123/mp4/480/asdasdas.mp4'
-    },
-    // Add more media URLs here
+class _GalleryPageState extends State<GalleryPage> {
+  bool _showImagesOnly = true;
+
+  final List<String> allPhotos = [
+    'https://m.media-amazon.com/images/I/71IeYNcBYdL._SX679_.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/e/e7/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg',
+    'https://hairstyleonpoint.com/wp-content/uploads/2015/09/4ce06e936dcd5e5c5c3e44be9edbc8ff.jpg',
+    'https://bsmedia.business-standard.com/_media/bs/img/article/2020-12/11/full/1607656152-0479.jpg',
+    'https://cdn.pixabay.com/photo/2015/04/19/08/32/marguerite-729510__340.jpg',
+    'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
   ];
 
-  String _filter = 'all';
-
-  void _filterMedia(String type) {
-    setState(() {
-      _filter = type;
-    });
+  List<String> get filteredPhotos {
+    if (_showImagesOnly) {
+      return allPhotos.where((photo) => !photo.endsWith('.mp4')).toList();
+    } else {
+      return allPhotos.where((photo) => photo.endsWith('.mp4')).toList();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> filteredMedia = _filter == 'all'
-        ? _mediaItems
-        : _mediaItems.where((item) => item['type'] == _filter).toList();
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gallery'),
+        title: const Text("Gallery"),
         actions: [
-          PopupMenuButton<String>(
-            onSelected: _filterMedia,
-            itemBuilder: (BuildContext context) {
-              return [
-                const PopupMenuItem(value: 'all', child: Text('All')),
-                const PopupMenuItem(value: 'image', child: Text('Pictures')),
-                const PopupMenuItem(value: 'video', child: Text('Videos')),
-              ];
+          IconButton(
+            icon: Icon(Icons.filter_alt),
+            onPressed: () {
+              setState(() {
+                _showImagesOnly = !_showImagesOnly;
+              });
             },
-            icon: const Icon(Icons.filter_list),
           ),
         ],
       ),
       body: GridView.builder(
-        padding: const EdgeInsets.all(16.0),
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        padding: const EdgeInsets.all(1),
+        itemCount: filteredPhotos.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
-          crossAxisSpacing: 8.0,
-          mainAxisSpacing: 8.0,
-          childAspectRatio: 3 / 4,
         ),
-        itemCount: filteredMedia.length,
-        itemBuilder: (context, index) {
-          var media = filteredMedia[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
+        itemBuilder: ((context, index) {
+          final String photo = filteredPhotos[index];
+          return Container(
+            padding: const EdgeInsets.all(0.5),
+            child: InkWell(
+              onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FullScreenMedia(url: media['url']),
+                  builder: (_) =>
+                      PhotoViewPage(photos: filteredPhotos, index: index),
                 ),
-              );
-            },
-            child: media['type'] == 'image'
-                ? CachedNetworkImage(
-                    imageUrl: media['url'],
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                    fit: BoxFit.cover,
-                  )
-                : VideoPlayerWidget(url: media['url']),
+              ),
+              child: Hero(
+                tag: photo,
+                child: photo.endsWith('.mp4')
+                    ? VideoPreviewWidget(url: photo)
+                    : CachedNetworkImage(
+                        imageUrl: photo,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) =>
+                            Container(color: Colors.grey),
+                        errorWidget: (context, url, error) =>
+                            Container(color: Colors.red.shade400),
+                      ),
+              ),
+            ),
           );
-        },
+        }),
       ),
     );
+  }
+}
+
+class PhotoViewPage extends StatelessWidget {
+  final List<String> photos;
+  final int index;
+
+  const PhotoViewPage({
+    Key? key,
+    required this.photos,
+    required this.index,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: PhotoViewGallery.builder(
+        itemCount: photos.length,
+        builder: (context, index) {
+          if (photos[index].endsWith('.mp4')) {
+            return PhotoViewGalleryPageOptions.customChild(
+              child: VideoPlayerWidget(url: photos[index]),
+              heroAttributes: PhotoViewHeroAttributes(tag: photos[index]),
+            );
+          } else {
+            return PhotoViewGalleryPageOptions.customChild(
+              child: CachedNetworkImage(
+                imageUrl: photos[index],
+                placeholder: (context, url) => Container(color: Colors.grey),
+                errorWidget: (context, url, error) =>
+                    Container(color: Colors.red.shade400),
+              ),
+              minScale: PhotoViewComputedScale.covered,
+              heroAttributes: PhotoViewHeroAttributes(tag: photos[index]),
+            );
+          }
+        },
+        pageController: PageController(initialPage: index),
+        enableRotation: true,
+      ),
+    );
+  }
+}
+
+class VideoPreviewWidget extends StatelessWidget {
+  final String url;
+
+  const VideoPreviewWidget({Key? key, required this.url}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        CachedNetworkImage(
+          imageUrl: _generateThumbnailUrl(url),
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Container(color: Colors.grey),
+          errorWidget: (context, url, error) =>
+              Container(color: Colors.red.shade400),
+        ),
+        const Icon(
+          Icons.play_circle_fill,
+          color: Colors.white,
+          size: 50,
+        ),
+      ],
+    );
+  }
+
+  String _generateThumbnailUrl(String videoUrl) {
+    // Replace with your logic to generate or fetch video thumbnail URL
+    // Here, we're just using a placeholder logic.
+    return videoUrl.replaceAll('.mp4', '.jpg');
   }
 }
 
 class VideoPlayerWidget extends StatefulWidget {
   final String url;
 
-  const VideoPlayerWidget({super.key, required this.url});
+  const VideoPlayerWidget({Key? key, required this.url}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
+  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
-    // ignore: deprecated_member_use
-    _controller = VideoPlayerController.network(widget.url);
-    _initializeVideoPlayerFuture = _controller.initialize();
-    _controller.setLooping(true);
+    _controller = VideoPlayerController.network(widget.url)
+      ..initialize().then((_) {
+        setState(() {});
+      });
 
-    // Ensure playback state updates
     _controller.addListener(() {
-      setState(() {});
+      setState(() {
+        _isPlaying = _controller.value.isPlaying;
+      });
     });
   }
 
@@ -130,63 +202,33 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     super.dispose();
   }
 
-  void _togglePlaying() {
-    setState(() {
-      if (_controller.value.isPlaying) {
-        _controller.pause();
-      } else {
-        _controller.play();
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _initializeVideoPlayerFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Stack(
-            alignment: Alignment.center,
-            children: [
-              AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              ),
-              IconButton(
-                onPressed: _togglePlaying,
-                icon: Icon(
-                  _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                  size: 50.0,
-                  color: Colors.white,
+    return _controller.value.isInitialized
+        ? GestureDetector(
+            onTap: () {
+              setState(() {
+                _isPlaying ? _controller.pause() : _controller.play();
+              });
+            },
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                AspectRatio(
+                  aspectRatio: _controller.value.aspectRatio,
+                  child: VideoPlayer(_controller),
                 ),
-              ),
-            ],
+                if (!_isPlaying)
+                  Icon(
+                    Icons.play_circle_fill,
+                    color: Colors.white,
+                    size: 80,
+                  ),
+              ],
+            ),
+          )
+        : Center(
+            child: CircularProgressIndicator(),
           );
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      },
-    );
-  }
-}
-
-class FullScreenMedia extends StatelessWidget {
-  final String url;
-
-  FullScreenMedia({required this.url});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Full Screen Media'),
-      ),
-      body: Center(
-        child: url.endsWith('.mp4')
-            ? VideoPlayerWidget(url: url)
-            : Image.network(url),
-      ),
-    );
   }
 }
