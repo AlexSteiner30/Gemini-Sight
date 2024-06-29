@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:app/helper/commands.dart';
 import 'package:app/pages/device.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +9,7 @@ import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_client/web_socket_client.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -23,8 +27,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   _navigateToLogin() async {
     final prefs = await SharedPreferences.getInstance();
+
     await Future.delayed(const Duration(seconds: 3), () {});
-    if (prefs.getBool('logged') as bool) {
+    if (prefs.getBool('logged') as bool &&
+        !(prefs.getBool('first_time') as bool)) {
       final GoogleSignIn _googleSignIn = GoogleSignIn(
           clientId:
               '910242255946-b70mhjrb2225nmapdvsgrr0mk66r9pid.apps.googleusercontent.com',
@@ -38,6 +44,22 @@ class _SplashScreenState extends State<SplashScreen> {
           ]);
 
       final GoogleSignInAccount? account = await _googleSignIn.signInSilently();
+      final GoogleSignInAuthentication auth = await account!.authentication;
+
+      final Completer<String> completer = Completer<String>();
+      await socket.connection.firstWhere((state) => state is Connected);
+
+      socket.send('authentication¬${auth.idToken}');
+
+      final subscription = socket.messages.listen((response) {
+        completer.complete(response);
+      });
+
+      final result = await completer.future;
+      await subscription.cancel();
+
+      authentication_key = result;
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
