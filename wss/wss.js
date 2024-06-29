@@ -52,13 +52,25 @@ wss.on('connection', function connection(ws) {
                         const data = messageParts[2];
                         if (await db.find('access_key', access_key)) {
                             const response = await ai.process_data('Fully summarize this data for me. Data: ' + data);
-                            const user = await db.find('access_key', access_key);
-                            const filter = { query: user.query };
+                            const filter = { access_key: access_key };
 
                             await db.Product.updateOne(filter, { query: user.query + ' ' + response });
                         }
                     }
                     break;
+
+                case 'not_first_time':
+                    {
+                        const access_key = messageParts[1];
+
+                        if (await db.find('access_key', access_key)) {
+                            const filter = { access_key: access_key };
+    
+                            await db.Product.updateOne(filter, { first_time: false });
+                        }
+                    }
+                        break;
+    
 
                 case 'speak':
                     {
@@ -146,9 +158,7 @@ wss.on('connection', function connection(ws) {
                         const input = messageParts[1];
                         try {
                             if (await db.find('access_key', access_key)) {
-                                console.log('command');
-                                console.log((await db.find('access_key', access_key)) );
-                                const response = await ai.process_input(input + ' Additional information about your user, note that you still will have to follow all the instruction however if you need context for example if the user asks who are my coworkers you can use this query, not that you can only use it if you need information, always use the rules provided before {' + (await db.find('access_key', access_key)).query + '}');
+                                const response = await ai.process_input(input); // + ' Additional information about your user, note that you still will have to follow all the instruction however if you need context for example if the user asks who are my coworkers you can use this query, not that you can only use it if you need information, always use the rules provided before {' + (await db.find('access_key', access_key)).query + '}'
                                 try {
                                     const result = response.split("```dart")[1].split("```")[0];
                                     console.log(result);
