@@ -1,8 +1,9 @@
 import 'package:app/helper/loading_screen.dart';
 import 'package:app/helper/query.dart';
-import 'package:app/pages/account.dart';
+import 'package:app/pages/settings.dart';
 import 'package:app/pages/bottom_nav_bar.dart';
 import 'package:app/pages/gallery.dart';
+import 'package:app/pages/sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -10,17 +11,14 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/helper/commands.dart';
 
-class Device {
-  String id;
-  String name;
-  String model;
-  bool isOnline;
+Device device = Device(auth: authentication_key, model: '0.1', status: "false");
 
-  Device(
-      {required this.id,
-      required this.name,
-      required this.model,
-      this.isOnline = false});
+class Device {
+  String auth;
+  String model;
+  String status;
+
+  Device({required this.auth, required this.model, this.status = "false"});
 }
 
 // ignore: must_be_immutable
@@ -129,9 +127,9 @@ class _DevicePageState extends State<DevicePage> {
     if (parts.length == 3) {
       setState(() {
         _devices.add(Device(
-          id: parts[0],
-          name: parts[1],
-          model: parts[2],
+          auth: parts[0],
+          model: parts[1],
+          status: parts[2],
         ));
       });
     }
@@ -148,7 +146,7 @@ class _DevicePageState extends State<DevicePage> {
             child: ListBody(
               children: <Widget>[
                 Text(
-                    'Are you sure you want to delete ${_devices[index].name}?'),
+                    'Are you sure you want to delete ${_devices[index].auth}?'),
               ],
             ),
           ),
@@ -197,12 +195,11 @@ class _DevicePageState extends State<DevicePage> {
     Index 
     0 -> Device
     1 -> Gallery
-    2 - QR Code
-    3 -> Menu
+    2 -> - QR Code
     */
 
     setState(() {
-      if (index != 2 || index != 3) {
+      if (index != 1 || index != 2) {
         _currentIndex = index;
       }
     });
@@ -218,46 +215,6 @@ class _DevicePageState extends State<DevicePage> {
       );
     } else if (_currentIndex == 2) {
       _scanQRCode();
-    } else if (_currentIndex == 3) {
-      final prefs = await SharedPreferences.getInstance();
-
-      // ignore: no_leading_underscores_for_local_identifiers
-      bool _googleMaps = prefs.getBool('googleMaps') ?? false;
-      // ignore: no_leading_underscores_for_local_identifiers
-      bool _googleDrive = prefs.getBool('googleDrive') ?? false;
-      // ignore: no_leading_underscores_for_local_identifiers
-      bool _gmail = prefs.getBool('gmail') ?? false;
-      // ignore: no_leading_underscores_for_local_identifiers
-      bool _googleCalendar = prefs.getBool('googleCalendar') ?? false;
-      // ignore: no_leading_underscores_for_local_identifiers
-      bool _youtube = prefs.getBool('youtube') ?? false;
-      // ignore: no_leading_underscores_for_local_identifiers
-      bool _location = prefs.getBool('location') ?? false;
-      // ignore: no_leading_underscores_for_local_identifiers
-      bool _contacts = prefs.getBool('contacts') ?? false;
-      // ignore: no_leading_underscores_for_local_identifiers
-      bool _health = prefs.getBool('health') ?? false;
-      // ignore: no_leading_underscores_for_local_identifiers
-      bool _phone = prefs.getBool('phone') ?? false;
-
-      Navigator.push(
-        // ignore: use_build_context_synchronously
-        context,
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => AccountPage(
-              user: widget.user,
-              googleMaps: _googleMaps,
-              googleDrive: _googleDrive,
-              gmail: _gmail,
-              googleCalendar: _googleCalendar,
-              youtube: _youtube,
-              location: _location,
-              contacts: _contacts,
-              health: _health,
-              phone: _phone),
-          transitionDuration: const Duration(seconds: 0),
-        ),
-      );
     }
   }
 
@@ -429,12 +386,56 @@ class _DevicePageState extends State<DevicePage> {
                         ListTile(
                           leading:
                               const Icon(Icons.settings, color: Colors.white),
-                          title: const Text('Headset settings',
+                          title: const Text('Glasses settings',
                               style: TextStyle(color: Colors.white)),
                           subtitle: const Text(
                               'Get info and configure your device',
                               style: TextStyle(color: Colors.grey)),
-                          onTap: () {},
+                          onTap: () async {
+                            final prefs = await SharedPreferences.getInstance();
+
+                            // ignore: no_leading_underscores_for_local_identifiers
+                            bool _googleMaps =
+                                prefs.getBool('googleMaps') ?? false;
+                            // ignore: no_leading_underscores_for_local_identifiers
+                            bool _googleDrive =
+                                prefs.getBool('googleDrive') ?? false;
+                            // ignore: no_leading_underscores_for_local_identifiers
+                            bool _gmail = prefs.getBool('gmail') ?? false;
+                            // ignore: no_leading_underscores_for_local_identifiers
+                            bool _googleCalendar =
+                                prefs.getBool('googleCalendar') ?? false;
+                            // ignore: no_leading_underscores_for_local_identifiers
+                            bool _youtube = prefs.getBool('youtube') ?? false;
+                            // ignore: no_leading_underscores_for_local_identifiers
+                            bool _location = prefs.getBool('location') ?? false;
+                            // ignore: no_leading_underscores_for_local_identifiers
+                            bool _contacts = prefs.getBool('contacts') ?? false;
+                            // ignore: no_leading_underscores_for_local_identifiers
+                            bool _health = prefs.getBool('health') ?? false;
+                            // ignore: no_leading_underscores_for_local_identifiers
+                            bool _phone = prefs.getBool('phone') ?? false;
+
+                            Navigator.push(
+                              // ignore: use_build_context_synchronously
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder: (_, __, ___) => DeviceSettings(
+                                    user: widget.user,
+                                    device: device,
+                                    googleMaps: _googleMaps,
+                                    googleDrive: _googleDrive,
+                                    gmail: _gmail,
+                                    googleCalendar: _googleCalendar,
+                                    youtube: _youtube,
+                                    location: _location,
+                                    contacts: _contacts,
+                                    health: _health,
+                                    phone: _phone),
+                                transitionDuration: const Duration(seconds: 0),
+                              ),
+                            );
+                          },
                         ),
                         ListTile(
                           leading: const Icon(Icons.book, color: Colors.white),

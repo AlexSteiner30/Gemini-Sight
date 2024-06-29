@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:app/helper/commands.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:web_socket_client/web_socket_client.dart';
 
 Future<void> initializeService() async {
   final service = FlutterBackgroundService();
@@ -51,7 +50,9 @@ void onStart(ServiceInstance service) async {
   recording_handler();
 }
 
+// ignore: non_constant_identifier_names
 void recording_handler() async {
+  // ignore: unused_local_variable
   var recording_temp = false;
 
   /*
