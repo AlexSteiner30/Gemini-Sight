@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:app/helper/commands.dart';
 import 'package:app/helper/loading_screen.dart';
+import 'package:app/helper/query.dart';
 import 'package:app/pages/device.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -112,120 +113,43 @@ class _SignInPageState extends State<SignInPage> {
         },
       );
     } else {
-      await get_init_query();
-    }
-  }
+      final Completer<String> completer = Completer<String>();
+      await socket.connection.firstWhere((state) => state is Connected);
 
-  Future<void> get_init_query() async {
-    final Completer<String> completer = Completer<String>();
-    await socket.connection.firstWhere((state) => state is Connected);
+      socket.send('first_time¬$authentication_key¬${user!.email}');
 
-    socket.send('first_time¬$authentication_key¬${user!.email}');
-
-    final subscription = socket.messages.listen((response) {
-      completer.complete(response);
-    });
-
-    final result = await completer.future;
-    await subscription.cancel();
-
-    if (result == "true") {
-      final GoogleAPIClient httpClient =
-          GoogleAPIClient(await user!.authHeaders);
-      final drive.DriveApi driveApi = drive.DriveApi(httpClient);
-      final docsApi = docs.DocsApi(httpClient);
-      final gmailApi = gmail.GmailApi(httpClient);
-
-      setState(() {
-        isLoading = true;
+      final subscription = socket.messages.listen((response) {
+        completer.complete(response);
       });
 
-      try {
-        /*
-        final List<gmail.Message> messages =
-            await _fetchGmailMessages(gmailApi);
+      final result = await completer.future;
+      await subscription.cancel();
 
-        print('gmail fetch');
-
-        await _processAndSendData(messages, (message) async {
-          final fullMessage =
-              await gmailApi.users.messages.get('me', message.id!);
-          return _getBody(fullMessage);
+      if (result == "true") {
+        setState(() {
+          isLoading = true;
         });
-        */
-
-        final fileList = await driveApi.files.list(
-          q: "mimeType='application/vnd.google-apps.document'",
-          spaces: 'drive',
-        );
-
-        await _processAndSendData(fileList.files!, (file) async {
-          final document = await docsApi.documents.get(file.id!);
-          final content = document.body!.content!;
-          return _extractText(content);
-        });
-      } catch (e) {
-        print('Error getting data: $e');
-      } finally {
+        await get_query(account!, context);
         setState(() {
           isLoading = false;
         });
       }
-    }
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('logged', true);
-    await prefs.setBool('first_time', false);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('logged', true);
+      await prefs.setBool('first_time', false);
 
-    socket.send('not_first_time¬$authentication_key');
+      socket.send('not_first_time¬$authentication_key');
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DevicePage(
-          user: user!,
-          connected: false,
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DevicePage(
+            user: user!,
+            connected: false,
+          ),
         ),
-      ),
-    );
-  }
-
-  Future<List<gmail.Message>> _fetchGmailMessages(
-      gmail.GmailApi gmailApi) async {
-    final List<gmail.Message> messages = [];
-    String? nextPageToken;
-
-    do {
-      print('test');
-      final response =
-          await gmailApi.users.messages.list('me', pageToken: nextPageToken);
-      messages.addAll(response.messages!);
-      nextPageToken = response.nextPageToken;
-    } while (nextPageToken != null);
-
-    return messages;
-  }
-
-  Future<void> _processAndSendData<T>(
-      List<T> items, Future<String> Function(T item) processItem) async {
-    String data = '';
-    int count = 0;
-
-    for (var item in items) {
-      data += ' ${await processItem(item)}';
-      count++;
-
-      if (count == 50) {
-        print('Data sent');
-        socket.send('add_query¬$authentication_key¬$data');
-        count = 0;
-        data = '';
-      }
-    }
-
-    if (data.isNotEmpty) {
-      socket.send('add_query¬$authentication_key¬$data');
-      print('Data sent');
+      );
     }
   }
 
@@ -287,52 +211,4 @@ class GoogleAPIClient extends IOClient {
   Future<Response> head(Uri url, {Map<String, String>? headers}) =>
       super.head(url,
           headers: headers != null ? (headers..addAll(_headers)) : _headers);
-}
-
-String _extractText(List<docs.StructuralElement> elements) {
-  String text = '';
-  for (var element in elements) {
-    if (element.paragraph != null) {
-      text += _extractParagraphText(element.paragraph!);
-    } else if (element.table != null) {
-      text += _extractTableText(element.table!);
-    }
-  }
-  return text;
-}
-
-String _extractParagraphText(docs.Paragraph paragraph) {
-  String text = '';
-  for (var element in paragraph.elements!) {
-    if (element.textRun != null) {
-      text += element.textRun!.content!;
-    }
-  }
-  return text + '\n\n';
-}
-
-String _extractTableText(docs.Table table) {
-  String text = '';
-  for (var row in table.tableRows!) {
-    for (var cell in row.tableCells!) {
-      text += _extractText(cell.content!);
-      text += '\t';
-    }
-    text += '\n';
-  }
-  return text + '\n';
-}
-
-String _getBody(gmail.Message message) {
-  final parts = message.payload!.parts;
-  if (parts != null) {
-    return parts.map((part) => _decodeBase64(part.body!.data!)).join();
-  } else {
-    return _decodeBase64(message.payload!.body!.data!);
-  }
-}
-
-String _decodeBase64(String data) {
-  return String.fromCharCodes(
-      base64.decode(data.replaceAll('-', '+').replaceAll('_', '/')));
 }

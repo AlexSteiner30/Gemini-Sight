@@ -1,3 +1,5 @@
+import 'package:app/helper/loading_screen.dart';
+import 'package:app/helper/query.dart';
 import 'package:app/pages/account.dart';
 import 'package:app/pages/bottom_nav_bar.dart';
 import 'package:app/pages/gallery.dart';
@@ -36,6 +38,7 @@ class _DevicePageState extends State<DevicePage> {
   final List<Device> _devices = [];
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
+  bool isLoading = false;
 
   // ignore: non_constant_identifier_names
 
@@ -263,188 +266,205 @@ class _DevicePageState extends State<DevicePage> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 40),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // ignore: prefer_const_constructors
-                Text(
-                  'Gemini Sight Glasses',
-                  // ignore: prefer_const_constructors
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            // ignore: prefer_const_constructors
-            SizedBox(height: 20),
-            // ignore: prefer_const_constructors
-            if (widget.connected)
-              // ignore: prefer_const_constructors
-              Text(
-                'Connected',
-                // ignore: prefer_const_constructors
-                style: TextStyle(color: Colors.green, fontSize: 16),
-              ),
-            if (widget.connected)
-              // ignore: prefer_const_constructors
-              Text(
-                'Synced 3m ago',
-                // ignore: prefer_const_constructors
-                style: TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-            if (!widget.connected)
-              // ignore: prefer_const_constructors
-              Text(
-                'Not Connected',
-                // ignore: prefer_const_constructors
-                style: TextStyle(color: Colors.red, fontSize: 16),
-              ),
-            const SizedBox(height: 20),
-            const Center(
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage(
-                    'assets/meta_quest_pro.png'), // Add your image asset here
-              ),
-            ),
-            const SizedBox(height: 20),
-            Center(
-              child: Column(
+        child: isLoading
+            ? LoadingScreen()
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (widget.connected)
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          children: [
-                            Icon(Icons.battery_charging_full,
-                                color: Colors.white),
-                            SizedBox(height: 5),
-                            Text('90%', style: TextStyle(color: Colors.white)),
-                          ],
-                        ),
-                        SizedBox(width: 40),
-                        Column(
-                          children: [
-                            Icon(Icons.volume_up, color: Colors.white),
-                            SizedBox(height: 5),
-                            Text('50%', style: TextStyle(color: Colors.white)),
-                          ],
-                        ),
-                      ],
-                    ),
-                  if (!widget.connected)
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          children: [
-                            Icon(Icons.battery_0_bar, color: Colors.red),
-                            SizedBox(height: 5),
-                          ],
-                        ),
-                        SizedBox(width: 40),
-                        Column(
-                          children: [
-                            Icon(Icons.volume_mute, color: Colors.red),
-                            SizedBox(height: 5),
-                          ],
-                        ),
-                      ],
-                    ),
-                  const SizedBox(height: 20),
-                  Text(widget.user.email,
+                  const SizedBox(height: 40),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       // ignore: prefer_const_constructors
-                      style: TextStyle(color: Colors.white)),
-                  const SizedBox(height: 20),
-                  if (widget.connected)
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
+                      Text(
+                        'Gemini Sight Glasses',
+                        // ignore: prefer_const_constructors
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      onPressed: () {},
-                      icon: const Icon(Icons.cast),
-                      label: const Text('Cast'),
-                    ),
-                  if (!widget.connected)
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      onPressed: _scanQRCode,
-                      icon: const Icon(Icons.qr_code),
-                      label: const Text('Connect'),
-                    ),
-                  const SizedBox(height: 10),
+                    ],
+                  ),
+                  // ignore: prefer_const_constructors
+                  SizedBox(height: 20),
+                  // ignore: prefer_const_constructors
                   if (widget.connected)
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        'Maximize your battery life',
-                        style: TextStyle(color: Colors.blueAccent),
-                      ),
+                    // ignore: prefer_const_constructors
+                    Text(
+                      'Connected',
+                      // ignore: prefer_const_constructors
+                      style: TextStyle(color: Colors.green, fontSize: 16),
+                    ),
+                  if (widget.connected)
+                    // ignore: prefer_const_constructors
+                    Text(
+                      'Synced 3m ago',
+                      // ignore: prefer_const_constructors
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
                     ),
                   if (!widget.connected)
-                    const Text(
-                      'Scan the QR code to connect your device',
-                      style: TextStyle(color: Colors.blueAccent),
+                    // ignore: prefer_const_constructors
+                    Text(
+                      'Not Connected',
+                      // ignore: prefer_const_constructors
+                      style: TextStyle(color: Colors.red, fontSize: 16),
                     ),
                   const SizedBox(height: 20),
+                  const Center(
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage: AssetImage(
+                          'assets/meta_quest_pro.png'), // Add your image asset here
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: Column(
+                      children: [
+                        if (widget.connected)
+                          const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Column(
+                                children: [
+                                  Icon(Icons.battery_charging_full,
+                                      color: Colors.white),
+                                  SizedBox(height: 5),
+                                  Text('90%',
+                                      style: TextStyle(color: Colors.white)),
+                                ],
+                              ),
+                              SizedBox(width: 40),
+                              Column(
+                                children: [
+                                  Icon(Icons.volume_up, color: Colors.white),
+                                  SizedBox(height: 5),
+                                  Text('50%',
+                                      style: TextStyle(color: Colors.white)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        if (!widget.connected)
+                          const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Column(
+                                children: [
+                                  Icon(Icons.battery_0_bar, color: Colors.red),
+                                  SizedBox(height: 5),
+                                ],
+                              ),
+                              SizedBox(width: 40),
+                              Column(
+                                children: [
+                                  Icon(Icons.volume_mute, color: Colors.red),
+                                  SizedBox(height: 5),
+                                ],
+                              ),
+                            ],
+                          ),
+                        const SizedBox(height: 20),
+                        Text(widget.user.email,
+                            // ignore: prefer_const_constructors
+                            style: TextStyle(color: Colors.white)),
+                        const SizedBox(height: 20),
+                        if (widget.connected)
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blueAccent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                            ),
+                            onPressed: () {},
+                            icon: const Icon(Icons.cast),
+                            label: const Text('Cast'),
+                          ),
+                        if (!widget.connected)
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blueAccent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                            ),
+                            onPressed: _scanQRCode,
+                            icon: const Icon(Icons.qr_code),
+                            label: const Text('Connect'),
+                          ),
+                        const SizedBox(height: 10),
+                        if (widget.connected)
+                          TextButton(
+                            onPressed: () {},
+                            child: const Text(
+                              'Maximize your battery life',
+                              style: TextStyle(color: Colors.blueAccent),
+                            ),
+                          ),
+                        if (!widget.connected)
+                          const Text(
+                            'Scan the QR code to connect your device',
+                            style: TextStyle(color: Colors.blueAccent),
+                          ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                  const Divider(color: Colors.grey),
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.apps, color: Colors.white),
+                          title: const Text('App Library',
+                              style: TextStyle(color: Colors.white)),
+                          subtitle: const Text(
+                              'Install and launch apps on your device',
+                              style: TextStyle(color: Colors.grey)),
+                          onTap: () {},
+                        ),
+                        ListTile(
+                          leading:
+                              const Icon(Icons.settings, color: Colors.white),
+                          title: const Text('Headset settings',
+                              style: TextStyle(color: Colors.white)),
+                          subtitle: const Text(
+                              'Get info and configure your device',
+                              style: TextStyle(color: Colors.grey)),
+                          onTap: () {},
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.book, color: Colors.white),
+                          title: const Text('Query',
+                              style: TextStyle(color: Colors.white)),
+                          subtitle: const Text(
+                              'Understanding you through your data',
+                              style: TextStyle(color: Colors.grey)),
+                          onTap: () async {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            await get_query(widget.user, context);
+                            setState(() {
+                              isLoading = false;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
-            const Divider(color: Colors.grey),
-            Expanded(
-              child: ListView(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.apps, color: Colors.white),
-                    title: const Text('App Library',
-                        style: TextStyle(color: Colors.white)),
-                    subtitle: const Text(
-                        'Install and launch apps on your device',
-                        style: TextStyle(color: Colors.grey)),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.settings, color: Colors.white),
-                    title: const Text('Headset settings',
-                        style: TextStyle(color: Colors.white)),
-                    subtitle: const Text('Get info and configure your device',
-                        style: TextStyle(color: Colors.grey)),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.keyboard, color: Colors.white),
-                    title: const Text('Keyboard',
-                        style: TextStyle(color: Colors.white)),
-                    subtitle: const Text('Type in VR from your Phone',
-                        style: TextStyle(color: Colors.grey)),
-                    onTap: () {},
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: _onNavBarTap,
-      ),
+      bottomNavigationBar: isLoading
+          ? null
+          : BottomNavBar(
+              currentIndex: _currentIndex,
+              onTap: _onNavBarTap,
+            ),
     );
   }
 }

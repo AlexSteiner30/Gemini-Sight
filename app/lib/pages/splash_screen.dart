@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
   _navigateToLogin() async {
     final prefs = await SharedPreferences.getInstance();
 
-    await Future.delayed(const Duration(seconds: 3), () {});
+    await Future.delayed(const Duration(seconds: 1), () {});
     if (prefs.getBool('logged') as bool &&
         !(prefs.getBool('first_time') as bool)) {
       final GoogleSignIn _googleSignIn = GoogleSignIn(
