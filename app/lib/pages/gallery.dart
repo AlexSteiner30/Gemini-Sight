@@ -1,17 +1,14 @@
-import 'package:app/pages/account.dart';
-import 'package:app/pages/bottom_nav_bar.dart';
-import 'package:app/pages/device.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryScreen extends StatefulWidget {
-  const GalleryScreen({Key? key, required this.user}) : super(key: key);
+  const GalleryScreen({super.key, required this.user});
   final GoogleSignInAccount user;
 
   @override
+  // ignore: library_private_types_in_public_api
   _GalleryScreenState createState() => _GalleryScreenState();
 }
 
@@ -47,28 +44,28 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gallery'),
+        title: const Text('Gallery'),
         actions: [
           PopupMenuButton<String>(
             onSelected: _filterMedia,
             itemBuilder: (BuildContext context) {
               return [
-                PopupMenuItem(value: 'all', child: Text('All')),
-                PopupMenuItem(value: 'image', child: Text('Pictures')),
-                PopupMenuItem(value: 'video', child: Text('Videos')),
+                const PopupMenuItem(value: 'all', child: Text('All')),
+                const PopupMenuItem(value: 'image', child: Text('Pictures')),
+                const PopupMenuItem(value: 'video', child: Text('Videos')),
               ];
             },
-            icon: Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_list),
           ),
         ],
       ),
       body: GridView.builder(
-        padding: EdgeInsets.all(16.0),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        padding: const EdgeInsets.all(16.0),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           crossAxisSpacing: 8.0,
           mainAxisSpacing: 8.0,
-          childAspectRatio: 3 / 4, // Aspect ratio for each grid item
+          childAspectRatio: 3 / 4,
         ),
         itemCount: filteredMedia.length,
         itemBuilder: (context, index) {
@@ -85,8 +82,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
             child: media['type'] == 'image'
                 ? CachedNetworkImage(
                     imageUrl: media['url'],
-                    placeholder: (context, url) => CircularProgressIndicator(),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
                     fit: BoxFit.cover,
                   )
                 : VideoPlayerWidget(url: media['url']),
@@ -100,29 +99,28 @@ class _GalleryScreenState extends State<GalleryScreen> {
 class VideoPlayerWidget extends StatefulWidget {
   final String url;
 
-  VideoPlayerWidget({required this.url});
+  const VideoPlayerWidget({super.key, required this.url});
 
   @override
+  // ignore: library_private_types_in_public_api
   _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
-  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
+    // ignore: deprecated_member_use
     _controller = VideoPlayerController.network(widget.url);
     _initializeVideoPlayerFuture = _controller.initialize();
     _controller.setLooping(true);
 
     // Ensure playback state updates
     _controller.addListener(() {
-      setState(() {
-        _isPlaying = _controller.value.isPlaying;
-      });
+      setState(() {});
     });
   }
 
@@ -166,7 +164,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             ],
           );
         } else {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
       },
     );
@@ -182,7 +180,7 @@ class FullScreenMedia extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Full Screen Media'),
+        title: const Text('Full Screen Media'),
       ),
       body: Center(
         child: url.endsWith('.mp4')

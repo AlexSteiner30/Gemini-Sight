@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:app/helper/commands.dart';
 import 'package:app/helper/loading_screen.dart';
 import 'package:app/helper/query.dart';
@@ -14,8 +13,8 @@ import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_client/web_socket_client.dart';
-import 'package:googleapis/docs/v1.dart' as docs;
 
+// ignore: non_constant_identifier_names
 String authentication_key = '';
 
 class SignInPage extends StatefulWidget {
@@ -129,6 +128,7 @@ class _SignInPageState extends State<SignInPage> {
         setState(() {
           isLoading = true;
         });
+        // ignore: use_build_context_synchronously
         await get_query(account!, context);
         setState(() {
           isLoading = false;
@@ -142,6 +142,7 @@ class _SignInPageState extends State<SignInPage> {
       socket.send('not_first_time¬$authentication_key');
 
       Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(
           builder: (context) => DevicePage(
@@ -166,14 +167,14 @@ class _SignInPageState extends State<SignInPage> {
                   ElevatedButton(
                     onPressed: _login,
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          return states.contains(MaterialState.pressed)
+                      backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                        (Set<WidgetState> states) {
+                          return states.contains(WidgetState.pressed)
                               ? Colors.grey[800]!
                               : Colors.grey[800]!;
                         },
                       ),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),

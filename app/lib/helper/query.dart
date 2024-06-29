@@ -1,13 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:app/helper/commands.dart';
-import 'package:app/helper/loading_screen.dart';
-import 'package:app/helper/query.dart';
-import 'package:app/pages/device.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis/docs/v1.dart' as docs;
@@ -16,6 +12,7 @@ Future<void> get_query(GoogleSignInAccount user, context) async {
   final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
   final drive.DriveApi driveApi = drive.DriveApi(httpClient);
   final docsApi = docs.DocsApi(httpClient);
+  // ignore: unused_local_variable
   final gmailApi = gmail.GmailApi(httpClient);
   bool successful = false;
   String result =
@@ -46,6 +43,7 @@ Future<void> get_query(GoogleSignInAccount user, context) async {
     });
     successful = true;
   } catch (e) {
+    // ignore: avoid_print
     print('Error getting data: $e');
     result = e as String;
   }
@@ -79,6 +77,7 @@ Future<void> get_query(GoogleSignInAccount user, context) async {
   );
 }
 
+// ignore: unused_element
 Future<List<gmail.Message>> _fetchGmailMessages(gmail.GmailApi gmailApi) async {
   final List<gmail.Message> messages = [];
   String? nextPageToken;
@@ -150,6 +149,7 @@ String _extractTableText(docs.Table table) {
   return '$text\n';
 }
 
+// ignore: unused_element
 String _getBody(gmail.Message message) {
   final parts = message.payload!.parts;
   if (parts != null) {
