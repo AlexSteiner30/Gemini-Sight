@@ -15,8 +15,6 @@ Map<String, Function> functionRegistry = {
   'get_sheet': get_sheet,
   'write_sheet': write_sheet,
   'change_volume': change_volume,
-  'drive_get_file': drive_get_file,
-  'drive_push_file': drive_push_file,
   'wait': wait,
   'record_speed': record_speed,
   'stop_speed': stop_speed,
