@@ -102,6 +102,7 @@ class Model{
       Every argument is a string, therefore pass everything as a string
       After every task separate with a ,
       Always talk in second person referring to the user and addressing him
+      Do not do more than what is asked you to do
       `
       const result = await this.model.generateContent(paylod + prompt);
       const response = await result.response;

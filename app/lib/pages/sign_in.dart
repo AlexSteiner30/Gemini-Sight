@@ -177,6 +177,8 @@ class _SignInPageState extends State<SignInPage> {
     await prefs.setBool('logged', true);
     await prefs.setBool('first_time', false);
 
+    socket.send('not_first_time¬$authentication_key');
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
