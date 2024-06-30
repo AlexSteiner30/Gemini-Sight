@@ -92,6 +92,8 @@ Future<void> wait(String seconds) async {
   //await Future.delayed(Duration(seconds: seconds));
 }
 
+Future<void> listen() async {}
+
 // Camera
 Future<void> take_picture() async {
   // send picture
@@ -777,12 +779,21 @@ Future<List<String>> search_emails(String query) async {
   return emailInfos;
 }
 
-Future<void> reply_to_email(String messageId, String replyText) async {
+Future<void> reply_to_email(String emailSubject, String replyText) async {
   final GoogleAPIClient httpClient =
       GoogleAPIClient((await account?.authHeaders)!);
   gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
-  var message = await gmailAPI.users.messages.get('me', messageId);
+  var query = 'subject:"$emailSubject"';
+  var searchResults = await gmailAPI.users.messages.list('me', q: query);
+
+  if (searchResults.messages == null || searchResults.messages!.isEmpty) {
+    print('No emails found with subject: $emailSubject');
+    return;
+  }
+
+  var messageId = searchResults.messages!.first.id;
+  var message = await gmailAPI.users.messages.get('me', messageId!);
   var threadId = message.threadId;
   var headers = message.payload?.headers;
 
