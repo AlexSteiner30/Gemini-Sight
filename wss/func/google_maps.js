@@ -8,26 +8,43 @@ class GoogleMaps{
     this.client = new Client({});
   }
 
-  async searchPlaces(query, location) {
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${this.apiKey}&location=${location}&radius=500&keyword=${query}`;
-
+  async searchPlaces(query, location, ws) {
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${this.apiKey}&location=${location}&radius=500&keyword=${encodeURIComponent(query)}`;
+    var places;
     try {
-      const response = await axios.get(url);
-      const places = response.data.results.slice(0, 3); 
-      const placeDetailsList = [];
+      await this.client
+      .findPlaceFromText({
+        params: {
+          input: query, 
+          inputtype: "textquery",
+          key: this.apiKey,
+        },
+      })
+      .then(async (response) =>  {
+        if (response.data && response.data.candidates && response.data.candidates.length > 0) {
+          places = location == '' ? response.data.candidates.slice(0, 3).map(candidate => candidate) : await axios.get(url).data.results.slice(0, 3);
+        } else {
+          places = await axios.get(url).data.results.slice(0, 3);
+        }
 
-      for (const place of places) {
-        const placeDetails = await this.getPlaceDetails(place.place_id);
-        placeDetailsList.push(placeDetails);
-      }
+        const placeDetailsList = [];
+    
+        for (const place of places) {
+          const placeDetails = await this.getPlaceDetails(place.place_id);
+          placeDetailsList.push(placeDetails);
+        }
+    
+        console.log(JSON.stringify(placeDetailsList));
+    
+        ws.send(JSON.stringify(placeDetailsList));
+      })
 
-      return JSON.stringify(placeDetailsList);
     } catch (error) {
       console.error('Error fetching places:', error);
       throw error;
     }
   }
-
+  
   async getPlaceDetails(placeId) {
     const url = `https://maps.googleapis.com/maps/api/place/details/json?key=${this.apiKey}&placeid=${placeId}`;
 

@@ -31,28 +31,3 @@ async function getDirections() {
 }
 
 getDirections();
-
-
-/*
-
-const ytdl = require('ytdl-core');
-const fs = require('fs');
-
-const videoId = 'XNpGNykVZ6U'; // Replace with the ID of the YouTube video you want to stream
-
-const stream = ytdl(`http://www.youtube.com/watch?v=${videoId}`, {
-  quality: 'highest',
-});
-
-stream.on('data', (chunk) => {
-  console.log('Received chunk of data:', chunk);
-});
-
-stream.on('end', () => {
-  console.log('Streaming ended.');
-});
-
-stream.on('error', (err) => {
-  console.error('Error occurred:', err);
-});
-*/
