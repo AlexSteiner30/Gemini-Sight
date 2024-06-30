@@ -6,6 +6,7 @@ Map<String, Function> functionRegistry = {
   'process': process,
   'send_data': send_data,
   'speak': speak,
+  'listen': listen,
   'start_recording': start_recording,
   'stop_recording': stop_recording,
   'start_route': start_route,

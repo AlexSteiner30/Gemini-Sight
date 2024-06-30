@@ -21,11 +21,10 @@ class GoogleMaps{
         },
       })
       .then(async (response) =>  {
-        if (response.data && response.data.candidates && response.data.candidates.length > 0) {
-          places = location == '' ? response.data.candidates.slice(0, 3).map(candidate => candidate) : await axios.get(url).data.results.slice(0, 3);
-        } else {
-          places = await axios.get(url).data.results.slice(0, 3);
-        }
+        if(response.data && response.data.candidates && response.data.candidates.length > 0)
+          places = location == '' ? response.data.candidates : (await axios.get(url)).data.results.slice(0, 3);
+        else
+          places = (await axios.get(url)).data.results.slice(0, 3);
 
         const placeDetailsList = [];
     
