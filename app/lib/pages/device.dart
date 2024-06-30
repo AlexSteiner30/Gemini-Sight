@@ -179,8 +179,7 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void initState() {
     super.initState();
-    send_data(
-        'Hey Gemma, create a video meeting for tomorrow at 3 p.m. name it Google Recap Project and add alex.steiner@student.h-is.com');
+    send_data('Hey Gemma, what are some restaurants in san marino');
   }
 
   @override
@@ -273,8 +272,7 @@ class _DevicePageState extends State<DevicePage> {
                   const Center(
                     child: CircleAvatar(
                       radius: 50,
-                      backgroundImage: AssetImage(
-                          'assets/meta_quest_pro.png'), // Add your image asset here
+                      backgroundImage: AssetImage('assets/images/glasses.jpeg'),
                     ),
                   ),
                   const SizedBox(height: 20),

@@ -3,6 +3,7 @@
     "@google/generative-ai": "^0.13.0",
     "@googlemaps/google-maps-services-js": "^3.4.0",
     "body-parser": "^1.20.2",
+    "cheerio": "^1.0.0-rc.12",
     "core-js": "^3.37.1",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
@@ -16,6 +17,8 @@
     "playht": "^0.9.8",
     "punycode": "^2.3.1",
     "wav": "^1.0.2",
-    "ws": "^8.17.1"
+    "ws": "^8.17.1",
+    "youtube-music-api": "^1.0.6",
+    "ytdl-core": "^4.11.5"
   }
 }
