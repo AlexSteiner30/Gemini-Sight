@@ -180,7 +180,7 @@ class _DevicePageState extends State<DevicePage> {
   void initState() {
     super.initState();
     send_data(
-        'Hey Gemma, update my Family Dinner eventy by chaning the location to Marcos House, also change the end date to the 15th of September 2024, add also marco.baroni@titanka.com');
+        'Hey Gemma, create a video meeting for tomorrow at 3 p.m. name it Google Recap Project and add alex.steiner@student.h-is.com');
   }
 
   @override
