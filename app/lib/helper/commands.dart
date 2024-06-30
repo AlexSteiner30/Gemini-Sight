@@ -429,6 +429,112 @@ Future<String> get_calendar_events() async {
   return complete_information;
 }
 
+Future<void> add_calendar_event(String title, String start, String end,
+    String description, String location, String emails) async {
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
+  calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
+  var eventLists = await calendarAPI.calendarList.list();
+
+  List<calendar.EventAttendee> attendees = [];
+
+  for (var i = 0; i < emails.split(',').length; i++) {
+    attendees.add(calendar.EventAttendee(email: emails.split(',')[i]));
+  }
+  var newEvent = calendar.Event()
+    ..summary = title
+    ..start = calendar.EventDateTime(date: DateTime.parse(start).toUtc())
+    ..end = calendar.EventDateTime(
+        date: DateTime.parse(end).isAfter(DateTime.parse(start))
+            ? DateTime.parse(end).toUtc()
+            : DateTime.parse(start).toUtc())
+    ..attendees = attendees
+    ..description = description.trim() == "|''" ? null : description
+    ..location = location.trim() == "|''" ? null : location;
+
+  await calendarAPI.events.insert(newEvent, eventLists.items![0].id!);
+}
+
+Future<void> delete_calendar_event(String event_name) async {
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
+  calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
+  var eventLists = await calendarAPI.calendarList.list();
+
+  var eventResult = await calendarAPI.events.list(eventLists.items![0].id!);
+  if (eventResult.items != null) {
+    for (var event in eventResult.items!) {
+      if (event.summary!.contains(event_name)) {
+        await calendarAPI.events.delete(eventLists.items![0].id!, event.id!);
+        break;
+      }
+    }
+  }
+}
+
+Future<void> update_calendar_event(
+    String event_name,
+    String new_name,
+    String new_start,
+    String new_end,
+    String new_description,
+    String new_location,
+    String new_status,
+    String new_emails) async {
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
+  calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
+  var eventLists = await calendarAPI.calendarList.list();
+
+  List<calendar.EventAttendee> attendees = [];
+
+  for (var i = 0; i < new_emails.split(',').length; i++) {
+    attendees.add(calendar.EventAttendee(email: new_emails.split(',')[i]));
+  }
+
+  var eventResult = await calendarAPI.events.list(eventLists.items![0].id!);
+  if (eventResult.items != null) {
+    for (var event in eventResult.items!) {
+      if (event.summary!.contains(event_name)) {
+        if (new_name.trim() != "''") event.summary = new_name;
+        if (new_status.trim() != "''") event.status = new_status;
+        if (new_start.trim() != "''") {
+          event.start =
+              calendar.EventDateTime(date: DateTime.parse(new_start).toUtc());
+        }
+        if (new_end.trim() != "''") {
+          event.end = calendar.EventDateTime(
+              date: DateTime.parse(new_end).isAfter(DateTime.parse(new_start))
+                  ? DateTime.parse(new_end).toUtc()
+                  : DateTime.parse(new_start).toUtc());
+        }
+        if (new_emails.trim() != "''") {
+          for (var i = 0; i < attendees.length; i++) {
+            if (event.attendees!.contains(attendees[i])) {
+              attendees.removeAt(i);
+            }
+          }
+          event.attendees = attendees;
+        }
+        if (new_description.trim() != "''") event.description = new_description;
+        if (new_location.trim() != "''") event.location = new_location;
+
+        await calendarAPI.events
+            .update(event, eventLists.items![0].id!, event.id!);
+        break;
+      }
+    }
+  }
+
+  update_calendar_event(
+      "Family Dinner",
+      "Family Dinner",
+      "2024-09-15T11:41",
+      " ",
+      "Marcos House",
+      "marco.baroni@titanka.com,geminisightglasses@gmail.com");
+}
+
 // Tasks
 Future<String> get_tasks() async {
   final GoogleAPIClient httpClient =
@@ -488,14 +594,12 @@ Future<void> delete_task(String taskName) async {
   var tasksResult = await tasksAPI.tasks.list(taskLists.items![0].id!);
   if (tasksResult.items != null) {
     for (var task in tasksResult.items!) {
-      if (task.title == taskName) {
+      if (task.title!.contains(taskName)) {
         await tasksAPI.tasks.delete(taskLists.items![0].id!, task.id!);
         break;
       }
     }
   }
-
-  print('Task deleted');
 }
 
 Future<void> update_task(String taskName, String newTitle, String newNotes,
@@ -508,7 +612,7 @@ Future<void> update_task(String taskName, String newTitle, String newNotes,
   var tasksResult = await tasksAPI.tasks.list(taskLists.items![0].id!);
   if (tasksResult.items != null) {
     for (var task in tasksResult.items!) {
-      if (task.title == taskName) {
+      if (task.title!.contains(taskName)) {
         if (newTitle.trim() != "''") task.title = newTitle;
         if (newNotes.trim() != "''") task.notes = newNotes;
         if (newDue.trim() != "''") {
@@ -521,8 +625,6 @@ Future<void> update_task(String taskName, String newTitle, String newNotes,
       }
     }
   }
-
-  print('Task updated');
 }
 
 // Gmail
@@ -668,14 +770,5 @@ $data
 
   var message = gmail.Message()..raw = encodedEmail;
 
-  try {
-    await gmailAPI.users.messages.send(message, 'me');
-    print('Email Sent');
-  } catch (e) {
-    print('Failed to send email: $e');
-    if (e is DetailedApiRequestError) {
-      print('Failed to send email: ${e.message}');
-    }
-    print('Failed to send email');
-  }
+  await gmailAPI.users.messages.send(message, 'me');
 }
