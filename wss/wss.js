@@ -5,6 +5,7 @@ const { Audio } = require('./func/audio.js');
 const helper = require('./func/helper.js');
 const { Model } = require('./func/model.js');
 const { Authentication } = require('./func/auth.js');
+const { Stream } = require('./func/stream_song.js');
 const { GoogleMaps } = require('./func/google_maps.js');
 const { WebSocketServer } = require('ws');
 
@@ -12,6 +13,7 @@ const db = new Database();
 const maps = new GoogleMaps();
 const audio = new Audio('./audio/');
 const ai = new Model();
+const stream = new Stream();
 const auth = new Authentication();
 
 db.parseData();
@@ -116,14 +118,23 @@ wss.on('connection', function connection(ws) {
                             var location = messageParts[3];
 
                             const encodedAddress = encodeURIComponent(location);
+                            
+                            if(location !== ''){
+                                const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${process.env.GOOGLE_MAPS_API}`);
+                                if (response.data.status === 'OK') {
 
-                            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${process.env.GOOGLE_MAPS_API}`);
-                            if (response.data.status === 'OK') {
-
-                                location = `${response.data.results[0].geometry.location.lat},${response.data.results[0].geometry.location.lng}`;
+                                    location = `${response.data.results[0].geometry.location.lat},${response.data.results[0].geometry.location.lng}`;
+                                }
                             }
 
-                            ws.send((await maps.searchPlaces('restaurant', location)));
+                            await maps.searchPlaces(query, location, ws);
+                        }
+                        break;
+
+                    case 'stream_song':
+                        {
+                            const query = messageParts[2];
+                            await stream.stream_song(query, ws);
                         }
                         break;
    

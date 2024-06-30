@@ -364,9 +364,11 @@ Future<String> get_place(String query, String location, String context) async {
 
   final Completer<void> completer = Completer<void>();
 
-  location = (location.trim() == "''")
-      ? '${latitude.toString()},${longitude.toString()}'
-      : location;
+  location = ((location.trim() == "''")
+      ? ''
+      : (location.trim() == 'near')
+          ? '${latitude.toString()},${longitude.toString()}'
+          : location)!;
 
   socket.send('get_place¬$authentication_key¬$query¬$location');
 
@@ -400,7 +402,19 @@ Future<void> stop_route() async {
 
 // Youtube
 Future<void> play_song(String song) async {
-  print('Playing song: $song');
+  await socket.connection.firstWhere((state) => state is Connected);
+
+  final Completer<void> completer = Completer<void>();
+
+  socket.send('stream_song¬$authentication_key¬$song');
+
+  final subscription = socket.messages.listen((pcm) async {
+    print(pcm);
+    completer.complete();
+  });
+
+  await completer.future;
+  await subscription.cancel();
 }
 
 // iPhone
