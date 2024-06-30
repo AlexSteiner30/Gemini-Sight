@@ -430,7 +430,7 @@ Future<String> get_calendar_events() async {
 }
 
 Future<void> add_calendar_event(String title, String start, String end,
-    String description, String location, String emails) async {
+    String description, String location, String emails, String meet) async {
   final GoogleAPIClient httpClient =
       GoogleAPIClient((await account?.authHeaders)!);
   calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
@@ -449,10 +449,21 @@ Future<void> add_calendar_event(String title, String start, String end,
             ? DateTime.parse(end).toUtc()
             : DateTime.parse(start).toUtc())
     ..attendees = attendees
-    ..description = description.trim() == "|''" ? null : description
-    ..location = location.trim() == "|''" ? null : location;
+    ..description = description.trim() == "''" ? null : description
+    ..location = location.trim() == "''" ? null : location
+    ..conferenceData = meet.trim() == "true"
+        ? calendar.ConferenceData(
+            createRequest: calendar.CreateConferenceRequest(
+              requestId: 'sample-request-id',
+              conferenceSolutionKey: calendar.ConferenceSolutionKey(
+                type: 'hangoutsMeet',
+              ),
+            ),
+          )
+        : null;
 
-  await calendarAPI.events.insert(newEvent, eventLists.items![0].id!);
+  await calendarAPI.events.insert(newEvent, eventLists.items![0].id!,
+      conferenceDataVersion: meet.trim() == "true" ? 1 : 0);
 }
 
 Future<void> delete_calendar_event(String event_name) async {
@@ -480,7 +491,8 @@ Future<void> update_calendar_event(
     String new_description,
     String new_location,
     String new_status,
-    String new_emails) async {
+    String new_emails,
+    String new_meet) async {
   final GoogleAPIClient httpClient =
       GoogleAPIClient((await account?.authHeaders)!);
   calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
@@ -519,20 +531,24 @@ Future<void> update_calendar_event(
         if (new_description.trim() != "''") event.description = new_description;
         if (new_location.trim() != "''") event.location = new_location;
 
-        await calendarAPI.events
-            .update(event, eventLists.items![0].id!, event.id!);
+        event.conferenceData = new_meet.trim() == "true"
+            ? calendar.ConferenceData(
+                createRequest: calendar.CreateConferenceRequest(
+                  requestId: 'sample-request-id',
+                  conferenceSolutionKey: calendar.ConferenceSolutionKey(
+                    type: 'hangoutsMeet',
+                  ),
+                ),
+              )
+            : null;
+
+        await calendarAPI.events.update(
+            event, eventLists.items![0].id!, event.id!,
+            conferenceDataVersion: new_meet.trim() == "true" ? 1 : 0);
         break;
       }
     }
   }
-
-  update_calendar_event(
-      "Family Dinner",
-      "Family Dinner",
-      "2024-09-15T11:41",
-      " ",
-      "Marcos House",
-      "marco.baroni@titanka.com,geminisightglasses@gmail.com");
 }
 
 // Tasks
