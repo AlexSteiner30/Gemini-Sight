@@ -18,13 +18,13 @@
     </nav>
     <div id="main">
         <header>
-            <h1 id="title">Sign-In</h1>
+            <h1 id="title">Sign In</h1>
         </header>
         <main>
             <section>
                 <form action="/signin" method="POST">
-                    <input type="text" placeholder="Username...">
-                    <input type="text" placeholder="Password...">
+                    <input name="username" type="text" placeholder="Username...">
+                    <input name="password" type="password" placeholder="Password...">
                     <p>Don't have an account? <a href="signup">Sign-Up</a></p>
                     <button>Submit</button>
                 </form>
@@ -34,5 +34,10 @@
     <footer>
         <p>Copyright (c) 2024 Alex Steiner</p>
     </footer>
+    <% if (failed) { %> 
+        <script>
+            alert("Incorrect username of password. Try again.");
+        </script>
+    <% } %>
 </body>
 </html>
