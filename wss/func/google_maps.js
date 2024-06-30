@@ -1,15 +1,15 @@
 require('dotenv').config({ path: './database/.env' });
 const axios = require('axios');
-
+const { Client } = require('@googlemaps/google-maps-services-js');
 
 class GoogleMaps{
-
   constructor(){
     this.apiKey = process.env.GOOGLE_MAPS_API;
+    this.client = new Client({});
   }
 
-  async searchPlaces(query, location, radius) {
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${this.apiKey}&location=${location}&radius=${radius}&keyword=${query}`;
+  async searchPlaces(query, location) {
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${this.apiKey}&location=${location}&radius=500&keyword=${query}`;
 
     try {
       const response = await axios.get(url);
@@ -17,11 +17,11 @@ class GoogleMaps{
       const placeDetailsList = [];
 
       for (const place of places) {
-        const placeDetails = await getPlaceDetails(place.place_id);
+        const placeDetails = await this.getPlaceDetails(place.place_id);
         placeDetailsList.push(placeDetails);
       }
 
-      return placeDetailsList;
+      return JSON.stringify(placeDetailsList);
     } catch (error) {
       console.error('Error fetching places:', error);
       throw error;
@@ -40,19 +40,49 @@ class GoogleMaps{
         name: result.name || 'N/A',
         website: result.website || 'N/A',
       };
+
       return placeInfo;
     } catch (error) {
       console.error('Error fetching place details:', error);
       throw error;
     }
   }
+
+  // google maps integration
+  // client request 
+  // origin
+  // destination
+  // ws send next two
+  // client parse
+  // request another one
+  // printe first if different or closer than 50 m and didnt call yet
+  // if different print error route 
+  // new route
+  // if equal to done stop
+
+  async getDirections(origin, destination, ws) {
+      try {
+          const params = {
+              origin: origin,  
+              destination: destination,  
+              key: this.apiKey,
+          };
+
+          const response = await this.client.directions({
+              params: params
+          });
+
+          const route = response.data.routes[0];
+
+          //ws.send(`Distance: ${route.legs[0].distance.text} Duration: ${route.legs[0].duration.text}`);
+          ws.send(`${route.legs[0].steps[0].html_instructions.replace(/<[^>]*>/g, '')}¬${route.legs[0].steps[1].html_instructions.replace(/<[^>]*>/g, '') == null ? 'Arrived' : route.legs[0].steps[1].html_instructions.replace(/<[^>]*>/g, '')} `);
+
+      } catch (error) {
+          console.error('Error fetching directions:', error);
+      }
+  }
 }
 
-  (async () => {
-  try {
-    const searchResults = await searchPlaces('restaurant', '37.7749,-122.4194', 500);
-    console.log('Top 3 Search Results:', searchResults);
-  } catch (error) {
-    console.error('Error:', error);
-  }
-})();
+module.exports = {
+  GoogleMaps
+};

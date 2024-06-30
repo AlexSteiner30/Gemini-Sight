@@ -5,7 +5,6 @@ import 'package:app/helper/parse.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:app/pages/splash_screen.dart';
 import 'package:contacts_service/contacts_service.dart';
-import 'package:googleapis/gmail/v1.dart';
 import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -19,6 +18,7 @@ import 'package:flutter_sms/flutter_sms.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis/docs/v1.dart' as docs;
 import 'package:googleapis/sheets/v4.dart' as sheets;
+import 'package:geolocator/geolocator.dart';
 
 bool recording = false;
 double volume = 100.0;
@@ -33,7 +33,8 @@ final socket = WebSocket(
 
 // General
 Future<String> process(String input, String context) async {
-  String data = input + context;
+  String data =
+      'Given this data $input you have to $context do not respond with anything else and do what is asked you to do, do not respond with formatting answer as if you you would be and talk to another human.';
   await socket.connection.firstWhere((state) => state is Connected);
 
   final Completer<String> completer = Completer<String>();
@@ -334,6 +335,53 @@ Future<drive.File> create_folder(
 }
 
 // GPS
+Future<void> get_directions(String origin, String destination) async {
+  bool arrived = false;
+  await socket.connection.firstWhere((state) => state is Connected);
+
+  final Completer<void> completer = Completer<void>();
+
+  socket.send('directions¬$authentication_key¬$origin¬$destination');
+
+  final subscription = socket.messages.listen((step) {
+    print(step);
+    completer.complete();
+  });
+
+  await completer.future;
+  await subscription.cancel();
+}
+
+Future<String> get_place(String query, String location, String context) async {
+  Position position = await Geolocator.getCurrentPosition(
+    desiredAccuracy: LocationAccuracy.high,
+  );
+
+  double latitude = position.latitude;
+  double longitude = position.longitude;
+
+  await socket.connection.firstWhere((state) => state is Connected);
+
+  final Completer<void> completer = Completer<void>();
+
+  location = (location.trim() == "''")
+      ? '${latitude.toString()},${longitude.toString()}'
+      : location;
+
+  socket.send('get_place¬$authentication_key¬$query¬$location');
+
+  String result = '';
+  final subscription = socket.messages.listen((answer) async {
+    result = answer;
+    completer.complete();
+  });
+
+  await completer.future;
+  await subscription.cancel();
+
+  return await process(result, context);
+}
+
 Future<void> record_speed() async {
   print('Recording Speed');
 }

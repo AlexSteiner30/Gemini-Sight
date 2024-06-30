@@ -1,48 +1,58 @@
-const CCrypto = require('crypto-js');
+const { Client } = require('@googlemaps/google-maps-services-js');
 
-// Function to encrypt data with AES
-function encryptSHA256(data, secretKey) {
-    const secretKeyWordArray = CCrypto.enc.Utf8.parse(secretKey);
-    const iv = CCrypto.lib.WordArray.random(16); // Generate a random IV
-    const encrypted = CCrypto.AES.encrypt(data, secretKeyWordArray, {
-        mode: CCrypto.mode.CBC,
-        padding: CCrypto.pad.Pkcs7,
-        iv: iv,
-    });
+const client = new Client({});
 
-    // Combine IV and encrypted data into a single string (for easier decryption later)
-    const combined = iv.concat(encrypted.ciphertext);
+async function getDirections() {
+    try {
+        const params = {
+            origin: 'Strada San Michele 150 Borgo Maggiore',  
+            destination: 'Bounty Rimini Italy',  
+            key: '',
+        };
 
-    return combined.toString(CCrypto.enc.Base64);
+        const response = await client.directions({
+            params: params,
+            timeout: 1000, 
+        });
+
+        const route = response.data.routes[0];
+            console.log(`Distance: ${route.legs[0].distance.text}`);
+            console.log(`Duration: ${route.legs[0].duration.text}`);
+            console.log('Steps:');
+            route.legs[0].steps.forEach((step, stepIndex) => {
+                console.log(step.distance['value']);
+                console.log(`${stepIndex + 1}. ${step.html_instructions.replace(/<[^>]*>/g, '')}`);
+            });
+            console.log('-----------------------');
+
+    } catch (error) {
+        console.error('Error fetching directions:', error);
+    }
 }
 
-// Function to decrypt AES-encrypted data
-function decryptSHA256(encryptedData, secretKey) {
-    const combined = CCrypto.enc.Base64.parse(encryptedData);
-    const iv = CCrypto.lib.WordArray.create(combined.words.slice(0, 4)); // Extract IV from combined data
-
-    const ciphertext = CCrypto.lib.WordArray.create(combined.words.slice(4)); // Extract ciphertext
-
-    const secretKeyWordArray = CCrypto.enc.Utf8.parse(secretKey);
-    const decrypted = CCrypto.AES.decrypt({ ciphertext: ciphertext }, secretKeyWordArray, {
-        mode: CCrypto.mode.CBC,
-        padding: CCrypto.pad.Pkcs7,
-        iv: iv,
-    });
-
-    return decrypted.toString(CCrypto.enc.Utf8);
-}
-
-// Example usage:
-const secretKey = 'your_secret_key_here';
-const dataToEncrypt = 'Hello, world!';
-
-// Encrypting the data
-const encryptedString = encryptSHA256(dataToEncrypt, secretKey);
-console.log('Encrypted:', encryptedString);
+getDirections();
 
 
-console.log(encryptedString)
-// Decrypting the encrypted string
-const decryptedString = decryptSHA256(encryptedString, secretKey);
-console.log('Decrypted:', decryptedString);
+/*
+
+const ytdl = require('ytdl-core');
+const fs = require('fs');
+
+const videoId = 'XNpGNykVZ6U'; // Replace with the ID of the YouTube video you want to stream
+
+const stream = ytdl(`http://www.youtube.com/watch?v=${videoId}`, {
+  quality: 'highest',
+});
+
+stream.on('data', (chunk) => {
+  console.log('Received chunk of data:', chunk);
+});
+
+stream.on('end', () => {
+  console.log('Streaming ended.');
+});
+
+stream.on('error', (err) => {
+  console.error('Error occurred:', err);
+});
+*/
