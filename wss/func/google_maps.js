@@ -1,27 +1,38 @@
 require('dotenv').config({ path: './database/.env' });
 const axios = require('axios');
+const { Client } = require('@googlemaps/google-maps-services-js');
 
-
-class GoogleMaps{
-
-  constructor(){
-    this.apiKey = process.env.GOOGLE_MAPS_API;
+class GoogleMaps {
+  constructor() {
+    this.apiKey = process.env.API_KEY;
+    this.client = new Client({});
   }
 
-  async searchPlaces(query, location, radius) {
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${this.apiKey}&location=${location}&radius=${radius}&keyword=${query}`;
-
+  async searchPlaces(query, location, ws) {
     try {
-      const response = await axios.get(url);
-      const places = response.data.results.slice(0, 3); 
-      const placeDetailsList = [];
+      const params = {
+        input: query,
+        inputtype: 'textquery',
+        key: this.apiKey,
+      };
 
-      for (const place of places) {
-        const placeDetails = await getPlaceDetails(place.place_id);
-        placeDetailsList.push(placeDetails);
+      const response = await this.client.findPlaceFromText({ params });
+      let places = response.data.candidates || [];
+      
+      if (location !== '') {
+        const encodedAddress = encodeURIComponent(location);
+        var url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${this.apiKey}`;
+
+        const response = await axios.get(url);
+        location = `${response.data.results[0].geometry.location.lat},${response.data.results[0].geometry.location.lng}`;
+              
+        url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${this.apiKey}&location=${location}&radius=500&keyword=${encodeURIComponent(query)}`;
+        const nearbyResponse = await axios.get(url);
+        places = nearbyResponse.data.results.slice(0, 5);
       }
 
-      return placeDetailsList;
+      const placeDetailsList = await Promise.all(places.map(place => this.getPlaceDetails(place.place_id)));
+      ws.send(JSON.stringify(placeDetailsList));
     } catch (error) {
       console.error('Error fetching places:', error);
       throw error;
@@ -29,30 +40,43 @@ class GoogleMaps{
   }
 
   async getPlaceDetails(placeId) {
-    const url = `https://maps.googleapis.com/maps/api/place/details/json?key=${this.apiKey}&placeid=${placeId}`;
-
     try {
+      const url = `https://maps.googleapis.com/maps/api/place/details/json?key=${this.apiKey}&placeid=${placeId}`;
       const response = await axios.get(url);
       const result = response.data.result;
-      const placeInfo = {
+
+      return {
         address: result.formatted_address || 'N/A',
         phone_number: result.formatted_phone_number || 'N/A',
         name: result.name || 'N/A',
         website: result.website || 'N/A',
       };
-      return placeInfo;
     } catch (error) {
       console.error('Error fetching place details:', error);
       throw error;
     }
   }
+
+  async getDirections(origin, destination, ws) {
+    try {
+      const params = {
+        origin,
+        destination,
+        key: this.apiKey,
+      };
+
+      const response = await this.client.directions({ params });
+      const route = response.data.routes[0];
+      const instructions = route.legs[0].steps.map(step => step.html_instructions.replace(/<[^>]*>/g, '')).join(' ');
+
+      ws.send(instructions);
+    } catch (error) {
+      console.error('Error fetching directions:', error);
+      throw error;
+    }
+  }
 }
 
-  (async () => {
-  try {
-    const searchResults = await searchPlaces('restaurant', '37.7749,-122.4194', 500);
-    console.log('Top 3 Search Results:', searchResults);
-  } catch (error) {
-    console.error('Error:', error);
-  }
-})();
+module.exports = {
+  GoogleMaps
+};

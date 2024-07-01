@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 import 'package:app/helper/commands.dart';
 import 'package:app/helper/loading_screen.dart';
 import 'package:app/helper/query.dart';
@@ -11,6 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
 import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,6 +38,7 @@ class _SignInPageState extends State<SignInPage> {
       gmail.GmailApi.gmailComposeScope,
       gmail.GmailApi.gmailModifyScope,
       drive.DriveApi.driveScope,
+      tasks.TasksApi.tasksScope
     ],
   );
 

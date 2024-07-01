@@ -1,17 +1,12 @@
 const wav = require('wav');
-const PlayHT = require('playht');
+const axios = require('axios');
 const fs = require('fs');
-const helper = require('./helper.js');
+
+require('dotenv').config({ path: './database/.env' });
 
 class Audio {
     constructor(path) {
-        PlayHT.init({
-            apiKey: '96e73ab231164b3a8cdffb07d02c3092',
-            userId: '2FybridC37WMAVXVaTsjomh0GXb2',
-            defaultVoiceId: 's3://peregrine-voices/oliver_narrative2_parrot_saad/manifest.json',
-            defaultVoiceEngine: 'PlayHT2.0',
-        });
-
+        this.apiKey = process.env.API_KEY;
         this.path = path;
     }
 
@@ -22,43 +17,58 @@ class Audio {
             fs.mkdirSync(`${this.path}${key}`);
         }
 
-        const fileStream = fs.createWriteStream(path);
-
-        const stream = await PlayHT.stream(input, {
-            voiceEngine: 'PlayHT2.0-turbo',
-            voiceId: 's3://voice-cloning-zero-shot/d9ff78ba-d016-47f6-b0ef-dd630f59414e/female-cs/manifest.json',
-            outputFormat: 'wav',
-        });
-        
-        return new Promise((resolve, reject) => {
-            stream.pipe(fileStream).on('finish', async function () {
-                try {
-                    const file = fs.createReadStream(path);
-                    const reader = new wav.Reader();
-
-                    const pcmData = [];
-
-                    reader.on('data', (chunk) => {
-                        for (let i = 0; i < chunk.length; i += 2) {
-                            const sample = chunk.readInt16LE(i);
-                            pcmData.push(sample);
-                        }
-                    });
-
-                    reader.on('error', (err) => {
-                        console.error('Error reading WAV file:', err);
-                    });
-
-                    reader.on('end',  () => {
-                        ws.send('p' + pcmData.toString());
-                    });
-
-                    file.pipe(reader);
-                } catch (error) {
-                    reject(error);
+        try{
+            const request = {
+                audioConfig: {
+                audioEncoding: "mp3",
+                effectsProfileId: [
+                        "small-bluetooth-speaker-class-device"
+                ],
+                pitch: 0,
+                    speakingRate: 1
+                },
+                input: {
+                    text: input
+                },
+                voice: {
+                    languageCode: "en-US",
+                    name: "en-US-Journey-F"
                 }
-            }).on('error', reject);
-        });
+            };
+            
+            const response = await axios.post(
+                `https://texttospeech.googleapis.com/v1/text:synthesize?key=${this.apiKey}`,
+                request
+            );
+            
+            const audioContent = response.data.audioContent;
+            const audioBuffer = Buffer.from(audioContent, 'base64');
+            const pcmData = [];
+
+            fs.writeFileSync(path, audioBuffer);
+
+            const reader = new wav.Reader();
+
+            reader.on('data', (chunk) => {
+                for (let i = 0; i < chunk.length; i += 2) {
+                    const sample = chunk.readInt16LE(i);
+                    pcmData.push(sample);
+                }         
+            });
+
+            reader.on('end',  () => {
+                ws.send('p' + pcmData.toString());
+            });
+
+            const stream = require('stream');
+            const bufferStream = new stream.PassThrough();
+            bufferStream.end(audioBuffer);
+
+            bufferStream.pipe(reader);
+        }
+        catch{
+
+        }
     }
 }
 
