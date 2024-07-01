@@ -20,7 +20,7 @@ class Audio {
         try{
             const request = {
                 audioConfig: {
-                audioEncoding: "mp3",
+                audioEncoding: "LINEAR16",
                 effectsProfileId: [
                         "small-bluetooth-speaker-class-device"
                 ],
@@ -32,7 +32,7 @@ class Audio {
                 },
                 voice: {
                     languageCode: "en-US",
-                    name: "en-US-Journey-F"
+                    name: "en-US-Studio-O"
                 }
             };
             
@@ -67,7 +67,7 @@ class Audio {
             bufferStream.pipe(reader);
         }
         catch{
-
+            
         }
     }
 }
