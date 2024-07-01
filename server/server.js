@@ -1,9 +1,10 @@
 require("dotenv").config();
-require("./models");
+require("./models/db");
 const express = require('express');
 const path = require("path");
 const mongoose = require("mongoose");
 const User = mongoose.model("User");
+const bodyparser = require("body-parser");
 
 const app = express();
 const PORT = 8080;
@@ -20,12 +21,12 @@ app.get('/', (req, res) => {
 });
 
 app.get('/:id', (req, res) => {
-    if (req.params.id == admin) res.render("admin", {failed: false});
+    if (req.params.id == "admin" || req.params.id == "signup") res.render(req.params.id, {failed: false});
     else if (allowedPages.includes(req.params.id)) res.render(req.params.id);
     else res.render("notFound");
 });
 
-app.post('/signin', async (req, res) => {
+app.post('/signin', bodyparser.urlencoded(), async (req, res) => {
     let name = req.body.username;
     let password = req.body.password;
     let found = false;
@@ -41,20 +42,24 @@ app.post('/signin', async (req, res) => {
     });
 });
 
-app.post('/signup', async (req, res) => {
-    let name = req.body.username;
+app.post('/signup', bodyparser.urlencoded(), async (req, res) => {
+    let username = req.body.username;
     let password = req.body.password;
     let confirm = req.body.confirm;
     if (password != confirm) res.render("signup", {failed: true});
     let found = false;
     User.find({}).then(users => {
         users.forEach(user => {
-            if (name == users.username && password == users.password) found = true;
+            if (username == users.username && password == users.password) found = true;
         });
         if (found) res.render("signup", {failed: true});
         else {
-            res.render("index");
-            //sign user in later
+            let user = new User();
+            user.username = username;
+            user.password = password;
+            user.save().then(_ => {
+                res.render("index");
+            });
         }
     });
 });
