@@ -180,9 +180,7 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void initState() {
     super.initState();
-    init();
-    send_data(
-        'Hey Gemma, record my speed for 25 seconds after record it a document name it as Average Run Speed also write the location of where I am currently running and the time it took');
+    send_data('Hey Gemma, search car shops near me');
     Geolocator.getPositionStream().listen((position) {
       if (recording_speed) {
         temp_speed += '${position.speed.toString()} metres per seconds,';
