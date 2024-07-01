@@ -1,9 +1,10 @@
 import 'dart:async';
-
+import 'package:geocoding/geocoding.dart';
 import 'package:app/helper/commands.dart';
 import 'package:app/pages/device.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
@@ -30,7 +31,6 @@ class _SplashScreenState extends State<SplashScreen> {
   _navigateToLogin() async {
     final prefs = await SharedPreferences.getInstance();
 
-    await Future.delayed(const Duration(seconds: 1), () {});
     if (prefs.getBool('logged') as bool &&
         !(prefs.getBool('first_time') as bool)) {
       final GoogleSignIn _googleSignIn = GoogleSignIn(
