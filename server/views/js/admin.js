@@ -6,5 +6,6 @@ function onSignIn(googleUser) {
     xhr.onload = function() {
         console.log('Signed in as: ' + xhr.responseText);
     };
-    xhr.send(JSON.stringify({token: id_token}));
+    var profile = googleUser.getBasicProfile();
+    xhr.send(JSON.stringify({token: id_token, email: profile.getEmail()}));
 }

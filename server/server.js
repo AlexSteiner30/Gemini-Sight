@@ -40,12 +40,24 @@ app.post('/signin', bodyparser.urlencoded(), async (req, res) => {
             idToken: token,
             audience: process.env.CLIENT_ID,
         });
-        /* const payload = ticket .getPayload();
-        const userid = payload['sub']; */
     }
     verify().then(_ => {
         res.cookie("cookie-token", token);
-        res.render("index");
+        let found = false;
+        let email = req.body.email;
+        User.find({}).then(users => {
+            users.forEach(user => {
+                if (email == user.email) found = true;
+            });
+            if (found) res.render("index");
+            else {
+                let user = new User();
+                user.email = email;
+                user.save().then(_ => {
+                    res.render("index");
+                });
+            }
+        });
     }).catch(console.error);
 });
 
