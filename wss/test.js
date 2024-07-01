@@ -1,3 +1,4 @@
+/*
 const { Client } = require('@googlemaps/google-maps-services-js');
 
 const client = new Client({});
@@ -31,3 +32,4 @@ async function getDirections() {
 }
 
 getDirections();
+*/
