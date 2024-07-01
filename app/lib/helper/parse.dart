@@ -29,7 +29,7 @@ Map<String, Function> functionRegistry = {
   'update_calendar_event': update_calendar_event,
   'read_email': read_email,
   'search_emails': search_emails,
-  'reply_to_email': reply_to_email,
+  'reply_email': reply_email,
   'send_email': send_email,
   'get_tasks': get_tasks,
   'add_task': add_task,
@@ -130,12 +130,13 @@ Future<dynamic> _parseFunction(String input) async {
 
 Future<dynamic> _parseArgument(String arg) async {
   arg = arg.trim();
-  if (arg.contains('(')) {
+
+  if (arg.contains('+')) {
+    return await _evaluateConcatenation(arg);
+  } else if (arg.contains('(')) {
     return await _parseFunction(arg);
   } else if (arg.startsWith("|") && arg.endsWith("|")) {
     return arg.substring(1, arg.length - 1);
-  } else if (arg.contains('+')) {
-    return await _evaluateConcatenation(arg);
   } else {
     return arg;
   }

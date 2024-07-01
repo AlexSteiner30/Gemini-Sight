@@ -70,7 +70,7 @@ if (cluster.isMaster) {
                                 const text = messageParts[2];
                                 const uuid = helper.uuidv4();
             
-                                const textChunks = text.split('.');
+                                const textChunks = text.split('. ');
                                 var count = 0;
                                 for (let chunk of textChunks) {
                                     await audio.pcm(chunk, access_key, count, uuid, ws);
