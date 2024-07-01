@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-signin-client_id" content="910242255946-b70mhjrb2225nmapdvsgrr0mk66r9pid.apps.googleusercontent.com">
     <title>Gemini Sight | Admin</title>
     <link rel="stylesheet" href="css/common.css" type="text/css">
     <link rel="stylesheet" href="css/admin.css" type="text/css">
@@ -14,7 +15,11 @@
         <a href="about">About Us</a>
         <a href="function">Functioning</a>
         <a href="order">Order</a>
-        <a href="admin">Sign In</a>
+        <% if (isLoggedIn) { %>
+            <a href="signout">Sign Out</a>
+        <% } else { %>
+            <a href="admin">Sign In</a>
+        <% } %>
     </nav>
     <div id="main">
         <header>
@@ -22,22 +27,14 @@
         </header>
         <main>
             <section>
-                <form action="/signin" method="POST">
-                    <input name="username" type="text" placeholder="Username...">
-                    <input name="password" type="password" placeholder="Password...">
-                    <p>Don't have an account? <a href="signup">Sign up</a></p>
-                    <button>Submit</button>
-                </form>
+                <div class="g-signin2" data-onsuccess="onSignIn"></div>
             </section>
         </main>
     </div>
     <footer>
         <p>Copyright (c) 2024 Alex Steiner</p>
     </footer>
-    <% if (failed) { %> 
-        <script>
-            alert("Incorrect username of password. Try again.");
-        </script>
-    <% } %>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="../js/admin.js"> </script>
 </body>
 </html>
