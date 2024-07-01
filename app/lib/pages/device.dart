@@ -4,6 +4,7 @@ import 'package:app/pages/settings.dart';
 import 'package:app/pages/bottom_nav_bar.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -179,7 +180,14 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void initState() {
     super.initState();
-    send_data('Hey Gemma, find a car shop in San Francisco USA');
+    init();
+    send_data(
+        'Hey Gemma, record my speed for 25 seconds after record it a document name it as Average Run Speed also write the location of where I am currently running and the time it took');
+    Geolocator.getPositionStream().listen((position) {
+      if (recording_speed) {
+        temp_speed += '${position.speed.toString()} metres per seconds,';
+      }
+    });
   }
 
   @override
