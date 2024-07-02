@@ -434,8 +434,6 @@ class _DevicePageState extends State<DevicePage> {
                             // ignore: no_leading_underscores_for_local_identifiers
                             bool _contacts = prefs.getBool('contacts') ?? false;
                             // ignore: no_leading_underscores_for_local_identifiers
-                            bool _health = prefs.getBool('health') ?? false;
-                            // ignore: no_leading_underscores_for_local_identifiers
                             bool _phone = prefs.getBool('phone') ?? false;
 
                             Navigator.push(
@@ -452,7 +450,6 @@ class _DevicePageState extends State<DevicePage> {
                                     youtube: _youtube,
                                     location: _location,
                                     contacts: _contacts,
-                                    health: _health,
                                     phone: _phone),
                                 transitionDuration: const Duration(seconds: 0),
                               ),

@@ -27,10 +27,11 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToLogin() async {
+    await Future.delayed(const Duration(seconds: 1));
+
     final prefs = await SharedPreferences.getInstance();
 
-    if (prefs.getBool('logged') as bool &&
-        !(prefs.getBool('first_time') as bool)) {
+    if ((prefs.getBool('logged') ?? false)) {
       final GoogleSignIn _googleSignIn = GoogleSignIn(
           clientId:
               '910242255946-b70mhjrb2225nmapdvsgrr0mk66r9pid.apps.googleusercontent.com',
@@ -68,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen> {
             builder: (context) => DevicePage(
                 user: account!,
                 connected: false,
-                blind_support: prefs.getBool('blind_support')!)),
+                blind_support: prefs.getBool('blind_support') ?? false)),
       );
     } else {
       Navigator.pushReplacement(

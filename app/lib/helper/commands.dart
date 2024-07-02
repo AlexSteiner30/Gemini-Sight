@@ -66,30 +66,37 @@ Future<String> process(String input, String context) async {
 }
 
 Future<void> send_data(String data) async {
-  if (place == null) {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
+  try {
+    await Permission.contacts.request();
+    await Permission.location.request();
+    if (place == null) {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.best);
 
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(position.latitude, position.longitude);
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
 
-    place = placemarks[0];
+      place = placemarks[0];
+    }
+
+    await socket.connection.firstWhere((state) => state is Connected);
+
+    final Completer<void> completer = Completer<void>();
+
+    socket.send(
+        'send_data¬$authentication_key¬General Information about the user, complete name ${account!.displayName}, email ${account!.email}, location ${place!.street}, ${place!.locality}, ${place!.postalCode}, ${place!.country}, additional data $data');
+
+    final subscription = socket.messages.listen((commands_list) {
+      parse(commands_list);
+      completer.complete();
+    });
+
+    await completer.future;
+    await subscription.cancel();
+  } catch (error) {
+    await speak(await process("$error",
+        ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
   }
-
-  await socket.connection.firstWhere((state) => state is Connected);
-
-  final Completer<void> completer = Completer<void>();
-
-  socket.send(
-      'send_data¬$authentication_key¬General Information about the user, complete name ${account!.displayName}, email ${account!.email}, location ${place!.street}, ${place!.locality}, ${place!.postalCode}, ${place!.country}, additional data $data');
-
-  final subscription = socket.messages.listen((commands_list) {
-    parse(commands_list);
-    completer.complete();
-  });
-
-  await completer.future;
-  await subscription.cancel();
 }
 
 Future<void> speak(String data) async {
