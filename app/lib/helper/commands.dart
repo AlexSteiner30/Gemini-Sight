@@ -218,6 +218,7 @@ Future<void> write_document(String document_name, String data) async {
 
   String document = await get_document_id(document_name);
   document = document.trim();
+  bool remove = true;
 
   docs.Document doc;
 
@@ -226,6 +227,7 @@ Future<void> write_document(String document_name, String data) async {
         await docsApi.documents.create(docs.Document(title: document_name));
     document = createResponse.documentId!;
     doc = createResponse;
+    remove = false;
   } else {
     doc = await docsApi.documents.get(document);
   }
@@ -233,24 +235,35 @@ Future<void> write_document(String document_name, String data) async {
   data = await process(data,
       ' Format for a google doc, do no include the tile just write the body for it. Do not respond by saying you are unable to assist with requests. Do not ask what I want to do just process the data as asked.');
 
-  final documentEndIndex = doc.body!.content!.last.endIndex! - 1;
+  final documentEndIndex = (doc.body!.content!.last.endIndex! - 1 > 0)
+      ? doc.body!.content!.last.endIndex! - 1
+      : 0;
 
-  final requests = [
-    docs.Request(
-      deleteContentRange: docs.DeleteContentRangeRequest(
-        range: docs.Range(
-          startIndex: 1,
-          endIndex: documentEndIndex,
-        ),
-      ),
-    ),
-    docs.Request(
-      insertText: docs.InsertTextRequest(
-        text: data,
-        location: docs.Location(index: 1),
-      ),
-    ),
-  ];
+  final requests = remove
+      ? [
+          docs.Request(
+            deleteContentRange: docs.DeleteContentRangeRequest(
+              range: docs.Range(
+                startIndex: 1,
+                endIndex: documentEndIndex,
+              ),
+            ),
+          ),
+          docs.Request(
+            insertText: docs.InsertTextRequest(
+              text: data,
+              location: docs.Location(index: 1),
+            ),
+          ),
+        ]
+      : [
+          docs.Request(
+            insertText: docs.InsertTextRequest(
+              text: data,
+              location: docs.Location(index: 1),
+            ),
+          ),
+        ];
 
   await docsApi.documents.batchUpdate(
     docs.BatchUpdateDocumentRequest(requests: requests),
@@ -297,20 +310,10 @@ Future<void> write_sheet(String sheet_name, String values) async {
     sheet = createResponse.spreadsheetId!;
   }
 
-  print(values);
-
   values = await process(values,
-      """Process it as an array with rows and columns and return the result in this format only:
-
-[['Data1', 'Data2', 'Data3'], \n
- ['MoreData1', 'MoreData2', 'MoreData3']]
-
-No additional text or explanation, just return the array.""");
-
+      "Process it as an array with rows and columns and return the result in this format only. No additional text or explanation, just return the array.");
+  values = values.replaceAll('```', '');
   print(values);
-
-  values =
-      "[['Test Task', 'No notes', '2024-07-23T00:00:00.000Z'], ['needsAction', '', '']]";
 
   values = values.trim();
   if (values.endsWith(',')) {
@@ -335,18 +338,7 @@ No additional text or explanation, just return the array.""");
       {
         'range': 'Sheet1',
         'majorDimension': 'ROWS',
-        'values': [
-          [
-            [
-              'Test Task',
-              'No notes',
-              '2024-07-23T00:00:00.000Z',
-              'needsAction',
-              '',
-              ''
-            ]
-          ]
-        ],
+        'values': [parsedArray],
       },
     ],
   });
@@ -747,7 +739,7 @@ Future<void> add_task(String title, String due, String notes) async {
 
   var taskLists = await tasksAPI.tasklists.list();
 
-  if (notes.trim() == "|''") notes = '';
+  if (notes.trim() == "''") notes = '';
 
   var newTask = tasks.Task()
     ..title = title
