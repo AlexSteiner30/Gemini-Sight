@@ -3,7 +3,6 @@ import 'package:app/helper/commands.dart';
 import 'package:app/helper/loading_screen.dart';
 import 'package:app/helper/query.dart';
 import 'package:app/pages/device.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
@@ -40,7 +39,7 @@ class _SignInPageState extends State<SignInPage> {
       gmail.GmailApi.gmailModifyScope,
       drive.DriveApi.driveScope,
       tasks.TasksApi.tasksScope,
-      sheets.SheetsApi.spreadsheetsScope
+      sheets.SheetsApi.spreadsheetsScope,
     ],
   );
 
@@ -54,27 +53,23 @@ class _SignInPageState extends State<SignInPage> {
   Future<void> _login() async {
     try {
       final GoogleSignInAccount? account = await _googleSignIn.signIn();
-      if (account == null) {
-        // User canceled the sign-in
-        return;
-      }
+      if (account == null) return; // User canceled the sign-in
       final GoogleSignInAuthentication auth = await account.authentication;
       user = account;
 
-      await verification(auth.idToken, account);
+      await _verifyAuthentication(auth.idToken, account);
     } catch (error) {
-      if (kDebugMode) {
-        print('Login failed: $error');
-      }
+      _showDialog('Login Failed', error.toString());
     }
   }
 
-  Future<void> verification(
-      String? auth_code, GoogleSignInAccount? account) async {
-    final Completer<String> completer = Completer<String>();
+  Future<void> _verifyAuthentication(
+      String? authCode, GoogleSignInAccount? account) async {
+    final prefs = await SharedPreferences.getInstance();
+    final completer = Completer<String>();
     await socket.connection.firstWhere((state) => state is Connected);
 
-    socket.send('authentication¬$auth_code');
+    socket.send('authentication¬$authCode');
 
     final subscription = socket.messages.listen((response) {
       completer.complete(response);
@@ -85,78 +80,82 @@ class _SignInPageState extends State<SignInPage> {
 
     authentication_key = result;
 
-    print(authentication_key);
-
-    if (authentication_key == '') {
+    if (authentication_key.isEmpty) {
       await _googleSignIn.signOut();
-      showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Authentication failed'),
-            content: const SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  Text(
-                    'In order to access this app, please log in with an account that has purchased the Gemini Sight Glasses',
-                  ),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Okay'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      final Completer<String> completer = Completer<String>();
-      await socket.connection.firstWhere((state) => state is Connected);
-
-      socket.send('first_time¬$authentication_key¬${user!.email}');
-
-      final subscription = socket.messages.listen((response) {
-        completer.complete(response);
-      });
-
-      final result = await completer.future;
-      await subscription.cancel();
-
-      if (result == "true") {
-        setState(() {
-          isLoading = true;
-        });
-        // ignore: use_build_context_synchronously
-        await get_query(account!, context);
-        setState(() {
-          isLoading = false;
-        });
-      }
-
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('logged', true);
-      await prefs.setBool('first_time', false);
-
-      socket.send('not_first_time¬$authentication_key');
-
-      Navigator.pushReplacement(
-        // ignore: use_build_context_synchronously
-        context,
-        MaterialPageRoute(
-          builder: (context) => DevicePage(
-            user: user!,
-            connected: false,
-            blind_support: prefs.getBool('blind_support')!,
-          ),
-        ),
-      );
+      _showDialog('Authentication failed',
+          'Please log in with an account that has purchased the Gemini Sight Glasses.');
+      return;
     }
+
+    await _handleFirstTimeLogin(account, prefs);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DevicePage(
+          user: user!,
+          connected: false,
+          blind_support: prefs.getBool('blind_support') ?? false,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleFirstTimeLogin(
+      GoogleSignInAccount? account, SharedPreferences prefs) async {
+    final completer = Completer<String>();
+    await socket.connection.firstWhere((state) => state is Connected);
+
+    socket.send('first_time¬$authentication_key¬${user!.email}');
+
+    final subscription = socket.messages.listen((response) {
+      completer.complete(response);
+    });
+
+    final result = await completer.future;
+    await subscription.cancel();
+
+    if (result == "true") {
+      setState(() {
+        isLoading = true;
+      });
+      await get_query(account!, context);
+      setState(() {
+        isLoading = false;
+      });
+    }
+
+    await prefs.setBool('logged', true);
+    await prefs.setBool('first_time', false);
+
+    socket.send('not_first_time¬$authentication_key');
+  }
+
+  void _showDialog(String title, String content) {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(content),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Okay'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -172,14 +171,12 @@ class _SignInPageState extends State<SignInPage> {
                   ElevatedButton(
                     onPressed: _login,
                     style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                        (Set<WidgetState> states) {
-                          return states.contains(WidgetState.pressed)
-                              ? Colors.grey[800]!
-                              : Colors.grey[800]!;
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          return Colors.grey[800]!;
                         },
                       ),
-                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),

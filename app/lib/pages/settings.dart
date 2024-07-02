@@ -1,12 +1,11 @@
-import 'package:app/pages/device.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/pages/sign_in.dart';
+import 'package:app/pages/device.dart'; // Adjust import as per your project structure
 
 class DeviceSettings extends StatefulWidget {
-  // ignore: use_super_parameters
   const DeviceSettings({
     Key? key,
     required this.user,
@@ -18,7 +17,6 @@ class DeviceSettings extends StatefulWidget {
     required this.youtube,
     required this.location,
     required this.contacts,
-    required this.health,
     required this.phone,
   }) : super(key: key);
 
@@ -31,11 +29,9 @@ class DeviceSettings extends StatefulWidget {
   final bool youtube;
   final bool location;
   final bool contacts;
-  final bool health;
   final bool phone;
 
   @override
-  // ignore: library_private_types_in_public_api
   _DeviceSettingsState createState() => _DeviceSettingsState();
 }
 
@@ -47,7 +43,6 @@ class _DeviceSettingsState extends State<DeviceSettings> {
   late bool _youtube;
   late bool _location;
   late bool _contacts;
-  late bool _health;
   late bool _phone;
 
   @override
@@ -60,7 +55,6 @@ class _DeviceSettingsState extends State<DeviceSettings> {
     _youtube = widget.youtube;
     _location = widget.location;
     _contacts = widget.contacts;
-    _health = widget.health;
     _phone = widget.phone;
   }
 
@@ -79,7 +73,34 @@ class _DeviceSettingsState extends State<DeviceSettings> {
       value = false;
     }
     await _setPreference(key, value);
-    setState(() {});
+    setState(() {
+      switch (key) {
+        case 'googleMaps':
+          _googleMaps = value;
+          break;
+        case 'googleDrive':
+          _googleDrive = value;
+          break;
+        case 'gmail':
+          _gmail = value;
+          break;
+        case 'googleCalendar':
+          _googleCalendar = value;
+          break;
+        case 'youtube':
+          _youtube = value;
+          break;
+        case 'location':
+          _location = value;
+          break;
+        case 'contacts':
+          _contacts = value;
+          break;
+        case 'phone':
+          _phone = value;
+          break;
+      }
+    });
   }
 
   @override
@@ -110,75 +131,66 @@ class _DeviceSettingsState extends State<DeviceSettings> {
             SwitchListTile(
               title: const Text('Google Maps'),
               value: _googleMaps,
-              onChanged: (value) async {
-                _googleMaps = value;
-                await _setPreference('googleMaps', value);
-              },
+              onChanged: (value) => _handlePermission(
+                Permission.location,
+                value,
+                'googleMaps',
+              ),
             ),
             SwitchListTile(
               title: const Text('Google Drive'),
               value: _googleDrive,
-              onChanged: (value) async {
-                _googleDrive = value;
-                await _setPreference('googleDrive', value);
-              },
+              onChanged: (value) => _handlePermission(
+                Permission.storage,
+                value,
+                'googleDrive',
+              ),
             ),
             SwitchListTile(
               title: const Text('Gmail'),
               value: _gmail,
-              onChanged: (value) async {
-                _gmail = value;
-                await _setPreference('gmail', value);
-              },
+              onChanged: (value) => _handlePermission(
+                Permission.audio,
+                value,
+                'gmail',
+              ),
             ),
             SwitchListTile(
               title: const Text('Google Calendar'),
               value: _googleCalendar,
-              onChanged: (value) async {
-                _googleCalendar = value;
-                await _setPreference('googleCalendar', value);
-              },
+              onChanged: (value) => _handlePermission(
+                Permission.calendar,
+                value,
+                'googleCalendar',
+              ),
             ),
             SwitchListTile(
               title: const Text('YouTube'),
               value: _youtube,
-              onChanged: (value) async {
-                _youtube = value;
-                await _setPreference('youtube', value);
-              },
+              onChanged: (value) => _setPreference('youtube', value),
             ),
             SwitchListTile(
               title: const Text('Location'),
               value: _location,
-              onChanged: (value) async {
-                _location = value;
-                await _handlePermission(Permission.location, value, 'location');
-              },
+              onChanged: (value) => _handlePermission(
+                Permission.location,
+                value,
+                'location',
+              ),
             ),
             SwitchListTile(
               title: const Text('Contacts'),
               value: _contacts,
-              onChanged: (value) async {
-                _contacts = value;
-                await _handlePermission(Permission.contacts, value, 'contacts');
-              },
-            ),
-            SwitchListTile(
-              title: const Text('Health'),
-              value: _health,
-              onChanged: (value) async {
-                _health = value;
-                await _handlePermission(
-                    Permission.activityRecognition, value, 'health');
-              },
+              onChanged: (value) => _handlePermission(
+                Permission.contacts,
+                value,
+                'contacts',
+              ),
             ),
             SwitchListTile(
               title: const Text('Phone'),
               value: _phone,
-              onChanged: (value) async {
-                _phone = value;
-                await _setPreference('phone', value);
-              },
+              onChanged: (value) => _setPreference('phone', value),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
@@ -187,7 +199,6 @@ class _DeviceSettingsState extends State<DeviceSettings> {
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.setBool('logged', false);
                 Navigator.pushAndRemoveUntil(
-                  // ignore: use_build_context_synchronously
                   context,
                   MaterialPageRoute(builder: (context) => const SignInPage()),
                   (route) => false,
@@ -197,21 +208,15 @@ class _DeviceSettingsState extends State<DeviceSettings> {
             ),
             const SizedBox(height: 16),
             const Divider(height: 1),
-            // ignore: prefer_const_constructors
             ListTile(
               title: Text(
                 'Model: ${widget.device.model}',
-                // ignore: prefer_const_constructors
-                style: TextStyle(
-                  fontSize: 12,
-                ),
+                style: const TextStyle(fontSize: 12),
               ),
             ),
             const Text(
               '© 2024 Gemini Sight',
-              style: TextStyle(
-                fontSize: 12,
-              ),
+              style: const TextStyle(fontSize: 12),
             ),
           ],
         ),
