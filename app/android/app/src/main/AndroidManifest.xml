@@ -1,4 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Location Services -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- Contacts -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <!-- Camera -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Bluetooth -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
     <application
         android:label="app"
         android:name="${applicationName}"
@@ -30,6 +46,20 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+            <!-- Background Mode for Location Updates -->
+        <service
+            android:name=".LocationUpdatesService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <!-- Background Task Scheduler -->
+        <receiver
+            android:name=".BackgroundTaskScheduler"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.app.BACKGROUND_REFRESH" />
+            </intent-filter>
+        </receiver>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
