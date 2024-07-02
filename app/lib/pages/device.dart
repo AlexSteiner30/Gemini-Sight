@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app/helper/loading_screen.dart';
 import 'package:app/helper/query.dart';
 import 'package:app/pages/settings.dart';
@@ -24,10 +26,15 @@ class Device {
 
 // ignore: must_be_immutable
 class DevicePage extends StatefulWidget {
-  DevicePage({super.key, required this.user, required this.connected});
+  DevicePage(
+      {super.key,
+      required this.user,
+      required this.connected,
+      required this.blind_support});
 
   final GoogleSignInAccount user;
   bool connected;
+  bool blind_support;
 
   @override
   State<DevicePage> createState() => _DevicePageState();
@@ -38,7 +45,6 @@ class _DevicePageState extends State<DevicePage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
   bool isLoading = false;
-
   // ignore: non_constant_identifier_names
 
   void _onQRViewCreated(QRViewController controller) {
@@ -180,10 +186,12 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void initState() {
     super.initState();
-    send_data('Hey Gemma, search car shops near me');
+    send_data(
+        'Hey Gemma, from my astrophysics essay remove the paragraph about black holes and add more information about Einsteins theoreom');
     Geolocator.getPositionStream().listen((position) {
       if (recording_speed) {
-        temp_speed += '${position.speed.toString()} metres per seconds,';
+        temp_speed +=
+            'Current Speed ${position.speed.toString()} metres per seconds ';
       }
     });
   }
@@ -380,13 +388,25 @@ class _DevicePageState extends State<DevicePage> {
                     child: ListView(
                       children: [
                         ListTile(
-                          leading: const Icon(Icons.apps, color: Colors.white),
-                          title: const Text('App Library',
+                          leading: const Icon(Icons.blind, color: Colors.white),
+                          title: const Text('Blind Support',
                               style: TextStyle(color: Colors.white)),
-                          subtitle: const Text(
-                              'Install and launch apps on your device',
+                          subtitle: Text(
+                              widget.blind_support
+                                  ? 'Blind support is currently enabled'
+                                  : 'Blind support is currently disabled',
                               style: TextStyle(color: Colors.grey)),
-                          onTap: () {},
+                          onTap: () async {
+                            final prefs = await SharedPreferences.getInstance();
+                            widget.blind_support =
+                                prefs.getBool('blind_support')!;
+
+                            await prefs.setBool(
+                                'blind_support', !widget.blind_support);
+                            setState(() {
+                              widget.blind_support = !widget.blind_support;
+                            });
+                          },
                         ),
                         ListTile(
                           leading:

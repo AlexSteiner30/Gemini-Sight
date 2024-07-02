@@ -19,7 +19,7 @@ class GoogleMaps {
       const response = await this.client.findPlaceFromText({ params });
       let places = response.data.candidates || [];
       
-      if (location !== '') {
+      if (location !== "''") {
         const encodedAddress = encodeURIComponent(location);
         var url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${this.apiKey}`;
 

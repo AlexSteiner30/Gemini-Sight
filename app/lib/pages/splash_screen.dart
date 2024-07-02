@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'package:geocoding/geocoding.dart';
 import 'package:app/helper/commands.dart';
 import 'package:app/pages/device.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
@@ -62,10 +60,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
       authentication_key = result;
 
+      final prefs = await SharedPreferences.getInstance();
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => DevicePage(user: account!, connected: false)),
+            builder: (context) => DevicePage(
+                user: account!,
+                connected: false,
+                blind_support: prefs.getBool('blind_support')!)),
       );
     } else {
       Navigator.pushReplacement(

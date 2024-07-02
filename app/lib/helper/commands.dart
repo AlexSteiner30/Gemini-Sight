@@ -164,9 +164,33 @@ Future<void> change_volume(volume) async {
 }
 
 // Docs
-Future<void> get_document(document) async {}
+Future<String> get_document(String document_id) async {
+  final GoogleAPIClient httpClient =
+      GoogleAPIClient((await account?.authHeaders)!);
+  final docsApi = docs.DocsApi(httpClient);
 
-Future<String> get_document_id(document) async {
+  try {
+    final document =
+        await docsApi.documents.get(await get_document_id(document_id));
+
+    String content = '';
+    for (var element in document.body?.content ?? []) {
+      if (element.paragraph != null) {
+        for (var paragraphElement in element.paragraph!.elements ?? []) {
+          content += paragraphElement.textRun?.content ?? '';
+        }
+      }
+    }
+
+    return (content != '')
+        ? content
+        : 'The document ${document.title!} is empty';
+  } on Exception catch (_) {
+    return 'No Document was found';
+  }
+}
+
+Future<String> get_document_id(String document) async {
   final GoogleAPIClient httpClient =
       GoogleAPIClient((await account?.authHeaders)!);
   final drive.DriveApi driveApi = drive.DriveApi(httpClient);
@@ -176,16 +200,15 @@ Future<String> get_document_id(document) async {
     spaces: 'drive',
   );
 
-  Map<String, String> files = {};
-
   for (var i = 0; i < fileList.files!.length; i++) {
-    files.addEntries({
-      fileList.files![i].name as String: fileList.files![i].id as String
-    }.entries);
+    if (fileList.files![i].name!
+        .toLowerCase()
+        .contains(document.toLowerCase())) {
+      return fileList.files![i].id!;
+    }
   }
 
-  return await process(files.toString(),
-      'Given the following Map {name of the document: id of the document} of file names with corresponding IDs, return only the ID of the document name that is most similar to "$document". Respond with only one document ID. Only return an ID if the names are actually very similar, if no similar document is found, reply with "404".');
+  return '404';
 }
 
 Future<void> write_document(String document_name, String data) async {
@@ -196,16 +219,31 @@ Future<void> write_document(String document_name, String data) async {
   String document = await get_document_id(document_name);
   document = document.trim();
 
+  docs.Document doc;
+
   if (document == '404') {
     final createResponse =
         await docsApi.documents.create(docs.Document(title: document_name));
     document = createResponse.documentId!;
+    doc = createResponse;
+  } else {
+    doc = await docsApi.documents.get(document);
   }
 
   data = await process(data,
-      ' Format for a google doc, do no include the tile just write the body for it. Do not respond by saying you are unable to assist with requests.');
+      ' Format for a google doc, do no include the tile just write the body for it. Do not respond by saying you are unable to assist with requests. Do not ask what I want to do just process the data as asked.');
+
+  final documentEndIndex = doc.body!.content!.last.endIndex! - 1;
 
   final requests = [
+    docs.Request(
+      deleteContentRange: docs.DeleteContentRangeRequest(
+        range: docs.Range(
+          startIndex: 1,
+          endIndex: documentEndIndex,
+        ),
+      ),
+    ),
     docs.Request(
       insertText: docs.InsertTextRequest(
         text: data,
@@ -223,7 +261,7 @@ Future<void> write_document(String document_name, String data) async {
 // Sheet
 Future<void> get_sheet(String sheet) async {}
 
-Future<String> get_sheet_id(String sheet) async {
+Future<String> get_sheet_id(String sheet_name) async {
   final GoogleAPIClient httpClient =
       GoogleAPIClient((await account?.authHeaders)!);
   final drive.DriveApi driveApi = drive.DriveApi(httpClient);
@@ -233,27 +271,24 @@ Future<String> get_sheet_id(String sheet) async {
     spaces: 'drive',
   );
 
-  Map<String, String> files = {};
+  String? fileId;
 
   for (var i = 0; i < fileList.files!.length; i++) {
-    files.addEntries({
-      fileList.files![i].name as String: fileList.files![i].id as String
-    }.entries);
+    if (fileList.files![i].name!.toLowerCase().contains(sheet_name)) {
+      fileId = fileList.files![i].id!;
+    }
   }
 
-  return await process(files.toString(),
-      'Given the following Map {name of the document: id of the document} of file names with corresponding IDs, return only the ID of the document name that is most similar to "$sheet". Respond with only one document ID. Only return an ID if the names are actually very similar, if no similar document is found, reply with "404".');
+  return fileId ?? '404';
 }
 
-Future<void> write_sheet(String sheet_name, List<List<Object>> data) async {
+Future<void> write_sheet(String sheet_name, String values) async {
   final GoogleAPIClient httpClient =
       GoogleAPIClient((await account?.authHeaders)!);
   final sheetsApi = sheets.SheetsApi(httpClient);
 
   String sheet = await get_sheet_id(sheet_name);
   sheet = sheet.trim();
-
-  print(sheet);
 
   if (sheet == '404') {
     final createResponse = await sheetsApi.spreadsheets.create(
@@ -262,32 +297,64 @@ Future<void> write_sheet(String sheet_name, List<List<Object>> data) async {
     sheet = createResponse.spreadsheetId!;
   }
 
-  print(sheet);
+  print(values);
 
-  final requests = [
-    sheets.Request(
-      updateCells: sheets.UpdateCellsRequest(
-        range:
-            sheets.GridRange(sheetId: 0, startRowIndex: 0, startColumnIndex: 0),
-        rows: data
-            .map((row) => sheets.RowData(
-                values: row
-                    .map((cell) => sheets.CellData(
-                        userEnteredValue:
-                            sheets.ExtendedValue(stringValue: cell.toString())))
-                    .toList()))
-            .toList(),
-        fields: 'userEnteredValue',
-      ),
-    ),
-  ];
+  values = await process(values,
+      """Process it as an array with rows and columns and return the result in this format only:
 
-  print('test');
+[['Data1', 'Data2', 'Data3'], \n
+ ['MoreData1', 'MoreData2', 'MoreData3']]
 
-  await sheetsApi.spreadsheets.batchUpdate(
-      sheets.BatchUpdateSpreadsheetRequest(requests: requests), sheet);
+No additional text or explanation, just return the array.""");
 
-  print('Sheet Written');
+  print(values);
+
+  values =
+      "[['Test Task', 'No notes', '2024-07-23T00:00:00.000Z'], ['needsAction', '', '']]";
+
+  values = values.trim();
+  if (values.endsWith(',')) {
+    values = values.substring(0, values.length - 1);
+  }
+
+  List<List<String>> parsedArray = values
+      .split('\n')
+      .map((line) => line
+          .replaceAll('[', '')
+          .replaceAll(']', '')
+          .split(',')
+          .map((item) => item.trim())
+          .toList())
+      .toList();
+
+  print(parsedArray);
+
+  var appendRequest = sheets.BatchUpdateValuesRequest.fromJson({
+    'valueInputOption': 'RAW',
+    'data': [
+      {
+        'range': 'Sheet1',
+        'majorDimension': 'ROWS',
+        'values': [
+          [
+            [
+              'Test Task',
+              'No notes',
+              '2024-07-23T00:00:00.000Z',
+              'needsAction',
+              '',
+              ''
+            ]
+          ]
+        ],
+      },
+    ],
+  });
+
+  await sheetsApi.spreadsheets.values.batchUpdate(
+    appendRequest,
+    sheet,
+  );
 }
 
 // Drive
@@ -417,7 +484,7 @@ Future<void> record_speed() async {
 Future<String> stop_speed(String task) async {
   recording_speed = false;
 
-  return await process(temp_speed, task);
+  return '$temp_speed $task';
 }
 
 Future<void> start_route(route) async {
@@ -863,7 +930,7 @@ $replyText
 
         await gmailAPI.users.messages.send(replyMessage, 'me');
 
-        print('test');
+        print('values');
       }
     }
   }
