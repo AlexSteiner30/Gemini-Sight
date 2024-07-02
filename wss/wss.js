@@ -50,10 +50,231 @@ if (cluster.isMaster) {
                         case 'add_query':
                             {
                                 const data = messageParts[2];
-                                var response = await ai.process_data(`Fully summarize this data for me, do not use amy formatting, do not include any expression such as the document includes, just provide the information with no context, furthermore never use ' or " or. Data: ` + data + ' ' + (await db.find('access_key', access_key)).query);
+ 
+                                var response = await ai.process_data(`${data + (await db.find('access_key', access_key)).query} Represent the full data in a json provide all necessary information and reply only with that. You can use this as a reference
+{
+  "name": "Nikolas Coffey",
+  "position": "Software Engineer",
+  "company": "Google",
+  "projects": [
+    {
+      "name": "Real-Time Collaboration Platform",
+      "description": "A platform to improve communication, productivity, and security for teams.",
+      "features": [
+        "Instant messaging",
+        "Video conferencing",
+        "Collaborative editing",
+        "Task management",
+        "File sharing",
+        "Integration with Google Workspace"
+      ],
+      "technology": {
+        "architecture": "Microservices",
+        "frontEnd": "React.js",
+        "backEnd": ["Node.js", "Express.js"],
+        "realTimeCommunication": ["WebRTC", "WebSockets"],
+        "database": "MongoDB",
+        "authentication": "OAuth 2.0",
+        "deployment": "Kubernetes on Google Cloud Platform"
+      },
+      "responsibilities": [
+        "Project planning",
+        "Architecture design",
+        "Development and implementation",
+        "Code review",
+        "Quality assurance",
+        "Collaboration and communication",
+        "Mentoring"
+      ],
+      "team": [
+        {
+          "name": "John Doe",
+          "role": "Senior Engineering Manager",
+          "email": "john.doe@google.com"
+        },
+        {
+          "name": "Jane Smith",
+          "role": "Director of Product Management",
+          "email": "jane.smith@google.com"
+        },
+        {
+          "name": "Emily Johnson",
+          "role": "Software Engineer",
+          "email": "emily.johnson@google.com"
+        },
+        {
+          "name": "Michael Brown",
+          "role": "UX Designer",
+          "email": "michael.brown@google.com"
+        }
+      ],
+      "tasks": [
+        {
+          "category": "Project Planning and Management",
+          "tasks": [
+            "Define Project Scope",
+            "Set Timelines and Milestones",
+            "Resource Allocation"
+          ]
+        },
+        {
+          "category": "Architecture Design",
+          "tasks": [
+            "Design System Architecture",
+            "Define Microservices",
+            "Scalability Planning"
+          ]
+        },
+        {
+          "category": "Front-End Development",
+          "tasks": [
+            "UI/UX Design",
+            "Implement React.js Components",
+            "Integrate with Backend APIs"
+          ]
+        },
+        {
+          "category": "Back-End Development",
+          "tasks": [
+            "Set Up Node.js and Express.js",
+            "Develop API Endpoints",
+            "Implement Business Logic"
+          ]
+        },
+        {
+          "category": "Real-Time Communication",
+          "tasks": [
+            "Integrate WebRTC",
+            "Implement WebSockets"
+          ]
+        },
+        {
+          "category": "Database Management",
+          "tasks": [
+            "Design Database Schema",
+            "Implement Data Storage"
+          ]
+        },
+        {
+          "category": "Authentication and Security",
+          "tasks": [
+            "Set Up OAuth 2.0",
+            "Data Encryption",
+            "Access Control"
+          ]
+        },
+        {
+          "category": "Video Conferencing Enhancements",
+          "tasks": [
+            "Screen Sharing",
+            "Recording Features"
+          ]
+        },
+        {
+          "category": "Collaborative Editing",
+          "tasks": [
+            "Real-Time Document Editing",
+            "Version Control"
+          ]
+        },
+        {
+          "category": "Task Management Tools",
+          "tasks": [
+            "Develop Task Features",
+            "Integrate with Existing Tools"
+          ]
+        },
+        {
+          "category": "File Sharing",
+          "tasks": [
+            "Implement File Uploads",
+            "Set Access Controls"
+          ]
+        },
+        {
+          "category": "Quality Assurance",
+          "tasks": [
+            "Testing Framework Setup",
+            "Conduct Unit and Integration Tests",
+            "User Acceptance Testing"
+          ]
+        },
+        {
+          "category": "Deployment",
+          "tasks": [
+            "Containerize Services",
+            "Deploy on GCP",
+            "Monitor and Optimize"
+          ]
+        },
+        {
+          "category": "Feedback and Iteration",
+          "tasks": [
+            "Collect User Feedback",
+            "Implement Improvements"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Project Phoenix",
+      "description": "An initiative to revamp our cloud infrastructure to improve scalability and performance.",
+      "tasks": [
+        "Designing microservices architecture",
+        "Implementing API endpoints",
+        "Conducting performance testing"
+      ]
+    },
+    {
+      "name": "AI-Driven Recommendation System",
+      "description": "A system to enhance user experience through personalized recommendations.",
+      "tasks": [
+        "Data preprocessing and feature engineering",
+        "Implementing machine learning models",
+        "Evaluating model performance"
+      ]
+    }
+  ],
+  "education": {
+    "degree": "Computer Science Engineering",
+    "institution": "Harvard"
+  },
+  "skills": [
+    "Python",
+    "Java",
+    "C++",
+    "JavaScript",
+    "React",
+    "Angular",
+    "Node.js",
+    "Django",
+    "AWS",
+    "Google Cloud Platform",
+    "Azure",
+    "TensorFlow",
+    "Keras",
+    "scikit-learn",
+    "MySQL",
+    "PostgreSQL",
+    "MongoDB"
+  ],
+  "traits": [
+    "Problem-Solving",
+    "Collaboration",
+    "Continuous Learning",
+    "Attention to Detail"
+  ],
+  "interests": [
+    "Open Source Contributions",
+    "Tech Blogging",
+    "Reading",
+    "Outdoor Activities"
+  ]
+}
+`);
                                 const filter = { access_key: access_key };
 
-                                await db.Product.updateOne(filter, { query: response });
+                                await db.Product.updateOne(filter, { query: response});
                             }
                             break;
 

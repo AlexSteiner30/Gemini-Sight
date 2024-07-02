@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:app/helper/loading_screen.dart';
 import 'package:app/helper/query.dart';
 import 'package:app/pages/settings.dart';
@@ -186,8 +184,7 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void initState() {
     super.initState();
-    send_data(
-        'Hey Gemma, from my astrophysics essay remove the paragraph about black holes and add more information about Einsteins theoreom');
+    send_data('Hey Gemma, who are my team members');
     Geolocator.getPositionStream().listen((position) {
       if (recording_speed) {
         temp_speed +=

