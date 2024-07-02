@@ -10,6 +10,7 @@ import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis/tasks/v1.dart' as tasks;
+import 'package:googleapis/sheets/v4.dart' as sheets;
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,7 +39,8 @@ class _SignInPageState extends State<SignInPage> {
       gmail.GmailApi.gmailComposeScope,
       gmail.GmailApi.gmailModifyScope,
       drive.DriveApi.driveScope,
-      tasks.TasksApi.tasksScope
+      tasks.TasksApi.tasksScope,
+      sheets.SheetsApi.spreadsheetsScope
     ],
   );
 
@@ -150,6 +152,7 @@ class _SignInPageState extends State<SignInPage> {
           builder: (context) => DevicePage(
             user: user!,
             connected: false,
+            blind_support: prefs.getBool('blind_support')!,
           ),
         ),
       );
