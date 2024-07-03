@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:app/helper/commands.dart';
+import 'package:app/helper/socket.dart';
 import 'package:app/pages/device.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:flutter/material.dart';

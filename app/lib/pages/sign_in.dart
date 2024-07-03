@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:app/helper/commands.dart';
+import 'package:app/helper/socket.dart';
 import 'package:app/helper/loading_screen.dart';
 import 'package:app/helper/query.dart';
 import 'package:app/pages/device.dart';
