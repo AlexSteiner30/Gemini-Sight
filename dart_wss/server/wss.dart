@@ -29,7 +29,11 @@ void main() async {
     if (request.uri.path == '/ws' &&
         WebSocketTransformer.isUpgradeRequest(request)) {
       WebSocket ws = await WebSocketTransformer.upgrade(request);
-      handleWebSocket(ws, request);
+      try {
+        handleWebSocket(ws, request);
+      } catch (error) {
+        print(error);
+      }
     } else {
       request.response
         ..statusCode = HttpStatus.forbidden
@@ -40,6 +44,7 @@ void main() async {
 }
 
 void handleWebSocket(WebSocket ws, HttpRequest request) {
+  print("A new client connected");
   Parser parser = Parser(functionRegistry: {});
   User user = User(
       displayName: '',
@@ -57,7 +62,7 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
       messageParts[0] =
           messageParts[0].substring(1, messageParts[0].length - 1);
 
-      List<String> pairs = messageParts[0].replaceAll('{', '').split(', ');
+      List<String> pairs = messageParts[0].split(', ');
 
       Map<String, String> auth_headers = {};
 
