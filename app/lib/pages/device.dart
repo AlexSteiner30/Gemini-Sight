@@ -184,8 +184,7 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void initState() {
     super.initState();
-    send_data(
-        'Hey Gemma, send an email to alex.steiner@student.h-is.com with my tasks');
+    send_data('Hey Gemma, call Anna');
     Geolocator.getPositionStream().listen((position) {
       if (recording_speed) {
         temp_speed +=

@@ -1,26 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:app/helper/parse.dart';
-import 'package:app/pages/sign_in.dart';
-import 'package:app/pages/splash_screen.dart';
-import 'package:contacts_service/contacts_service.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:googleapis/tasks/v1.dart' as tasks;
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:http/http.dart';
+import 'package:http/io_client.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
 import 'package:intl/intl.dart';
-import 'package:flutter_sms/flutter_sms.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis/docs/v1.dart' as docs;
 import 'package:googleapis/sheets/v4.dart' as sheets;
-import 'package:geolocator/geolocator.dart';
+import 'parser.dart';
+import 'wss.dart';
 
+Account? account;
+String authentication_key = '';
 Placemark? place;
 
 bool recording = false;
@@ -77,15 +73,15 @@ Future<String> process(String input, String context) async {
 Future<void> send_data(String data) async {
   try {
     if (place == null) {
-      await Permission.contacts.request();
-      await Permission.location.request();
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.best);
+      //await Permission.contacts.request();
+      //await Permission.location.request();
+      //Position position = await Geolocator.getCurrentPosition(
+      //desiredAccuracy: LocationAccuracy.best);
 
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(position.latitude, position.longitude);
+      //List<Placemark> placemarks =
+      //await placemarkFromCoordinates(position.latitude, position.longitude);
 
-      place = placemarks[0];
+      //place = placemarks[0];
     }
 
     await socket.connection.firstWhere((state) => state is Connected);
@@ -382,19 +378,24 @@ Future<void> drive_push_file(file_name, data) async {
   final GoogleAPIClient httpClient =
       GoogleAPIClient((await account?.authHeaders)!);
   final driveApi = drive.DriveApi(httpClient);
-  final prefs = await SharedPreferences.getInstance();
+  //final prefs = await SharedPreferences.getInstance();
 
   final decodedBytes = base64Decode(data);
 
-  final directory = await getTemporaryDirectory();
-  final filePath = '${directory.path}/$file_name';
+  //final directory = await getTemporaryDirectory();
+  //final filePath = '${directory.path}/$file_name';
+
+  final directory_path = '';
+  final filePath = '${directory_path}/$file_name';
 
   final file = File(filePath);
   await file.writeAsBytes(decodedBytes);
 
   var folderId = await get_or_create_folder_id(
       driveApi,
-      prefs.getString('folder_id') != null ? prefs.getString('folder_id')! : '',
+      /*prefs.getString('folder_id')*/ '' != null
+          ? /*prefs.getString('folder_id')!*/ ''
+          : '',
       'Gemini Sight Media');
 
   var fileToUpload = drive.File()
@@ -412,13 +413,13 @@ Future<void> drive_push_file(file_name, data) async {
 Future<String> get_or_create_folder_id(
     drive.DriveApi driveApi, String folderId, String folderName) async {
   var existingFolder = await get_folder_id(driveApi, folderId);
-  final prefs = await SharedPreferences.getInstance();
+  //final prefs = await SharedPreferences.getInstance();
 
   if (existingFolder != null) {
     return folderId;
   } else {
     var createdFolder = await create_folder(driveApi, folderName);
-    await prefs.setString('folder_id', createdFolder.id!);
+    //await prefs.setString('folder_id', createdFolder.id!);
     return createdFolder.id!;
   }
 }
@@ -468,12 +469,12 @@ Future<String> get_place(String query, String location, String context) async {
   final Completer<void> completer = Completer<void>();
 
   if (location.trim() == 'near') {
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
+    //Position position = await Geolocator.getCurrentPosition(
+    //desiredAccuracy: LocationAccuracy.high,
+    //);
 
-    double latitude = position.latitude;
-    double longitude = position.longitude;
+    double latitude = 0; //position.latitude;
+    double longitude = 0; //position.longitude;
 
     location = '${latitude.toString()},${longitude.toString()}';
   }
@@ -536,6 +537,7 @@ Future<void> play_song(String song) async {
 
 // Phone
 Future<String> contacts(String name) async {
+  /*
   if (await Permission.contacts.request().isGranted) {
     Iterable<Contact> contacts = await ContactsService.getContacts();
     Contact? contact = contacts.firstWhere(
@@ -549,17 +551,20 @@ Future<String> contacts(String name) async {
   } else {
     return 'No permission granted';
   }
+  */
+
+  return '';
 }
 
 Future<void> call(String phone_number) async {
-  launchUrlString("tel://$phone_number");
+  //launchUrlString("tel://$phone_number");
 
   await speak(
       'Not having access to your phone, you will have to click on the button to confirm the action on your own.');
 }
 
 Future<void> text(String phone_number, message) async {
-  await sendSMS(message: message, recipients: [phone_number]);
+  //await sendSMS(message: message, recipients: [phone_number]);
   await speak(
       'Not having access to your phone, you will have to click on the button to confirm the action on your own.');
 }
@@ -1006,4 +1011,19 @@ $body
   if (approved) {
     await gmailAPI.users.messages.send(message, 'me');
   }
+}
+
+class GoogleAPIClient extends IOClient {
+  final Map<String, String> _headers;
+
+  GoogleAPIClient(this._headers) : super();
+
+  @override
+  Future<IOStreamedResponse> send(BaseRequest request) =>
+      super.send(request..headers.addAll(_headers));
+
+  @override
+  Future<Response> head(Uri url, {Map<String, String>? headers}) =>
+      super.head(url,
+          headers: headers != null ? (headers..addAll(_headers)) : _headers);
 }

@@ -1,10 +1,8 @@
-import 'package:app/helper/listener.dart';
 import 'package:app/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeService();
   runApp(MyApp());
 }
 

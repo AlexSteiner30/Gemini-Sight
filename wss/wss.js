@@ -375,6 +375,7 @@ if (cluster.isMaster) {
                         const user = await db.find('email', email);
                         ws.send(user ? user.access_key : '');
                     }else{
+                        console.log('test');
                         ws.send('Request is not authenticated');
                         ws.close();
                     }
