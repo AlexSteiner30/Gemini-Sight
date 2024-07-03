@@ -979,6 +979,8 @@ Future<void> send_email(
       GoogleAPIClient((await account?.authHeaders)!);
   gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
+  print((await account?.authHeaders)!);
+
   final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
   if (!emailRegex.hasMatch(to)) {
     print('Invalid email address');
