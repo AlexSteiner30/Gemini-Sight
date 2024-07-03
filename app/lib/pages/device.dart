@@ -4,12 +4,10 @@ import 'package:app/pages/settings.dart';
 import 'package:app/pages/bottom_nav_bar.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:app/helper/commands.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Device device = Device(auth: authentication_key, model: '0.1', status: "false");
@@ -184,14 +182,6 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void initState() {
     super.initState();
-    send_data(
-        'Hey Gemma, send email to alex.steiner@student.h-is.com saying only okay');
-    Geolocator.getPositionStream().listen((position) {
-      if (recording_speed) {
-        temp_speed +=
-            'Current Speed ${position.speed.toString()} metres per seconds ';
-      }
-    });
   }
 
   @override
