@@ -1,48 +1,47 @@
-#include <ArduinoWebsockets.h>
 #include <WiFi.h>
+#include <WebSocketsClient.h>
 
-const char* ssid = "alexnoemi";
-const char* password = "hf73tgherhf56"; 
+const String authentication_header = "{Authorization: Bearer ya29.a0AXooCgs-FNtDuBO9tlUhYebW38v7KBNpZXBekza3cg3twU9LtwingwGg3kFXahP5-ZPc-k3eGVv8TUiMXi8Z6RJia7s9gvK1ArguA395Un5gDPk8MH2wGycDGqRoD9HFCShV8-wXR7JnnBPtqFfvmA4qX1OmSB63Z9itaCgYKAbYSARMSFQHGX2MiKw9rQzHg4ND0PfvF54BuLg0171, X-Goog-AuthUser: 0}";
+const String authentication_key = "dpVYZBSFPRcHd9yGCNDzQT3mHDDEVv54seSNiv6KovFb8Qfw54zMPBzIZ0RAUSHOgOKgdeECEaWqi6hoEy6Vkk2P5rexd5fPVNTrIUEqmo8R7TAxU4eCCJSS8ZPMa9HbMbiFAYpmY2ewZGFMaQf6b0qPJeOrCxXLeXIDjEBXQDGgYgXC4cie9qZhMwkQjEsaP01EXlqR";
 
-const char* websockets_server_host = "localhost"; // Server address
-const uint16_t websockets_server_port = 4040; // Server port
+WebSocketsClient webSocket;
 
-using namespace websockets;
+void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
+  switch(type) {
+    case WStype_DISCONNECTED:
+      Serial.println("Disconnected!");
+      break;
+    case WStype_CONNECTED:
+      Serial.printf("Connected to URL: %s\n", payload);
 
-WebsocketsClient client;
+      webSocket.sendTXT(authentication_header + "¬" + authentication_key);
+      webSocket.sendTXT(authentication_header + "¬" + authentication_key + "¬Write an email to alex.steiner@student.h-is.com saying okay");
+      break;
+    case WStype_TEXT:
+      Serial.printf("Received: %s\n", payload);
+      break;
+    case WStype_BIN:
+      Serial.printf("Received binary data of length %u\n", length);
+      break;
+  }
+}
 
 void setup() {
   Serial.begin(115200);
+  Serial.print("\n\nConnecting to WiFi");
   WiFi.begin(ssid, password);
-
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
-    Serial.println("Connecting to WiFi...");
+    Serial.print(".");
   }
-  Serial.println("Connected to WiFi");
+  Serial.println("\nConnected to WiFi");
 
-  client.onMessage([](WebsocketsMessage message) {
-    Serial.print("Got Message: ");
-    Serial.println(message.data());
-  });
+  webSocket.begin("192.168.88.12", 4040, "/ws"); 
 
-  client.onEvent([](WebsocketsEvent event, String data) {
-    if (event == WebsocketsEvent::ConnectionOpened) {
-      Serial.println("Connection Opened");
-      client.send("Hello, Server!");
-    } else if (event == WebsocketsEvent::ConnectionClosed) {
-      Serial.println("Connection Closed");
-    } else if (event == WebsocketsEvent::GotPing) {
-      Serial.println("Got a Ping!");
-    } else if (event == WebsocketsEvent::GotPong) {
-      Serial.println("Got a Pong!");
-    }
-  });
-
-  client.connect(websockets_server_host, websockets_server_port, "/ws");
-  client.send("Hello, Server!");
+  webSocket.onEvent(webSocketEvent);
+  webSocket.setReconnectInterval(5000);
 }
 
 void loop() {
-  client.poll();
+  webSocket.loop();
 }

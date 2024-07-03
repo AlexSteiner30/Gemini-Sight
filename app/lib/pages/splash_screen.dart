@@ -45,6 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
           ]);
 
       account = await _googleSignIn.signInSilently();
+      print((await account?.authHeaders)!);
       final GoogleSignInAuthentication auth = await account!.authentication;
 
       final Completer<String> completer = Completer<String>();
