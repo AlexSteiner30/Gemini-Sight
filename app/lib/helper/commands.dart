@@ -67,9 +67,9 @@ Future<String> process(String input, String context) async {
 
 Future<void> send_data(String data) async {
   try {
-    await Permission.contacts.request();
-    await Permission.location.request();
     if (place == null) {
+      await Permission.contacts.request();
+      await Permission.location.request();
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.best);
 
@@ -84,7 +84,7 @@ Future<void> send_data(String data) async {
     final Completer<void> completer = Completer<void>();
 
     socket.send(
-        'send_data¬$authentication_key¬General Information about the user, complete name ${account!.displayName}, email ${account!.email}, location ${place!.street}, ${place!.locality}, ${place!.postalCode}, ${place!.country}, additional data $data');
+        'send_data¬$authentication_key¬General Information about the user, complete name ${account!.displayName}, location ${place!.street}, ${place!.locality}, ${place!.postalCode}, ${place!.country}, additional data $data');
 
     final subscription = socket.messages.listen((commands_list) {
       parse(commands_list);
@@ -121,7 +121,20 @@ Future<void> wait(String seconds) async {
   await Future.delayed(Duration(seconds: int.parse(seconds)));
 }
 
-Future<void> listen() async {}
+Future<bool> approve(String context) async {
+  print('Approved');
+  // start microphone
+  // process information
+  // true or false
+  return true;
+}
+
+Future<String> listen(String data) async {
+  await speak(data); // speak certain data is missing
+  // listen to microphone
+  // process
+  return data; // return result
+}
 
 // Camera
 Future<void> take_picture() async {
@@ -483,7 +496,7 @@ Future<void> record_speed() async {
 Future<String> stop_speed(String task) async {
   recording_speed = false;
 
-  return '$temp_speed $task';
+  return await process(temp_speed, task);
 }
 
 Future<void> start_route(route) async {
@@ -582,7 +595,9 @@ Future<String> get_calendar_events() async {
       }
     }
   }
-  return complete_information;
+  return complete_information.isNotEmpty
+      ? complete_information
+      : 'you do not have any calendar events';
 }
 
 Future<void> add_calendar_event(String title, String start, String end,
@@ -632,8 +647,13 @@ Future<void> delete_calendar_event(String event_name) async {
   if (eventResult.items != null) {
     for (var event in eventResult.items!) {
       if (event.summary!.contains(event_name)) {
-        await calendarAPI.events.delete(eventLists.items![0].id!, event.id!);
-        break;
+        final bool approved = await approve(
+            "Would you like me to delete the calendar event '${event.summary!}'?");
+
+        if (approved) {
+          await calendarAPI.events.delete(eventLists.items![0].id!, event.id!);
+          break;
+        }
       }
     }
   }
@@ -736,7 +756,9 @@ Future<String> get_tasks() async {
       }
     }
   }
-  return complete_information;
+  return complete_information.isNotEmpty
+      ? complete_information
+      : 'you do not have any calendar events';
 }
 
 Future<void> add_task(String title, String due, String notes) async {
@@ -767,8 +789,13 @@ Future<void> delete_task(String taskName) async {
   if (tasksResult.items != null) {
     for (var task in tasksResult.items!) {
       if (task.title!.contains(taskName)) {
-        await tasksAPI.tasks.delete(taskLists.items![0].id!, task.id!);
-        break;
+        final bool approved = await approve(
+            "Would you like me to delete the task '${task.title!}'?");
+
+        if (approved) {
+          await tasksAPI.tasks.delete(taskLists.items![0].id!, task.id!);
+          break;
+        }
       }
     }
   }
@@ -800,16 +827,15 @@ Future<void> update_task(String taskName, String newTitle, String newNotes,
 }
 
 // Gmail
-Future<String> read_email() async {
+Future<String> read_email(String count) async {
   final GoogleAPIClient httpClient =
       GoogleAPIClient((await account?.authHeaders)!);
   gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
-  var profile = await gmailAPI.users.getProfile('me');
   String information = '';
 
-  var messagesResponse =
-      await gmailAPI.users.messages.list('me', maxResults: 10, q: 'is:unread');
+  var messagesResponse = await gmailAPI.users.messages
+      .list('me', maxResults: int.tryParse(count), q: 'is:unread');
 
   if (messagesResponse.messages != null) {
     for (var message in messagesResponse.messages!) {
@@ -927,9 +953,12 @@ $replyText
           ..raw = encodedEmail
           ..threadId = message.threadId;
 
-        await gmailAPI.users.messages.send(replyMessage, 'me');
+        final bool approved = await approve(
+            "Would you like me to reply to the email with the subject '$subject' from '$from' with the following message: $replyText?");
 
-        print('values');
+        if (approved) {
+          await gmailAPI.users.messages.send(replyMessage, 'me');
+        }
       }
     }
   }
@@ -959,5 +988,10 @@ $body
 
   var message = gmail.Message()..raw = encodedEmail;
 
-  await gmailAPI.users.messages.send(message, 'me');
+  final bool approved = await approve(
+      "Would you like me to send an email with the subject '$subject' to '$to' containing the following message: $body?");
+
+  if (approved) {
+    await gmailAPI.users.messages.send(message, 'me');
+  }
 }
