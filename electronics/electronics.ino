@@ -1,6 +1,9 @@
 #include <WiFi.h>
 #include <WebSocketsClient.h>
 
+const char* ssid = "";
+const char* password = "";
+
 const String authentication_header = "{Authorization: Bearer ya29.a0AXooCgs-FNtDuBO9tlUhYebW38v7KBNpZXBekza3cg3twU9LtwingwGg3kFXahP5-ZPc-k3eGVv8TUiMXi8Z6RJia7s9gvK1ArguA395Un5gDPk8MH2wGycDGqRoD9HFCShV8-wXR7JnnBPtqFfvmA4qX1OmSB63Z9itaCgYKAbYSARMSFQHGX2MiKw9rQzHg4ND0PfvF54BuLg0171, X-Goog-AuthUser: 0}";
 const String authentication_key = "dpVYZBSFPRcHd9yGCNDzQT3mHDDEVv54seSNiv6KovFb8Qfw54zMPBzIZ0RAUSHOgOKgdeECEaWqi6hoEy6Vkk2P5rexd5fPVNTrIUEqmo8R7TAxU4eCCJSS8ZPMa9HbMbiFAYpmY2ewZGFMaQf6b0qPJeOrCxXLeXIDjEBXQDGgYgXC4cie9qZhMwkQjEsaP01EXlqR";
 
