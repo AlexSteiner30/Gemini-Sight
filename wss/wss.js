@@ -308,18 +308,6 @@ if (cluster.isMaster) {
                             }
                             break;
 
-                        case 'media':
-                            {
-                                const base64Data = messageParts[2];
-                                const uuid = helper.uuidv4();
-                                const dirPath = `./media/${access_key}`;
-                                if (!fs.existsSync(dirPath)) {
-                                    fs.mkdirSync(dirPath);
-                                }
-                                fs.writeFileSync(`${dirPath}/${uuid}.png`, Buffer.from(base64Data, 'base64'));
-                            }
-                            break;
-
                         case 'vision':
                             {
 
@@ -373,15 +361,7 @@ if (cluster.isMaster) {
                                 const input = messageParts[2];
                                 const additional_query = (await db.find('access_key', access_key)).query;
 
-                                const dateObj = new Date();
-                                const year = dateObj.getFullYear();
-                                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                                const day = String(dateObj.getDate()).padStart(2, '0');
-                                const hours = String(dateObj.getHours()).padStart(2, '0');
-                                const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-                                const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
-
-                                const response = await ai.process_input(input + '{' + additional_query + '}' + `[date: ${formattedDate}]`); 
+                                const response = await ai.process_input(input + '{' + additional_query + '}'); 
                                 ws.send(response);
 
                                 console.log(response);
