@@ -1,7 +1,8 @@
 #include <WiFi.h>
 #include <WebSocketsClient.h>
 
-
+const char* ssid = "";
+const char* password = "";
 
 String authentication_key = "peJ0AMmumNwHwk3U6IMcRqtLqFWO0Ao9oT3BaijuZA1s5f5NqPyvPnhyAGVPV8Kh64HxcNiux3Rq2lS6qMI6IhGztPPsvrahqux4MsxikyHCCPDsazVxJln7hJfDa4J2";
 
@@ -16,7 +17,9 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       Serial.printf("Connected to URL: %s\n", payload);
 
       webSocket.sendTXT(authentication_key);
-      webSocket.sendTXT(authentication_key + "¬Write an email to alex.steiner@student.h-is.com saying okay");
+
+      delay(1000);
+      webSocket.sendTXT(authentication_key + "¬Hey Gemma, who are my team members");
       break;
     case WStype_TEXT:
       Serial.printf("Received: %s\n", payload);
@@ -40,7 +43,6 @@ void setup() {
   webSocket.begin("192.168.88.12", 4040, "/ws"); 
 
   webSocket.onEvent(webSocketEvent);
-  webSocket.setReconnectInterval(5000);
 }
 
 void loop() {

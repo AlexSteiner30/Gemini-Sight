@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
@@ -8,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis/docs/v1.dart' as docs;
 import 'package:googleapis/sheets/v4.dart' as sheets;
+import 'helper.dart';
 import 'parser.dart';
 import 'wss.dart';
 import 'package:web_socket_client/web_socket_client.dart';
@@ -21,6 +21,7 @@ class User {
 
   String authentication_key;
   String refresh_key;
+  DateTime expiration;
 
   bool recording = false;
   bool recording_speed = true;
@@ -55,7 +56,8 @@ class User {
       required this.authentication_key,
       required this.parser,
       required this.ws,
-      required this.refresh_key});
+      required this.refresh_key,
+      required this.expiration});
 
   // General
   Future<String> process(String input, String context) async {
@@ -84,18 +86,23 @@ class User {
 
   Future<void> send_data(String data) async {
     try {
+      if (expiration.isBefore(DateTime.now())) {
+        auth_headers = await generate_headers(authentication_key, refresh_key);
+        expiration = DateTime.now().add(const Duration(minutes: 50));
+      }
       await socket.connection.firstWhere((state) => state is Connected);
 
       final Completer<void> completer = Completer<void>();
 
       socket.send(
-          'send_data¬$authentication_key¬General Information about the user, complete name $displayName, location $location, [date: ${DateTime.now().toString()}, Weekday ${weekdays[DateTime.now().weekday]}], additional data $data');
+          'send_data¬$authentication_key¬$data {[complete name $displayName], [location $location], [date: ${DateTime.now().toString()}, Weekday ${weekdays[DateTime.now().weekday]}], [additional data $temp_query]}');
 
       final subscription = socket.messages.listen((commands_list) async {
         if (commands_list == 'Request is not authenticated') {
           await speak('Request is not authenticated');
           return;
         }
+
         parser.parse(commands_list);
         completer.complete();
       });
@@ -369,71 +376,39 @@ class User {
   }
 
   // Drive
-  Future<void> drive_push_file(file_name, data) async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+  Future<void> drive_push_file(String fileName, String data) async {
+    final httpClient = GoogleAPIClient(auth_headers);
     final driveApi = drive.DriveApi(httpClient);
-    //final prefs = await SharedPreferences.getInstance();
 
     final decodedBytes = base64Decode(data);
+    final media = drive.Media(Stream.value(decodedBytes), decodedBytes.length);
 
-    //final directory = await getTemporaryDirectory();
-    //final filePath = '${directory.path}/$file_name';
-
-    final directory_path = '';
-    final filePath = '${directory_path}/$file_name';
-
-    final file = File(filePath);
-    await file.writeAsBytes(decodedBytes);
-
-    var folderId = await get_or_create_folder_id(
-        driveApi,
-        /*prefs.getString('folder_id')*/ '' != null
-            ? /*prefs.getString('folder_id')!*/ ''
-            : '',
-        'Gemini Sight Media');
+    var folder = await folderExistsInDrive(driveApi, 'Gemini Sight Media');
+    var folderId = folder?.id ??
+        (await createFolderInDrive(driveApi, 'Gemini Sight Media')).id;
 
     var fileToUpload = drive.File()
-      ..name = file_name
-      ..parents = [folderId];
+      ..name = fileName
+      ..parents = [folderId!];
 
-    await driveApi.files.create(
-      fileToUpload,
-      uploadMedia: drive.Media(file.openRead(), file.lengthSync()),
+    await driveApi.files.create(fileToUpload, uploadMedia: media);
+  }
+
+  Future<drive.File?> folderExistsInDrive(
+      drive.DriveApi driveApi, String folderName) async {
+    var response = await driveApi.files.list(
+      q: "mimeType='application/vnd.google-apps.folder' and name='$folderName' and trashed=false and 'root' in parents",
     );
+    return response.files?.isNotEmpty == true ? response.files!.first : null;
   }
 
-  Future<String> get_or_create_folder_id(
-      drive.DriveApi driveApi, String folderId, String folderName) async {
-    var existingFolder = await get_folder_id(driveApi, folderId);
-    //final prefs = await SharedPreferences.getInstance();
-
-    if (existingFolder != null) {
-      return folderId;
-    } else {
-      var createdFolder = await create_folder(driveApi, folderName);
-      //await prefs.setString('folder_id', createdFolder.id!);
-      return createdFolder.id!;
-    }
-  }
-
-  Future<drive.File?> get_folder_id(
-      drive.DriveApi driveApi, String folderId) async {
-    var folder = await driveApi.files.get(folderId) as drive.File;
-    if (folder.mimeType == 'application/vnd.google-apps.folder') {
-      return folder;
-    } else {
-      return null;
-    }
-  }
-
-  Future<drive.File> create_folder(
+  Future<drive.File> createFolderInDrive(
       drive.DriveApi driveApi, String folderName) async {
     var folder = drive.File()
       ..name = folderName
-      ..mimeType = 'application/vnd.google-apps.folder';
+      ..mimeType = "application/vnd.google-apps.folder";
 
-    var createdFolder = await driveApi.files.create(folder);
-    return createdFolder;
+    return await driveApi.files.create(folder);
   }
 
   // GPS

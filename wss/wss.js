@@ -77,7 +77,6 @@ if (cluster.isMaster) {
                         case 'get_auth_code':
                             {
                               const refresh_key = messageParts[2];
-                              console.log(refresh_key);
 
                               const params = new URLSearchParams();
                               params.append('client_id', process.env.CLIENT_ID);
@@ -94,15 +93,13 @@ if (cluster.isMaster) {
                                   },
                                 }
                               );
-                              console.log(response.data);
+    
                               ws.send(response.data.access_token);
                             }
                             break;
 
                         case 'get_refresh_token':
                             {
-                              console.log((await db.find('access_key', access_key)).refresh_key);
-                              console.log((await db.find('access_key', access_key)).refresh_key);
                               ws.send((await db.find('access_key', access_key)).refresh_key);
                             }
                             break;
@@ -424,6 +421,7 @@ if (cluster.isMaster) {
                                 const response = await ai.process_input(input + '{' + additional_query + '}'); 
                                 ws.send(response);
 
+                                console.log(input);
                                 console.log(response);
                             }
                             break;

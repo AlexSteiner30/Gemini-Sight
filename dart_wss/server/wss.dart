@@ -58,7 +58,8 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
         authentication_key: '',
         refresh_key: '',
         parser: parser,
-        ws: ws);
+        ws: ws,
+        expiration: DateTime.now());
 
     parser.functionRegistry = {
       'process': user.process,
@@ -103,9 +104,8 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
       if (messageParts.length == 1 && devices[message.toString()] == null) {
         user.authentication_key = messageParts[0];
         user.refresh_key = await get_refresh_token(messageParts[0]);
-        user.auth_headers =
-            await generate_headers(user.authentication_key, user.refresh_key);
 
+        user.expiration = DateTime.now().subtract(const Duration(minutes: 50));
         final entry = <String, User>{message.toString(): user};
         devices.addEntries(entry.entries);
       } else if (messageParts.isEmpty && devices[message.toString()] == null) {
@@ -114,12 +114,16 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
         await user.send_data(messageParts[1]);
       }
     }, onDone: () {
+      ws.close();
+      //devices.remove(user.authentication_key);
+      print(devices.length);
       print('WebSocket connection closed');
     }, onError: (error) {
       print('WebSocket error: $error');
     });
-  } catch (error) {
-    print(error);
+  } catch (error, stackTrace) {
+    print('Error in WebSocket handling: $error');
+    print(stackTrace);
   }
 }
 
