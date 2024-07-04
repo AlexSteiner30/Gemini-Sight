@@ -3,8 +3,10 @@ import 'package:app/helper/query.dart';
 import 'package:app/pages/settings.dart';
 import 'package:app/pages/bottom_nav_bar.dart';
 import 'package:app/pages/sign_in.dart';
+import 'package:app/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -192,6 +194,23 @@ class _DevicePageState extends State<DevicePage> {
 
   int _currentIndex = 0;
 
+  Future<drive.File?> folderExistsInDrive(
+      drive.DriveApi driveApi, String folderName) async {
+    var response = await driveApi.files.list(
+      q: "mimeType='application/vnd.google-apps.folder' and name='$folderName' and trashed=false and 'root' in parents",
+    );
+    return response.files?.isNotEmpty == true ? response.files!.first : null;
+  }
+
+  Future<drive.File> createFolderInDrive(
+      drive.DriveApi driveApi, String folderName) async {
+    var folder = drive.File()
+      ..name = folderName
+      ..mimeType = "application/vnd.google-apps.folder";
+
+    return await driveApi.files.create(folder);
+  }
+
   Future<void> _onNavBarTap(int index) async {
     /* 
     Index 
@@ -205,9 +224,13 @@ class _DevicePageState extends State<DevicePage> {
     });
 
     if (_currentIndex == 1) {
-      final prefs = await SharedPreferences.getInstance();
+      final httpClient = GoogleAPIClient(await account!.authHeaders);
+      final driveApi = drive.DriveApi(httpClient);
+      var folder = await folderExistsInDrive(driveApi, 'Gemini Sight Media');
+      var folderId = folder?.id ??
+          (await createFolderInDrive(driveApi, 'Gemini Sight Media')).id;
       String folder_url =
-          "https://drive.google.com/drive/u/2/folders/${prefs.getString('folder_id')}";
+          "https://drive.google.com/drive/u/2/folders/$folderId";
       if (await canLaunch(folder_url)) {
         _currentIndex = 0;
         await launch(folder_url);
