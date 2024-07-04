@@ -29,10 +29,10 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToLogin() async {
-    await Future.delayed(const Duration(seconds: 1));
-
     final prefs = await SharedPreferences.getInstance();
-
+    if (prefs.getBool('blind_support') == null) {
+      await prefs.setBool('blind_support', false);
+    }
     if ((prefs.getBool('logged') ?? false)) {
       final GoogleSignIn _googleSignIn = GoogleSignIn(
           clientId:
@@ -49,7 +49,6 @@ class _SplashScreenState extends State<SplashScreen> {
           ]);
       account = await _googleSignIn.signInSilently();
 
-      print(await account!.authHeaders);
       final GoogleSignInAuthentication auth = await account!.authentication;
       final Completer<String> completer = Completer<String>();
       await socket.connection.firstWhere((state) => state is Connected);
@@ -72,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
         MaterialPageRoute(
             builder: (context) => DevicePage(
                 user: account!,
-                connected: false,
+                connected: true,
                 blind_support: prefs.getBool('blind_support') ?? false)),
       );
     } else {

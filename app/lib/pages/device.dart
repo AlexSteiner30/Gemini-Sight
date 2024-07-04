@@ -7,8 +7,8 @@ import 'package:app/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'qr_code.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -39,22 +39,10 @@ class DevicePage extends StatefulWidget {
 }
 
 class _DevicePageState extends State<DevicePage> {
-  final List<Device> _devices = [];
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  QRViewController? controller;
   bool isLoading = false;
-  // ignore: non_constant_identifier_names
+  int _currentIndex = 0;
 
-  void _onQRViewCreated(QRViewController controller) {
-    this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
-      _addDevice(scanData.code);
-      controller.dispose();
-      Navigator.pop(context); // Close the scanner
-    });
-  }
-
-  Future<void> _scanQRCode() async {
+  Future<void> _scanQRCode(BuildContext context) async {
     const permission = Permission.camera;
 
     if (await permission.isDenied) {
@@ -65,37 +53,13 @@ class _DevicePageState extends State<DevicePage> {
 
     if (status.isGranted) {
       Navigator.push(
-        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(
-          builder: (context) => Scaffold(
-            appBar: AppBar(
-              title: const Text('Scan QR Code'),
-            ),
-            body: Stack(
-              children: [
-                QRView(
-                  key: qrKey,
-                  onQRViewCreated: _onQRViewCreated,
-                ),
-                Center(
-                  child: Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white, width: 2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          builder: (context) => QRCodeScreen(),
         ),
       );
     } else {
       showDialog<void>(
-        // ignore: use_build_context_synchronously
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
@@ -124,61 +88,8 @@ class _DevicePageState extends State<DevicePage> {
     }
   }
 
-  void _addDevice(String qrData) {
-    // Parse the QR code data to extract device details
-    // For this example, assume the qrData is formatted as "id,name,model"
-    final parts = qrData.split(',');
-    print(parts);
-    if (parts.length == 3) {
-      setState(() {
-        _devices.add(Device(
-          auth: parts[0],
-          model: parts[1],
-          status: parts[2],
-        ));
-      });
-    }
-  }
-
-  void _confirmDelete(int index) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Confirm Delete'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(
-                    'Are you sure you want to delete ${_devices[index].auth}?'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Delete'),
-              onPressed: () {
-                _deleteDevice(index);
-                Navigator.of(dialogContext).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _deleteDevice(int index) {
-    setState(() {
-      _devices.removeAt(index);
-    });
+  void scanQRCode() {
+    _scanQRCode(context);
   }
 
   @override
@@ -188,11 +99,8 @@ class _DevicePageState extends State<DevicePage> {
 
   @override
   void dispose() {
-    controller?.dispose();
     super.dispose();
   }
-
-  int _currentIndex = 0;
 
   Future<drive.File?> folderExistsInDrive(
       drive.DriveApi driveApi, String folderName) async {
@@ -212,18 +120,12 @@ class _DevicePageState extends State<DevicePage> {
   }
 
   Future<void> _onNavBarTap(int index) async {
-    /* 
-    Index 
-    0 -> Device
-    1 -> Gallery
-    2 -> - QR Code
-    */
-
     setState(() {
       _currentIndex = index;
     });
 
     if (_currentIndex == 1) {
+      _currentIndex = 0;
       final httpClient = GoogleAPIClient(await account!.authHeaders);
       final driveApi = drive.DriveApi(httpClient);
       var folder = await folderExistsInDrive(driveApi, 'Gemini Sight Media');
@@ -231,14 +133,15 @@ class _DevicePageState extends State<DevicePage> {
           (await createFolderInDrive(driveApi, 'Gemini Sight Media')).id;
       String folder_url =
           "https://drive.google.com/drive/u/2/folders/$folderId";
+      // ignore: deprecated_member_use
       if (await canLaunch(folder_url)) {
-        _currentIndex = 0;
+        // ignore: deprecated_member_use
         await launch(folder_url);
       } else {
         throw 'Could not launch $folder_url';
       }
     } else if (_currentIndex == 2) {
-      _scanQRCode();
+      await _scanQRCode(context);
       _currentIndex = 0;
     }
   }
@@ -326,6 +229,20 @@ class _DevicePageState extends State<DevicePage> {
                                       style: TextStyle(color: Colors.white)),
                                 ],
                               ),
+                              SizedBox(width: 40),
+                              Column(
+                                children: [
+                                  Icon(Icons.bluetooth, color: Colors.white),
+                                  SizedBox(height: 5),
+                                ],
+                              ),
+                              SizedBox(width: 40),
+                              Column(
+                                children: [
+                                  Icon(Icons.wifi, color: Colors.white),
+                                  SizedBox(height: 5),
+                                ],
+                              ),
                             ],
                           ),
                         if (!widget.connected)
@@ -372,7 +289,7 @@ class _DevicePageState extends State<DevicePage> {
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
                             ),
-                            onPressed: _scanQRCode,
+                            onPressed: scanQRCode,
                             icon: const Icon(Icons.qr_code),
                             label: const Text('Connect'),
                           ),
@@ -381,7 +298,7 @@ class _DevicePageState extends State<DevicePage> {
                           TextButton(
                             onPressed: () {},
                             child: const Text(
-                              'Maximize your battery life',
+                              'Gemini Sight Glasses successfully connected',
                               style: TextStyle(color: Colors.blueAccent),
                             ),
                           ),
@@ -410,7 +327,7 @@ class _DevicePageState extends State<DevicePage> {
                           onTap: () async {
                             final prefs = await SharedPreferences.getInstance();
                             widget.blind_support =
-                                prefs.getBool('blind_support')!;
+                                prefs.getBool('blind_support') ?? false;
 
                             await prefs.setBool(
                                 'blind_support', !widget.blind_support);

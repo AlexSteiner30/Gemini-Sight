@@ -1,8 +1,8 @@
 #include <WiFi.h>
 #include <WebSocketsClient.h>
 
-const char* ssid = "";
-const char* password = "";
+const char* ssid = "alexnoemi";
+const char* password = "hf73tgherhf56";
 
 String authentication_key = "peJ0AMmumNwHwk3U6IMcRqtLqFWO0Ao9oT3BaijuZA1s5f5NqPyvPnhyAGVPV8Kh64HxcNiux3Rq2lS6qMI6IhGztPPsvrahqux4MsxikyHCCPDsazVxJln7hJfDa4J2";
 
