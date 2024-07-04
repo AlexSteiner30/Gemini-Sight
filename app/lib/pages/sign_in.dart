@@ -29,19 +29,21 @@ class _SignInPageState extends State<SignInPage> {
   bool isLoading = false;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId:
-        '910242255946-b70mhjrb2225nmapdvsgrr0mk66r9pid.apps.googleusercontent.com',
-    scopes: [
-      calendar.CalendarApi.calendarScope,
-      gmail.GmailApi.gmailReadonlyScope,
-      gmail.GmailApi.gmailSendScope,
-      gmail.GmailApi.gmailComposeScope,
-      gmail.GmailApi.gmailModifyScope,
-      drive.DriveApi.driveScope,
-      tasks.TasksApi.tasksScope,
-      sheets.SheetsApi.spreadsheetsScope,
-    ],
-  );
+      clientId:
+          '910242255946-b70mhjrb2225nmapdvsgrr0mk66r9pid.apps.googleusercontent.com',
+      scopes: [
+        calendar.CalendarApi.calendarScope,
+        gmail.GmailApi.gmailReadonlyScope,
+        gmail.GmailApi.gmailSendScope,
+        gmail.GmailApi.gmailComposeScope,
+        gmail.GmailApi.gmailModifyScope,
+        drive.DriveApi.driveScope,
+        tasks.TasksApi.tasksScope,
+        sheets.SheetsApi.spreadsheetsScope,
+      ],
+      forceCodeForRefreshToken: true,
+      serverClientId:
+          '910242255946-3okgle3e78inrabcm39807h21cumhvkj.apps.googleusercontent.com');
 
   GoogleSignInAccount? user;
 
@@ -55,6 +57,7 @@ class _SignInPageState extends State<SignInPage> {
       final GoogleSignInAccount? account = await _googleSignIn.signIn();
       if (account == null) return; // User canceled the sign-in
       final GoogleSignInAuthentication auth = await account.authentication;
+
       user = account;
 
       await _verifyAuthentication(auth.idToken, account);
@@ -87,6 +90,7 @@ class _SignInPageState extends State<SignInPage> {
       return;
     }
 
+    await _handleServerAuthCode(account!.serverAuthCode!);
     await _handleFirstTimeLogin(account, prefs);
 
     Navigator.pushReplacement(
@@ -99,6 +103,20 @@ class _SignInPageState extends State<SignInPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleServerAuthCode(String serverAuthCode) async {
+    final completer = Completer<String>();
+    await socket.connection.firstWhere((state) => state is Connected);
+
+    socket.send('auth_code¬$authentication_key¬$serverAuthCode');
+
+    final subscription = socket.messages.listen((response) {
+      completer.complete(response);
+    });
+
+    await completer.future;
+    await subscription.cancel();
   }
 
   Future<void> _handleFirstTimeLogin(

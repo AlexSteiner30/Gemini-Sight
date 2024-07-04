@@ -9,6 +9,7 @@ if (cluster.isMaster) {
 }else{
     const fs = require('fs');
     const axios = require('axios');
+    const querystring = require('querystring');
     const { Database } = require('./func/db.js');
     const { Audio } = require('./func/audio.js');
     const helper = require('./func/helper.js');
@@ -41,9 +42,68 @@ if (cluster.isMaster) {
                         case 'first_time':
                             {
                                 const email = messageParts[2];
-                                const user = await db.find('email', email);
+                                ws.send((await db.find('email', email)).first_time ? "true": "false");
+                            }
+                            break;
 
-                                ws.send(user ? "true": "false");
+                        case 'auth_code':
+                            {
+                                const auth_code = messageParts[2];
+
+                                const response = await axios.post(
+                                  'https://oauth2.googleapis.com/token',
+                                  querystring.stringify({
+                                    'client_id': process.env.CLIENT_ID,
+                                    'client_secret': process.env.CLIENT_SECRET,
+                                    'code': auth_code,
+                                    'grant_type': 'authorization_code',
+                                  }),
+                                  {
+                                    headers: {
+                                      'Content-Type': 'application/x-www-form-urlencoded',
+                                    },
+                                  }
+                                );
+
+                                const refresh_key = response.data.refresh_token;
+                                const filter = { access_key: access_key };
+  
+                                await db.Product.updateOne(filter, { refresh_key: refresh_key});
+
+                                ws.send('Refresh key was successful');
+                            }
+                            break;
+
+                        case 'get_auth_code':
+                            {
+                              const refresh_key = messageParts[2];
+                              console.log(refresh_key);
+
+                              const params = new URLSearchParams();
+                              params.append('client_id', process.env.CLIENT_ID);
+                              params.append('client_secret', process.env.CLIENT_SECRET);
+                              params.append('refresh_token', refresh_key);
+                              params.append('grant_type', 'refresh_token');
+
+                              const response = await axios.post(
+                                'https://oauth2.googleapis.com/token',
+                                params,
+                                {
+                                  headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                  },
+                                }
+                              );
+                              console.log(response.data);
+                              ws.send(response.data.access_token);
+                            }
+                            break;
+
+                        case 'get_refresh_token':
+                            {
+                              console.log((await db.find('access_key', access_key)).refresh_key);
+                              console.log((await db.find('access_key', access_key)).refresh_key);
+                              ws.send((await db.find('access_key', access_key)).refresh_key);
                             }
                             break;
 
@@ -375,7 +435,7 @@ if (cluster.isMaster) {
                         const user = await db.find('email', email);
                         ws.send(user ? user.access_key : '');
                     }else{
-                        console.log('test');
+                        console.log('Request is not authenticated');
                         ws.send('Request is not authenticated');
                         ws.close();
                     }

@@ -17,6 +17,7 @@ class Database {
 
     const productSchema = new mongoose.Schema({
       access_key: String,
+      refresh_key: String,
       model: Number,
       query: String,
       email: String,

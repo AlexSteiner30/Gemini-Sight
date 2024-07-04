@@ -1,1 +1,1 @@
-npm i ws mongoose express axios path fs @google/generative-ai crypto wav dotenv google-auth-library @googlemaps/google-maps-services-js
+npm i ws mongoose express axios path fs @google/generative-ai crypto wav dotenv google-auth-library @googlemaps/google-maps-services-js querystring

@@ -20,6 +20,7 @@ class User {
   var ws;
 
   String authentication_key;
+  String refresh_key;
 
   bool recording = false;
   bool recording_speed = true;
@@ -53,7 +54,8 @@ class User {
       required this.auth_headers,
       required this.authentication_key,
       required this.parser,
-      required this.ws});
+      required this.ws,
+      required this.refresh_key});
 
   // General
   Future<String> process(String input, String context) async {
@@ -89,7 +91,11 @@ class User {
       socket.send(
           'send_data¬$authentication_key¬General Information about the user, complete name $displayName, location $location, [date: ${DateTime.now().toString()}, Weekday ${weekdays[DateTime.now().weekday]}], additional data $data');
 
-      final subscription = socket.messages.listen((commands_list) {
+      final subscription = socket.messages.listen((commands_list) async {
+        if (commands_list == 'Request is not authenticated') {
+          await speak('Request is not authenticated');
+          return;
+        }
         parser.parse(commands_list);
         completer.complete();
       });

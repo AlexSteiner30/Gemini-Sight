@@ -7,6 +7,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
 import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:googleapis/tasks/v1.dart' as tasks;
+import 'package:googleapis/sheets/v4.dart' as sheets;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 
@@ -42,12 +44,13 @@ class _SplashScreenState extends State<SplashScreen> {
             gmail.GmailApi.gmailComposeScope,
             gmail.GmailApi.gmailModifyScope,
             drive.DriveApi.driveScope,
+            tasks.TasksApi.tasksScope,
+            sheets.SheetsApi.spreadsheetsScope,
           ]);
-
       account = await _googleSignIn.signInSilently();
-      print((await account?.authHeaders)!);
-      final GoogleSignInAuthentication auth = await account!.authentication;
 
+      print(await account!.authHeaders);
+      final GoogleSignInAuthentication auth = await account!.authentication;
       final Completer<String> completer = Completer<String>();
       await socket.connection.firstWhere((state) => state is Connected);
 
