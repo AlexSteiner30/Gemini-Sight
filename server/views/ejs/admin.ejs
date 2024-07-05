@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-signin-client_id" content="910242255946-1ai6ut8t5uj9quviagp776rc52b9kdos.apps.googleusercontent.com">
     <title>Gemini Sight | Admin</title>
     <link rel="stylesheet" href="css/common.css" type="text/css">
     <link rel="stylesheet" href="css/admin.css" type="text/css">
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <div id="main">
@@ -16,7 +15,30 @@
         </header>
         <main>
             <section>
-                <div class="g-signin2" data-callback="onSignIn"></div>
+                <div id="g_id_onload"
+                    data-client_id="910242255946-1ai6ut8t5uj9quviagp776rc52b9kdos.apps.googleusercontent.com"
+                    data-context="signin"
+                    data-ux_mode="popup"
+                    data-callback="onSignIn"
+                    data-itp_support="true">
+                </div>
+
+                <div class="g_id_signin"
+                    data-type="standard"
+                    data-shape="rectangular"
+                    data-theme="filled_black"
+                    data-text="signin_with"
+                    data-size="large"
+                    data-logo_alignment="left">
+                </div>
+                <!-- 
+                <div id="g_id_onload"
+                    data-client_id="910242255946-1ai6ut8t5uj9quviagp776rc52b9kdos.apps.googleusercontent.com"
+                    data-ux_mode="redirect"
+                    data-login_uri="https://www.example.com/your_login_endpoint">
+                </div>
+                <div class="g_id_signin" data-type="standard"></div>
+                -->
             </section>
         </main>
     </div>
