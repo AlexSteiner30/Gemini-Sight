@@ -7,18 +7,6 @@
     <link rel="stylesheet" href="css/common.css" type="text/css">
 </head>
 <body>
-    <nav>
-        <div></div>
-        <a href="index">Home</a>
-        <a href="about">About Us</a>
-        <a href="function">Functioning</a>
-        <a href="order">Order</a>
-        <% if (isLoggedIn) { %>
-            <a onClick="signOut()">Sign Out</a>
-        <% } else { %>
-            <a href="admin">Sign In</a>
-        <% } %>
-    </nav>
     <div id="main">
         <header>
             <h1 id="title">Smart Glasses</h1>
@@ -37,15 +25,13 @@
             </section>
             <hr>
             <section>
-                <h1>Sign-In</h1>
+                <h1>Sign In</h1>
                 <p>Sign in to use our chatbot system to help answer any of your questions.</p>
-                <a href="admin"><button class="more-btn">Sign-In</button></a>
+                <a href="admin"><button class="more-btn">Sign In</button></a>
             </section>
         </main>
     </div>
-    <footer>
-        <p>Copyright (c) 2024 Alex Steiner</p>
-    </footer>
+    <input type="hidden" id="logged-in" value="<%= isLoggedIn %>">
     <script type="text/javascript" src="../js/script.js"> </script>
 </body>
 </html>
