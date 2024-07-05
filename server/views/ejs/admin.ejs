@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-signin-client_id" content="910242255946-b70mhjrb2225nmapdvsgrr0mk66r9pid.apps.googleusercontent.com">
+    <meta name="google-signin-client_id" content="910242255946-1ai6ut8t5uj9quviagp776rc52b9kdos.apps.googleusercontent.com">
     <title>Gemini Sight | Admin</title>
     <link rel="stylesheet" href="css/common.css" type="text/css">
     <link rel="stylesheet" href="css/admin.css" type="text/css">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
 <body>
     <nav>
@@ -16,7 +17,7 @@
         <a href="function">Functioning</a>
         <a href="order">Order</a>
         <% if (isLoggedIn) { %>
-            <a href="signout">Sign Out</a>
+            <a onClick="signOut()">Sign Out</a>
         <% } else { %>
             <a href="admin">Sign In</a>
         <% } %>
@@ -27,14 +28,14 @@
         </header>
         <main>
             <section>
-                <div class="g-signin2" data-onsuccess="onSignIn"></div>
+                <div class="g-signin2" data-callback="onSignIn"></div>
             </section>
         </main>
     </div>
     <footer>
         <p>Copyright (c) 2024 Alex Steiner</p>
     </footer>
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <script src="../js/admin.js"> </script>
+    <script type="text/javascript" src="../js/script.js"> </script>
+    <script type="text/javascript" src="../js/admin.js"> </script>
 </body>
 </html>

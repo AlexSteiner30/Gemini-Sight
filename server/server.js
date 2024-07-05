@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
-    res.render('index');
+    res.redirect('index');
 });
 
 app.get('/:id', (req, res) => {
@@ -34,6 +34,7 @@ app.get('/:id', (req, res) => {
 
 app.post('/signin', bodyparser.urlencoded(), async (req, res) => {
     let token = req.body.token;
+    console.log("Singing in");
     
     async function verify() {
         const ticket = await client.verifyldToken({
@@ -46,15 +47,18 @@ app.post('/signin', bodyparser.urlencoded(), async (req, res) => {
         let found = false;
         let email = req.body.email;
         User.find({}).then(users => {
+            console.log("At least here");
             users.forEach(user => {
                 if (email == user.email) found = true;
             });
-            if (found) res.render("index");
+            console.log("Found status is "+found);
+            if (found) res.redirect("index");
             else {
+                console.log("Signing up");
                 let user = new User();
                 user.email = email;
                 user.save().then(_ => {
-                    res.render("index");
+                    res.redirect("index");
                 });
             }
         });

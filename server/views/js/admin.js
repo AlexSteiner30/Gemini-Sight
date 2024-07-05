@@ -1,4 +1,5 @@
 function onSignIn(googleUser) {
+    console.log("Here we are "+googleUser);
     var id_token = googleUser.getAuthResponse().id_token;
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/signin');

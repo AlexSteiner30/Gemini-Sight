@@ -14,7 +14,7 @@
         <a href="function">Functioning</a>
         <a href="order">Order</a>
         <% if (isLoggedIn) { %>
-            <a href="signout">Sign Out</a>
+            <a onClick="signOut()">Sign Out</a>
         <% } else { %>
             <a href="admin">Sign In</a>
         <% } %>
@@ -32,5 +32,6 @@
     <footer>
         <p>Copyright (c) 2024 Alex Steiner</p>
     </footer>
+    <script type="text/javascript" src="../js/script.js"> </script>
 </body>
 </html>

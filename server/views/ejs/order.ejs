@@ -15,7 +15,7 @@
         <a href="function">Functioning</a>
         <a href="order">Order</a>
         <% if (isLoggedIn) { %>
-            <a href="signout">Sign Out</a>
+            <a onClick="signOut()">Sign Out</a>
         <% } else { %>
             <a href="admin">Sign In</a>
         <% } %>
@@ -37,7 +37,8 @@
     <footer>
         <p>Copyright (c) 2024 Alex Steiner</p>
     </footer>
-    <script src="https://www.paypal.com/sdk/js?client-id=AQWg9WACiJoyKew9hmooJuzU9RxkN04eGuMILz6pAxcE1_S0XFE-ErLkgumIbaIwPY3zuPrL_s2KXIrB&buyer-country=US&currency=USD&components=buttons&enable-funding=venmo" data-sdk-integration-source="developer-studio"></script>
-    <script src="../js/order.js"></script>
+    <script type="text/javascript" src="https://www.paypal.com/sdk/js?client-id=AQWg9WACiJoyKew9hmooJuzU9RxkN04eGuMILz6pAxcE1_S0XFE-ErLkgumIbaIwPY3zuPrL_s2KXIrB&buyer-country=US&currency=USD&components=buttons&enable-funding=venmo" data-sdk-integration-source="developer-studio"></script>
+    <script type="text/javascript" src="../js/order.js"></script>
+    <script type="text/javascript" src="../js/script.js"> </script>
 </body>
 </html>
