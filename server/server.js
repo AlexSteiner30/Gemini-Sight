@@ -7,6 +7,11 @@ const User = mongoose.model("User");
 const bodyparser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const { jwtDecode } = require("jwt-decode");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const fs = require("fs");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
+let previousChats = [];
 
 
 const app = express();
@@ -26,9 +31,11 @@ app.get('/', (req, res) => {
 
 app.get('/:id', (req, res) => {
     if (allowedPages.includes(req.params.id)) res.render(req.params.id, {
-        isLoggedIn: req.cookies["cookie-token"]
+        isLoggedIn: req.cookies["cookie-token"],
+        chats: JSON.stringify(previousChats)
     });
     else if (req.params.id == "logout") {
+        previousChats = [];
         res.clearCookie('cookie-token');
         res.redirect("index");
     }
@@ -56,6 +63,26 @@ app.post('/signin', bodyparser.urlencoded(), async (req, res) => {
             res.send("Done");
         }
     });
+});
+
+app.post('/chat', bodyparser.urlencoded(), async (req, res) => {
+    let prompt = req.body.prompt;
+    const chat = model.startChat({
+        history: previousChats,
+        generationConfig: {
+          maxOutputTokens: 100,
+        }
+    });
+    try {
+        const result = await model.generateContent(prompt);
+        previousChats.push({role: 'user', parts: [{text: prompt}]});
+        previousChats.push({role: 'model', parts: [{text: result.response.text()}]});
+    }
+    catch (err) {
+        console.log(err);
+        res.redirect("notFound");
+    }
+    res.redirect("/");
 });
 
 app.listen(PORT, _ => console.log(`Server running on port ${PORT}`));
