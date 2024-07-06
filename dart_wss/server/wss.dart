@@ -115,8 +115,7 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
       }
     }, onDone: () {
       ws.close();
-      //devices.remove(user.authentication_key);
-      print(devices.length);
+      devices.remove(user.authentication_key);
       print('WebSocket connection closed');
     }, onError: (error) {
       print('WebSocket error: $error');

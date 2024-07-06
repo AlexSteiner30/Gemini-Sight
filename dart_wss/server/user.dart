@@ -46,7 +46,7 @@ class User {
   ];
 
   final socket = WebSocket(
-    Uri.parse('ws://192.168.88.12:443'),
+    Uri.parse('ws://localhost:443'),
   );
 
   User(
@@ -62,7 +62,7 @@ class User {
   // General
   Future<String> process(String input, String context) async {
     String data =
-        '$input $context Use this additional query if needed { $temp_query }';
+        '$input $context Use this additional query if needed { [additional information: $temp_query] }';
     await socket.connection.firstWhere((state) => state is Connected);
 
     final Completer<String> completer = Completer<String>();
@@ -74,10 +74,6 @@ class User {
         completer.complete(response);
       }
     });
-
-    query_count++;
-
-    if (query_count == 5) temp_query = '';
 
     final result = await completer.future;
     await subscription.cancel();
@@ -95,7 +91,12 @@ class User {
       final Completer<void> completer = Completer<void>();
 
       socket.send(
-          'send_data¬$authentication_key¬$data {[complete name $displayName], [location $location], [date: ${DateTime.now().toString()}, Weekday ${weekdays[DateTime.now().weekday]}], [additional data $temp_query]}');
+          'send_data¬$authentication_key¬$data {[complete name $displayName], [location $location], [date: ${DateTime.now().toString()}, Weekday ${weekdays[DateTime.now().weekday]}], [previous converseation, from oldest to newest consider as more important the older ones $temp_query]}');
+
+      temp_query = '$temp_query [My message: $data]';
+      query_count++;
+
+      if (query_count == 10) temp_query = '';
 
       final subscription = socket.messages.listen((commands_list) async {
         if (commands_list == 'Request is not authenticated') {
@@ -123,6 +124,11 @@ class User {
     final Completer<void> completer = Completer<void>();
 
     socket.send('speak¬$authentication_key¬$data');
+
+    temp_query = '$temp_query [Your response: $data]';
+    query_count++;
+
+    if (query_count == 10) temp_query = '';
 
     final subscription = socket.messages.listen((pcm) {
       //ws.add(pcm);
@@ -462,7 +468,7 @@ class User {
     }
 
     return await process(context,
-        ' Given this $result and $context, respond naturally as a human would, without using any formatting, and without asking questions. Just provide a plain text response based on the data and task. Do not include any websites.Just return what is asked with no additional data');
+        ' Given this $result and $context, respond naturally as a human would, without using any formatting, and without asking questions. Just provide a plain text response based on the data and task. Do not include any websites.Just return what is asked with no previous converseation, from oldest to newest consider as more important the older ones');
   }
 
   Future<void> record_speed() async {

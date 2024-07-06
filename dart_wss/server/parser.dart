@@ -98,7 +98,7 @@ class Parser {
   Future<dynamic> _parseArgument(String arg) async {
     arg = arg.trim();
 
-    if (arg.contains('+')) {
+    if (arg.contains('^')) {
       return await _evaluateConcatenation(arg);
     } else if (arg.contains('(')) {
       return await _parseFunction(arg);
@@ -110,7 +110,7 @@ class Parser {
   }
 
   Future<String> _evaluateConcatenation(String expression) async {
-    List<String> parts = expression.split('+');
+    List<String> parts = expression.split('^');
     StringBuffer result = StringBuffer();
 
     for (String part in parts) {
