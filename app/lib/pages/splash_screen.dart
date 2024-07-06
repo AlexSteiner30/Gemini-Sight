@@ -47,10 +47,12 @@ class _SplashScreenState extends State<SplashScreen> {
             tasks.TasksApi.tasksScope,
             sheets.SheetsApi.spreadsheetsScope,
           ]);
+
       account = await _googleSignIn.signInSilently();
 
       final GoogleSignInAuthentication auth = await account!.authentication;
       final Completer<String> completer = Completer<String>();
+
       await socket.connection.firstWhere((state) => state is Connected);
 
       socket.send('authentication¬${auth.idToken}');
