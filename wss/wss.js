@@ -416,13 +416,13 @@ if (cluster.isMaster) {
                         case 'send_data':
                             {   
                                 const input = messageParts[2];
+                                console.log(input);
                                 const additional_query = (await db.find('access_key', access_key)).query;
 
                                 const response = await ai.process_input(input + '{' + additional_query + '}'); 
-                                ws.send(response);
+                                ws.send(response.replace('```dart', '').replace('```', ''));
 
-                                console.log(input);
-                                console.log(response);
+                                console.log(response.replace('```dart', '').replace('```', ''));
                             }
                             break;
                     }

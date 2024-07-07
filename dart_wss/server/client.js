@@ -22,8 +22,6 @@ ws.onmessage = async (message) => {
   promptUserInput();
 };
 
-let receivedMessages = [];
-
 function promptUserInput() {
   rl.question('Enter a message: ', (input) => {
     ws.send(`${authentication_key}¬Hey Gemma, ${input}`);

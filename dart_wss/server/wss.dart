@@ -120,9 +120,8 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
     }, onError: (error) {
       print('WebSocket error: $error');
     });
-  } catch (error, stackTrace) {
+  } catch (error) {
     print('Error in WebSocket handling: $error');
-    print(stackTrace);
   }
 }
 

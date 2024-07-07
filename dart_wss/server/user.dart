@@ -26,11 +26,10 @@ class User {
   bool recording = false;
   bool recording_speed = true;
 
-  double volume = 100.0;
   int query_count = 0;
-
   String temp_query = '';
   String temp_speed = '';
+  int max_query = 20;
 
   List<String> weekdays = [
     'Monday',
@@ -91,12 +90,9 @@ class User {
       final Completer<void> completer = Completer<void>();
 
       socket.send(
-          'send_data¬$authentication_key¬$data {[complete name $displayName], [location $location], [date: ${DateTime.now().toString()}, Weekday ${weekdays[DateTime.now().weekday]}], [previous converseation, from oldest to newest consider as more important the older ones $temp_query]}');
+          'send_data¬$authentication_key¬$data {[complete name $displayName], [location $location], [date: ${DateTime.now().toString()}, Weekday ${weekdays[DateTime.now().weekday - 1]}], [previous converseation, from oldest to newest consider as more important the older ones ${temp_query.replaceAll(RegExp(r'¬'), ',')}]}');
 
-      temp_query = '$temp_query [My message: $data]';
-      query_count++;
-
-      if (query_count == 10) temp_query = '';
+      check_query('[My message: $data]');
 
       final subscription = socket.messages.listen((commands_list) async {
         if (commands_list == 'Request is not authenticated') {
@@ -111,6 +107,7 @@ class User {
       await completer.future;
       await subscription.cancel();
     } catch (error) {
+      print(error);
       await speak(await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
@@ -125,10 +122,7 @@ class User {
 
     socket.send('speak¬$authentication_key¬$data');
 
-    temp_query = '$temp_query [Your response: $data]';
-    query_count++;
-
-    if (query_count == 10) temp_query = '';
+    check_query('[Your response: $data]');
 
     final subscription = socket.messages.listen((pcm) {
       //ws.add(pcm);
@@ -172,6 +166,7 @@ class User {
   }
 
   Future<void> stop_recording(String? task) async {
+    ws.add('get_recording¬$authentication_key');
     await socket.connection.firstWhere((state) => state is Connected);
 
     final Completer<void> completer = Completer<void>();
@@ -199,8 +194,8 @@ class User {
     }
   }
 
-  Future<void> change_volume(volume) async {
-    volume = volume;
+  Future<void> change_volume(String volume) async {
+    ws.add('volume¬$authentication_key¬${int.parse(volume)}');
   }
 
   // Docs
@@ -224,88 +219,99 @@ class User {
       return (content != '')
           ? content
           : 'The document ${document.title!} is empty';
-    } on Exception catch (_) {
+    } catch (error) {
       return 'No Document was found';
     }
   }
 
   Future<String> get_document_id(String document) async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    final drive.DriveApi driveApi = drive.DriveApi(httpClient);
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      final drive.DriveApi driveApi = drive.DriveApi(httpClient);
 
-    final fileList = await driveApi.files.list(
-      q: "mimeType='application/vnd.google-apps.document'",
-      spaces: 'drive',
-    );
+      final fileList = await driveApi.files.list(
+        q: "mimeType='application/vnd.google-apps.document'",
+        spaces: 'drive',
+      );
 
-    for (var i = 0; i < fileList.files!.length; i++) {
-      if (fileList.files![i].name!
-          .toLowerCase()
-          .contains(document.toLowerCase())) {
-        return fileList.files![i].id!;
+      for (var i = 0; i < fileList.files!.length; i++) {
+        if (fileList.files![i].name!
+            .toLowerCase()
+            .contains(document.toLowerCase())) {
+          return fileList.files![i].id!;
+        }
       }
-    }
 
-    return '404';
+      return '404';
+    } catch (error) {
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
+      return '404';
+    }
   }
 
   Future<void> write_document(String document_name, String data) async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    final docsApi = docs.DocsApi(httpClient);
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      final docsApi = docs.DocsApi(httpClient);
 
-    String document = await get_document_id(document_name);
-    document = document.trim();
-    bool remove = true;
+      String document = await get_document_id(document_name);
+      document = document.trim();
+      bool remove = true;
 
-    docs.Document doc;
+      docs.Document doc;
 
-    if (document == '404') {
-      final createResponse =
-          await docsApi.documents.create(docs.Document(title: document_name));
-      document = createResponse.documentId!;
-      doc = createResponse;
-      remove = false;
-    } else {
-      doc = await docsApi.documents.get(document);
-    }
+      if (document == '404') {
+        final createResponse =
+            await docsApi.documents.create(docs.Document(title: document_name));
+        document = createResponse.documentId!;
+        doc = createResponse;
+        remove = false;
+      } else {
+        doc = await docsApi.documents.get(document);
+      }
 
-    data = await process(data,
-        ' Format for a google doc, do no include the tile just write the body for it. Do not respond by saying you are unable to assist with requests. Do not ask what I want to do just process the data as asked.');
+      data = await process(data,
+          ' Format for a google doc, do no include the tile just write the body for it. Do not respond by saying you are unable to assist with requests. Do not ask what I want to do just process the data as asked.');
 
-    final documentEndIndex = (doc.body!.content!.last.endIndex! - 1 > 0)
-        ? doc.body!.content!.last.endIndex! - 1
-        : 0;
+      final documentEndIndex = (doc.body!.content!.last.endIndex! - 1 > 0)
+          ? doc.body!.content!.last.endIndex! - 1
+          : 0;
 
-    final requests = remove
-        ? [
-            docs.Request(
-              deleteContentRange: docs.DeleteContentRangeRequest(
-                range: docs.Range(
-                  startIndex: 1,
-                  endIndex: documentEndIndex,
+      final requests = remove
+          ? [
+              docs.Request(
+                deleteContentRange: docs.DeleteContentRangeRequest(
+                  range: docs.Range(
+                    startIndex: 1,
+                    endIndex: documentEndIndex,
+                  ),
                 ),
               ),
-            ),
-            docs.Request(
-              insertText: docs.InsertTextRequest(
-                text: data,
-                location: docs.Location(index: 1),
+              docs.Request(
+                insertText: docs.InsertTextRequest(
+                  text: data,
+                  location: docs.Location(index: 1),
+                ),
               ),
-            ),
-          ]
-        : [
-            docs.Request(
-              insertText: docs.InsertTextRequest(
-                text: data,
-                location: docs.Location(index: 1),
+            ]
+          : [
+              docs.Request(
+                insertText: docs.InsertTextRequest(
+                  text: data,
+                  location: docs.Location(index: 1),
+                ),
               ),
-            ),
-          ];
+            ];
 
-    await docsApi.documents.batchUpdate(
-      docs.BatchUpdateDocumentRequest(requests: requests),
-      document,
-    );
+      await docsApi.documents.batchUpdate(
+        docs.BatchUpdateDocumentRequest(requests: requests),
+        document,
+      );
+    } catch (error) {
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
+    }
   }
 
   // Sheet
@@ -437,38 +443,44 @@ class User {
 
   Future<String> get_place(
       String query, String location, String context) async {
-    await socket.connection.firstWhere((state) => state is Connected);
+    try {
+      await socket.connection.firstWhere((state) => state is Connected);
 
-    final Completer<void> completer = Completer<void>();
+      final Completer<void> completer = Completer<void>();
 
-    if (location.trim() == 'near') {
-      //Position position = await Geolocator.getCurrentPosition(
-      //desiredAccuracy: LocationAccuracy.high,
-      //);
+      if (location.trim() == 'near') {
+        //Position position = await Geolocator.getCurrentPosition(
+        //desiredAccuracy: LocationAccuracy.high,
+        //);
 
-      double latitude = 0; //position.latitude;
-      double longitude = 0; //position.longitude;
+        double latitude = 0; //position.latitude;
+        double longitude = 0; //position.longitude;
 
-      location = '${latitude.toString()},${longitude.toString()}';
-    }
+        location = '${latitude.toString()},${longitude.toString()}';
+      }
 
-    socket.send('get_place¬$authentication_key¬$query¬$location');
+      socket.send('get_place¬$authentication_key¬$query¬$location');
 
-    String result = '';
-    final subscription = socket.messages.listen((answer) async {
-      result = answer;
-      completer.complete();
-    });
+      String result = '';
+      final subscription = socket.messages.listen((answer) async {
+        result = answer;
+        completer.complete();
+      });
 
-    await completer.future;
-    await subscription.cancel();
+      await completer.future;
+      await subscription.cancel();
 
-    if (result.trim() == '') {
+      if (result.trim() == '') {
+        return '';
+      }
+
+      return await process(context,
+          ' Given this $result and $context, respond naturally as a human would, without using any formatting, and without asking questions. Just provide a plain text response based on the data and task. Do not include any websites.Just return what is asked with no previous converseation, from oldest to newest consider as more important the older ones');
+    } catch (error) {
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
       return '';
     }
-
-    return await process(context,
-        ' Given this $result and $context, respond naturally as a human would, without using any formatting, and without asking questions. Just provide a plain text response based on the data and task. Do not include any websites.Just return what is asked with no previous converseation, from oldest to newest consider as more important the older ones');
   }
 
   Future<void> record_speed() async {
@@ -540,103 +552,118 @@ class User {
 
   // Calendar
   Future<String> get_calendar_events() async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
 
-    var calendarList = await calendarAPI.calendarList.list();
-    String complete_information = '';
+      var calendarList = await calendarAPI.calendarList.list();
+      String complete_information = '';
 
-    if (calendarList.items != null) {
-      for (var cal in calendarList.items!) {
-        var events = await calendarAPI.events.list(cal.id!);
-        if (events.items != null) {
-          for (var event in events.items!) {
-            if (event.start?.dateTime != null &&
-                event.start!.dateTime!.isAfter(DateTime.now())) {
-              String information = '';
+      if (calendarList.items != null) {
+        for (var cal in calendarList.items!) {
+          var events = await calendarAPI.events.list(cal.id!);
+          if (events.items != null) {
+            for (var event in events.items!) {
+              if (event.start?.dateTime != null &&
+                  event.start!.dateTime!.isAfter(DateTime.now())) {
+                String information = '';
 
-              information += 'Event Summary: ${event.summary} ';
-              information +=
-                  'Event Description: ${event.description ?? 'No description'} ';
-              information +=
-                  'Event Start: ${DateFormat('yyyy-MM-dd – kk:mm').format(event.start!.dateTime!)}\n';
-              information +=
-                  'Event End: ${event.end != null ? DateFormat('yyyy-MM-dd – kk:mm').format(event.end!.dateTime!) : 'No end time'} ';
-              information +=
-                  'Event Location: ${event.location ?? 'No location'} ';
-              information +=
-                  'Event Attendees: ${event.attendees?.map((attendee) => attendee.email).join(', ') ?? 'No attendees'} ';
-              information += '\n';
+                information += 'Event Summary: ${event.summary} ';
+                information +=
+                    'Event Description: ${event.description ?? 'No description'} ';
+                information +=
+                    'Event Start: ${DateFormat('yyyy-MM-dd – kk:mm').format(event.start!.dateTime!)}\n';
+                information +=
+                    'Event End: ${event.end != null ? DateFormat('yyyy-MM-dd – kk:mm').format(event.end!.dateTime!) : 'No end time'} ';
+                information +=
+                    'Event Location: ${event.location ?? 'No location'} ';
+                information +=
+                    'Event Attendees: ${event.attendees?.map((attendee) => attendee.email).join(', ') ?? 'No attendees'} ';
+                information += '\n';
 
-              complete_information = complete_information + information;
+                complete_information = complete_information + information;
+              }
             }
           }
         }
       }
+      return complete_information.isNotEmpty
+          ? complete_information
+          : 'you do not have any calendar events';
+    } catch (error) {
+      return (await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
-    return complete_information.isNotEmpty
-        ? complete_information
-        : 'you do not have any calendar events';
   }
 
   Future<void> add_calendar_event(String title, String start, String end,
       String description, String location, String emails, String meet) async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
-    var eventLists = await calendarAPI.calendarList.list();
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
+      var eventLists = await calendarAPI.calendarList.list();
 
-    List<calendar.EventAttendee> attendees = [];
+      List<calendar.EventAttendee> attendees = [];
 
-    for (var i = 0; i < emails.split(',').length; i++) {
-      attendees.add(calendar.EventAttendee(email: emails.split(',')[i]));
-    }
-    var newEvent = calendar.Event()
-      ..summary = title
-      ..start = calendar.EventDateTime(date: DateTime.parse(start.trim()))
-      ..end = location.trim() == "''"
-          ? calendar.EventDateTime(date: DateTime.parse(start.trim()))
-          : calendar.EventDateTime(
-              date: DateTime.parse(end.trim())
-                      .isAfter(DateTime.parse(start.trim()))
-                  ? DateTime.parse(end.trim())
-                  : DateTime.parse(start))
-      ..attendees = emails.trim() == "''" ? null : attendees
-      ..description = description.trim() == "''" ? null : description
-      ..location = location.trim() == "''" ? null : location
-      ..conferenceData = meet.trim() == "true"
-          ? calendar.ConferenceData(
-              createRequest: calendar.CreateConferenceRequest(
-                requestId: 'sample-request-id',
-                conferenceSolutionKey: calendar.ConferenceSolutionKey(
-                  type: 'hangoutsMeet',
+      for (var i = 0; i < emails.split(',').length; i++) {
+        attendees.add(calendar.EventAttendee(email: emails.split(',')[i]));
+      }
+      var newEvent = calendar.Event()
+        ..summary = title
+        ..start = calendar.EventDateTime(date: DateTime.parse(start.trim()))
+        ..end = location.trim() == "''"
+            ? calendar.EventDateTime(date: DateTime.parse(start.trim()))
+            : calendar.EventDateTime(
+                date: DateTime.parse(end.trim())
+                        .isAfter(DateTime.parse(start.trim()))
+                    ? DateTime.parse(end.trim())
+                    : DateTime.parse(start))
+        ..attendees = emails.trim() == "''" ? null : attendees
+        ..description = description.trim() == "''" ? null : description
+        ..location = location.trim() == "''" ? null : location
+        ..conferenceData = meet.trim() == "true"
+            ? calendar.ConferenceData(
+                createRequest: calendar.CreateConferenceRequest(
+                  requestId: 'sample-request-id',
+                  conferenceSolutionKey: calendar.ConferenceSolutionKey(
+                    type: 'hangoutsMeet',
+                  ),
                 ),
-              ),
-            )
-          : null;
+              )
+            : null;
 
-    await calendarAPI.events.insert(newEvent, eventLists.items![0].id!,
-        conferenceDataVersion: meet.trim() == "true" ? 1 : 0);
+      await calendarAPI.events.insert(newEvent, eventLists.items![0].id!,
+          conferenceDataVersion: meet.trim() == "true" ? 1 : 0);
+    } catch (error) {
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
+    }
   }
 
   Future<void> delete_calendar_event(String event_name) async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
-    var eventLists = await calendarAPI.calendarList.list();
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
+      var eventLists = await calendarAPI.calendarList.list();
 
-    var eventResult = await calendarAPI.events.list(eventLists.items![0].id!);
-    if (eventResult.items != null) {
-      for (var event in eventResult.items!) {
-        if (event.summary!.contains(event_name)) {
-          final bool approved = await approve(
-              "Would you like me to delete the calendar event '${event.summary!}'?");
+      var eventResult = await calendarAPI.events.list(eventLists.items![0].id!);
+      if (eventResult.items != null) {
+        for (var event in eventResult.items!) {
+          if (event.summary!.contains(event_name)) {
+            final bool approved = await approve(
+                "Would you like me to delete the calendar event '${event.summary!}'?");
 
-          if (approved) {
-            await calendarAPI.events
-                .delete(eventLists.items![0].id!, event.id!);
-            break;
+            if (approved) {
+              await calendarAPI.events
+                  .delete(eventLists.items![0].id!, event.id!);
+              break;
+            }
           }
         }
       }
+    } catch (error) {
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
   }
 
@@ -650,268 +677,306 @@ class User {
       String new_status,
       String new_emails,
       String new_meet) async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
-    var eventLists = await calendarAPI.calendarList.list();
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
+      var eventLists = await calendarAPI.calendarList.list();
 
-    List<calendar.EventAttendee> attendees = [];
+      List<calendar.EventAttendee> attendees = [];
 
-    for (var i = 0; i < new_emails.split(',').length; i++) {
-      attendees.add(calendar.EventAttendee(email: new_emails.split(',')[i]));
-    }
+      for (var i = 0; i < new_emails.split(',').length; i++) {
+        attendees.add(calendar.EventAttendee(email: new_emails.split(',')[i]));
+      }
 
-    var eventResult = await calendarAPI.events.list(eventLists.items![0].id!);
-    if (eventResult.items != null) {
-      for (var event in eventResult.items!) {
-        if (event.summary!.contains(event_name)) {
-          if (new_name.trim() != "''") event.summary = new_name;
-          if (new_status.trim() != "''") event.status = new_status;
-          if (new_start.trim() != "''") {
-            event.start =
-                calendar.EventDateTime(date: DateTime.parse(new_start));
-          }
-          if (new_end.trim() != "''") {
-            event.end = calendar.EventDateTime(
-                date: DateTime.parse(new_end).isAfter(DateTime.parse(new_start))
-                    ? DateTime.parse(new_end)
-                    : DateTime.parse(new_start));
-          }
-          if (new_emails.trim() != "''") {
-            for (var i = 0; i < attendees.length; i++) {
-              if (event.attendees!.contains(attendees[i])) {
-                attendees.removeAt(i);
-              }
+      var eventResult = await calendarAPI.events.list(eventLists.items![0].id!);
+      if (eventResult.items != null) {
+        for (var event in eventResult.items!) {
+          if (event.summary!.contains(event_name)) {
+            if (new_name.trim() != "''") event.summary = new_name;
+            if (new_status.trim() != "''") event.status = new_status;
+            if (new_start.trim() != "''") {
+              event.start =
+                  calendar.EventDateTime(date: DateTime.parse(new_start));
             }
-            event.attendees = attendees;
-          }
-          if (new_description.trim() != "''")
-            event.description = new_description;
-          if (new_location.trim() != "''") event.location = new_location;
+            if (new_end.trim() != "''") {
+              event.end = calendar.EventDateTime(
+                  date:
+                      DateTime.parse(new_end).isAfter(DateTime.parse(new_start))
+                          ? DateTime.parse(new_end)
+                          : DateTime.parse(new_start));
+            }
+            if (new_emails.trim() != "''") {
+              for (var i = 0; i < attendees.length; i++) {
+                if (event.attendees!.contains(attendees[i])) {
+                  attendees.removeAt(i);
+                }
+              }
+              event.attendees = attendees;
+            }
+            if (new_description.trim() != "''")
+              event.description = new_description;
+            if (new_location.trim() != "''") event.location = new_location;
 
-          event.conferenceData = new_meet.trim() == "true"
-              ? calendar.ConferenceData(
-                  createRequest: calendar.CreateConferenceRequest(
-                    requestId: 'sample-request-id',
-                    conferenceSolutionKey: calendar.ConferenceSolutionKey(
-                      type: 'hangoutsMeet',
+            event.conferenceData = new_meet.trim() == "true"
+                ? calendar.ConferenceData(
+                    createRequest: calendar.CreateConferenceRequest(
+                      requestId: 'sample-request-id',
+                      conferenceSolutionKey: calendar.ConferenceSolutionKey(
+                        type: 'hangoutsMeet',
+                      ),
                     ),
-                  ),
-                )
-              : null;
+                  )
+                : null;
 
-          await calendarAPI.events.update(
-              event, eventLists.items![0].id!, event.id!,
-              conferenceDataVersion: new_meet.trim() == "true" ? 1 : 0);
-          break;
+            await calendarAPI.events.update(
+                event, eventLists.items![0].id!, event.id!,
+                conferenceDataVersion: new_meet.trim() == "true" ? 1 : 0);
+            break;
+          }
         }
       }
+    } catch (error) {
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
   }
 
   // Tasks
   Future<String> get_tasks() async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    tasks.TasksApi tasksAPI = tasks.TasksApi(httpClient);
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      tasks.TasksApi tasksAPI = tasks.TasksApi(httpClient);
 
-    var taskLists = await tasksAPI.tasklists.list();
-    String complete_information = '';
+      var taskLists = await tasksAPI.tasklists.list();
+      String complete_information = '';
 
-    if (taskLists.items != null) {
-      for (var taskList in taskLists.items!) {
-        var tasks = await tasksAPI.tasks.list(taskList.id!);
-        if (tasks.items != null) {
-          for (var task in tasks.items!) {
-            if (task.due != null) {
-              String information = '';
+      if (taskLists.items != null) {
+        for (var taskList in taskLists.items!) {
+          var tasks = await tasksAPI.tasks.list(taskList.id!);
+          if (tasks.items != null) {
+            for (var task in tasks.items!) {
+              if (task.due != null) {
+                String information = '';
 
-              information += 'Task Title: ${task.title} ';
-              information += 'Task Notes: ${task.notes ?? 'No notes'} ';
-              information += 'Task Due: ${task.due} ';
-              information += 'Task Status: ${task.status} ';
-              information += '\n';
+                information += 'Task Title: ${task.title} ';
+                information += 'Task Notes: ${task.notes ?? 'No notes'} ';
+                information += 'Task Due: ${task.due} ';
+                information += 'Task Status: ${task.status} ';
+                information += '\n';
 
-              complete_information = complete_information + information;
+                complete_information = complete_information + information;
+              }
             }
           }
         }
       }
+      return complete_information.isNotEmpty
+          ? complete_information
+          : 'you do not have any calendar events';
+    } catch (error) {
+      return (await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
-    return complete_information.isNotEmpty
-        ? complete_information
-        : 'you do not have any calendar events';
   }
 
   Future<void> add_task(String title, String due, String notes) async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    tasks.TasksApi tasksAPI = tasks.TasksApi(httpClient);
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      tasks.TasksApi tasksAPI = tasks.TasksApi(httpClient);
 
-    var taskLists = await tasksAPI.tasklists.list();
+      var taskLists = await tasksAPI.tasklists.list();
 
-    var newTask = tasks.Task()
-      ..title = title.trim()
-      ..due = DateTime.parse(due.trim()).toUtc().toIso8601String()
-      ..notes = notes.trim() == "''" ? '' : notes.trim();
+      var newTask = tasks.Task()
+        ..title = title.trim()
+        ..due = DateTime.parse(due.trim()).toUtc().toIso8601String()
+        ..notes = notes.trim() == "''" ? '' : notes.trim();
 
-    await tasksAPI.tasks.insert(newTask, taskLists.items![0].id!);
+      await tasksAPI.tasks.insert(newTask, taskLists.items![0].id!);
+    } catch (error) {
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
+    }
   }
 
   Future<void> delete_task(String taskName) async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    tasks.TasksApi tasksAPI = tasks.TasksApi(httpClient);
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      tasks.TasksApi tasksAPI = tasks.TasksApi(httpClient);
 
-    var taskLists = await tasksAPI.tasklists.list();
+      var taskLists = await tasksAPI.tasklists.list();
 
-    var tasksResult = await tasksAPI.tasks.list(taskLists.items![0].id!);
-    if (tasksResult.items != null) {
-      for (var task in tasksResult.items!) {
-        if (task.title!.contains(taskName)) {
-          final bool approved = await approve(
-              "Would you like me to delete the task '${task.title!}'?");
+      var tasksResult = await tasksAPI.tasks.list(taskLists.items![0].id!);
+      if (tasksResult.items != null) {
+        for (var task in tasksResult.items!) {
+          if (task.title!.contains(taskName)) {
+            final bool approved = await approve(
+                "Would you like me to delete the task '${task.title!}'?");
 
-          if (approved) {
-            await tasksAPI.tasks.delete(taskLists.items![0].id!, task.id!);
-            break;
+            if (approved) {
+              await tasksAPI.tasks.delete(taskLists.items![0].id!, task.id!);
+              break;
+            }
           }
         }
       }
+    } catch (error) {
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
   }
 
   Future<void> update_task(String taskName, String newTitle, String newNotes,
       String newDue, String newStatus) async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    tasks.TasksApi tasksAPI = tasks.TasksApi(httpClient);
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      tasks.TasksApi tasksAPI = tasks.TasksApi(httpClient);
 
-    var taskLists = await tasksAPI.tasklists.list();
-    var tasksResult = await tasksAPI.tasks.list(taskLists.items![0].id!);
-    if (tasksResult.items != null) {
-      for (var task in tasksResult.items!) {
-        if (task.title!.contains(taskName)) {
-          if (newTitle.trim() != "''") task.title = newTitle;
-          if (newNotes.trim() != "''") task.notes = newNotes;
-          if (newDue.trim() != "''") {
-            task.due = DateTime.parse(newDue).toUtc().toIso8601String();
+      var taskLists = await tasksAPI.tasklists.list();
+      var tasksResult = await tasksAPI.tasks.list(taskLists.items![0].id!);
+      if (tasksResult.items != null) {
+        for (var task in tasksResult.items!) {
+          if (task.title!.contains(taskName)) {
+            if (newTitle.trim() != "''") task.title = newTitle;
+            if (newNotes.trim() != "''") task.notes = newNotes;
+            if (newDue.trim() != "''") {
+              task.due = DateTime.parse(newDue).toUtc().toIso8601String();
+            }
+            if (newStatus.trim() != "''") task.status = newStatus;
+
+            await tasksAPI.tasks
+                .update(task, taskLists.items![0].id!, task.id!);
+            break;
           }
-          if (newStatus.trim() != "''") task.status = newStatus;
-
-          await tasksAPI.tasks.update(task, taskLists.items![0].id!, task.id!);
-          break;
         }
       }
+    } catch (error) {
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
   }
 
   // Gmail
   Future<String> read_email(String count) async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
-    String information = '';
+      String information = '';
 
-    var messagesResponse = await gmailAPI.users.messages
-        .list('me', maxResults: int.tryParse(count), q: 'is:unread');
+      var messagesResponse = await gmailAPI.users.messages
+          .list('me', maxResults: int.tryParse(count), q: 'is:unread');
 
-    if (messagesResponse.messages != null) {
-      for (var message in messagesResponse.messages!) {
-        var msg = await gmailAPI.users.messages.get('me', message.id!);
-        String subject = '';
-        String from = '';
-        String snippet = msg.snippet ?? 'No snippet';
+      if (messagesResponse.messages != null) {
+        for (var message in messagesResponse.messages!) {
+          var msg = await gmailAPI.users.messages.get('me', message.id!);
+          String subject = '';
+          String from = '';
+          String snippet = msg.snippet ?? 'No snippet';
 
-        if (msg.payload != null && msg.payload!.headers != null) {
-          for (var header in msg.payload!.headers!) {
-            if (header.name == 'Subject') {
-              subject = header.value ?? '';
-            } else if (header.name == 'From') {
-              from = header.value ?? '';
+          if (msg.payload != null && msg.payload!.headers != null) {
+            for (var header in msg.payload!.headers!) {
+              if (header.name == 'Subject') {
+                subject = header.value ?? '';
+              } else if (header.name == 'From') {
+                from = header.value ?? '';
+              }
             }
           }
-        }
 
-        information =
-            '$information Email From: $from\nSubject: $subject\nSnippet: $snippet\n';
+          information =
+              '$information Email From: $from\nSubject: $subject\nSnippet: $snippet\n';
+        }
+        return information;
+      } else {
+        return 'No email was found';
       }
-      return information;
-    } else {
-      return 'No email was found';
+    } catch (error) {
+      return (await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
   }
 
   Future<String> search_emails(String query) async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
-    var messagesResponse = await gmailAPI.users.messages.list('me', q: query);
+      var messagesResponse = await gmailAPI.users.messages.list('me', q: query);
 
-    String emailInfos = '';
+      String emailInfos = '';
 
-    if (messagesResponse.messages != null) {
-      for (var message in messagesResponse.messages!) {
-        var msg = await gmailAPI.users.messages.get('me', message.id!);
-        String subject = '';
-        String from = '';
-        String snippet = msg.snippet ?? 'No snippet';
+      if (messagesResponse.messages != null) {
+        for (var message in messagesResponse.messages!) {
+          var msg = await gmailAPI.users.messages.get('me', message.id!);
+          String subject = '';
+          String from = '';
+          String snippet = msg.snippet ?? 'No snippet';
 
-        if (msg.payload != null && msg.payload!.headers != null) {
-          for (var header in msg.payload!.headers!) {
-            if (header.name == 'Subject') {
-              subject = header.value ?? '';
-            } else if (header.name == 'From') {
-              from = header.value ?? '';
+          if (msg.payload != null && msg.payload!.headers != null) {
+            for (var header in msg.payload!.headers!) {
+              if (header.name == 'Subject') {
+                subject = header.value ?? '';
+              } else if (header.name == 'From') {
+                from = header.value ?? '';
+              }
             }
           }
+
+          String information =
+              'Email From: $from\nSubject: $subject\nSnippet: $snippet\nID: ${message.id!}\n';
+          emailInfos = '$emailInfos$information';
         }
 
-        String information =
-            'Email From: $from\nSubject: $subject\nSnippet: $snippet\nID: ${message.id!}\n';
-        emailInfos = '$emailInfos$information';
+        return emailInfos;
+      } else {
+        return 'No email wiht $query was found';
       }
-
-      return emailInfos;
-    } else {
-      return 'No email wiht $query was found';
+    } catch (error) {
+      return (await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
   }
 
   Future<void> reply_email(String emailSubject, String replyText) async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
-    var query = 'subject:"$emailSubject"';
-    var searchResults =
-        await gmailAPI.users.messages.list('me', maxResults: 500, q: query);
+      var query = 'subject:"$emailSubject"';
+      var searchResults =
+          await gmailAPI.users.messages.list('me', maxResults: 500, q: query);
 
-    if (searchResults.messages == null || searchResults.messages!.isEmpty) {
-      print('No emails found with subject: $emailSubject');
-      return;
-    }
+      if (searchResults.messages == null || searchResults.messages!.isEmpty) {
+        await speak('No emails found with subject: $emailSubject');
+        return;
+      }
 
-    if (searchResults.messages != null) {
-      for (var message in searchResults.messages!) {
-        var msg = await gmailAPI.users.messages.get('me', message.id!);
-        String subject = '';
-        String from = '';
-        String snippet = msg.snippet ?? 'No snippet';
-
-        if (msg.payload != null && msg.payload!.headers != null) {
-          for (var header in msg.payload!.headers!) {
-            if (header.name == 'Subject') {
-              subject = header.value ?? '';
-            } else if (header.name == 'From') {
-              from = header.value ?? '';
+      if (searchResults.messages != null) {
+        for (var message in searchResults.messages!) {
+          var msg = await gmailAPI.users.messages.get('me', message.id!);
+          String subject = '';
+          String from = '';
+          if (msg.payload != null && msg.payload!.headers != null) {
+            for (var header in msg.payload!.headers!) {
+              if (header.name == 'Subject') {
+                subject = header.value ?? '';
+              } else if (header.name == 'From') {
+                from = header.value ?? '';
+              }
             }
           }
-        }
 
-        if (from.isEmpty) {
-          print('No valid recipient found in the original message.');
-          return;
-        }
+          if (from.isEmpty) {
+            await speak('No valid recipient found in the original message.');
+            return;
+          }
 
-        if (subject.toLowerCase().contains(emailSubject.trim().toLowerCase())) {
-          replyText = await process(replyText,
-              'Receiver (me): ${displayName} Sender: $from Subject: $subject format this as a reply to an email, dont include the subject in the email');
-          var emailContent = '''
+          if (subject
+              .toLowerCase()
+              .contains(emailSubject.trim().toLowerCase())) {
+            replyText = await process(replyText,
+                'Receiver (me): ${displayName} Sender: $from Subject: $subject format this as a reply to an email, dont include the subject in the email');
+            var emailContent = '''
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 to: $from
@@ -922,37 +987,44 @@ references: ${message.id}
 $replyText
 ''';
 
-          var encodedEmail = base64Url.encode(utf8.encode(emailContent));
+            var encodedEmail = base64Url.encode(utf8.encode(emailContent));
 
-          var replyMessage = gmail.Message()
-            ..raw = encodedEmail
-            ..threadId = message.threadId;
+            var replyMessage = gmail.Message()
+              ..raw = encodedEmail
+              ..threadId = message.threadId;
 
-          final bool approved = await approve(
-              "Would you like me to reply to the email with the subject '$subject' from '$from' with the following message: $replyText?");
+            final bool approved = await approve(
+                "Would you like me to reply to the email with the subject '$subject' from '$from' with the following message: $replyText?");
 
-          if (approved) {
-            await gmailAPI.users.messages.send(replyMessage, 'me');
+            if (approved) {
+              await gmailAPI.users.messages.send(replyMessage, 'me');
+            }
           }
         }
       }
+    } catch (error) {
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
+      return;
     }
   }
 
   Future<void> send_email(
       String to, String subject, String body, String context) async {
-    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
-    gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
+    try {
+      final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+      gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
-    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-    if (!emailRegex.hasMatch(to)) {
-      print('Invalid email address');
-    }
+      final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+      if (!emailRegex.hasMatch(to)) {
+        await speak('Invalid email address');
+        return;
+      }
 
-    body = await process(body,
-        'Sender (me): ${displayName} Receiver: $to Subject: $subject $context dont include the subject in the email');
+      body = await process(body,
+          'Sender (me): ${displayName} Receiver: $to Subject: $subject $context dont include the subject in the email');
 
-    var emailContent = '''
+      var emailContent = '''
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 To: $to
@@ -961,15 +1033,30 @@ Subject: $subject
 $body
 ''';
 
-    var encodedEmail = base64Url.encode(utf8.encode(emailContent));
+      var encodedEmail = base64Url.encode(utf8.encode(emailContent));
 
-    var message = gmail.Message()..raw = encodedEmail;
+      var message = gmail.Message()..raw = encodedEmail;
 
-    final bool approved = await approve(
-        "Would you like me to send an email with the subject '$subject' to '$to' containing the following message: $body?");
+      final bool approved = await approve(
+          "Would you like me to send an email with the subject '$subject' to '$to' containing the following message: $body?");
 
-    if (approved) {
-      await gmailAPI.users.messages.send(message, 'me');
+      if (approved) {
+        await gmailAPI.users.messages.send(message, 'me');
+      }
+    } catch (error) {
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
+    }
+  }
+
+  void check_query(String data) {
+    temp_query = '$temp_query¬ $data';
+    query_count++;
+
+    if (query_count == max_query) {
+      List<String> temp_query_list = temp_query.split('¬');
+      temp_query_list.removeRange(0, 4);
+      temp_query = temp_query_list.join('¬');
     }
   }
 }
