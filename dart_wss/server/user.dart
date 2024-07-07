@@ -385,9 +385,9 @@ class User {
     final decodedBytes = base64Decode(data);
     final media = drive.Media(Stream.value(decodedBytes), decodedBytes.length);
 
-    var folder = await folderExistsInDrive(driveApi, 'Gemini Sight Media');
+    var folder = await folderExistsInDrive(driveApi, 'Gemin-Eye Media');
     var folderId = folder?.id ??
-        (await createFolderInDrive(driveApi, 'Gemini Sight Media')).id;
+        (await createFolderInDrive(driveApi, 'Gemin-Eye Media')).id;
 
     var fileToUpload = drive.File()
       ..name = fileName

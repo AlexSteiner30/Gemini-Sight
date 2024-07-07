@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Gemini Sight',
+      title: 'Gemin-Eye',
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Color(0xFF1C1C1C),
       ),
