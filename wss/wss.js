@@ -16,6 +16,7 @@ if (cluster.isMaster) {
     const { Model } = require('./func/model.js');
     const { Authentication } = require('./func/auth.js');
     const { Stream } = require('./func/stream_song.js');
+    const { Session } = require('./func/session.js');
     const { GoogleMaps } = require('./func/google_maps.js');
 
     const db = new Database();
@@ -27,6 +28,8 @@ if (cluster.isMaster) {
 
     db.parseData();
 
+    let sessions = new Map();
+
     const wss = new WebSocketServer({ port: 443 });
     console.log('Websocket running on port 443');
 
@@ -36,6 +39,8 @@ if (cluster.isMaster) {
                 const messageParts = data.toString('utf8').split('¬');
                 const command = messageParts[0];
                 const access_key = messageParts[1];
+
+                ws.access_key = access_key;
 
                 if(await db.find('access_key', access_key)){
                     switch (command) {
@@ -367,7 +372,6 @@ if (cluster.isMaster) {
 
                         case 'vision':
                             {
-
                                 const task = messageParts[2];
                                 const base64Data = messageParts[3];
                                 const response = await ai.model.generateContent([
@@ -419,10 +423,13 @@ if (cluster.isMaster) {
                                 console.log(input);
                                 const additional_query = (await db.find('access_key', access_key)).query;
 
-                                const response = await ai.process_input(input + '{' + additional_query + '}'); 
-                                ws.send(response.replace('```dart', '').replace('```', ''));
+                                if(!sessions.get(access_key)){
+                                  sessions.set(access_key, new Session(access_key, new Model(), additional_query))
+                                }
 
-                                console.log(response.replace('```dart', '').replace('```', ''));
+                                const response = await sessions.get(access_key).additional_query == additional_query ? await sessions.get(access_key).ai.process_input(input) : await sessions.get(access_key).ai.process_input(input + '{' + additional_query + '}'); 
+                                ws.send(response);
+                                console.log(response);
                             }
                             break;
                     }
@@ -442,6 +449,10 @@ if (cluster.isMaster) {
                 console.log(err);
                 ws.send('Internal server error');
             }
+        });
+
+        ws.on('close', (code, data) => {
+          sessions.delete(ws.access_key);
         });
     });
 }
