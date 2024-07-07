@@ -193,29 +193,16 @@ Upload Code to ESP32 and Arduino*
 
 ## Download
 
-You can [download](https://github.com/amitmerchant1990/electron-markdownify/releases/tag/v1.2.0) the latest installable iOS version of the Gemini Sight App.
-
-## Emailware
-
-Markdownify is an [emailware](https://en.wiktionary.org/wiki/emailware). Meaning, if you liked using this app or it has helped you in any way, I'd like you send me an email at <bullredeyes@gmail.com> about anything you'd want to say about this software. I'd really appreciate it!
+You can [download](https://github.com/AlexSteiner30/GeminiSight/edit/main/README.md#license) the latest installable iOS version of the Gemini Sight App.
 
 ## Credits
 
-This software uses the following open source packages:
+This software uses the following open-source packages:
 
 - [Flutter](http://electron.atom.io/)
 - [Node.js](https://nodejs.org/)
-- write other packages and tools used 
-
-## Support
-
-<a href="https://buymeacoffee.com/alexsteiner" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
-
-<p>Or</p> 
-
-<a href="https://www.patreon.com/amitmerchant">
-	<img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="160">
-</a>
+- [MongoDB](https://www.mongodb.com)
+- [Google Cloud Console](https://console.cloud.google.com)
 
 ---
 
