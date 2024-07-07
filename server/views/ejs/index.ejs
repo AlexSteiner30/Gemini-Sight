@@ -23,12 +23,14 @@
                 <p>Find out how this proudct works and what it does.</p>
                 <a href="function"><button class="more-btn">See more</button></a>
             </section>
+            <% if (!isLoggedIn) { %>
             <hr>
             <section>
                 <h1>Sign In</h1>
                 <p>Sign in to use our chatbot system to help answer any of your questions.</p>
                 <a href="admin"><button class="more-btn">Sign In</button></a>
             </section>
+            <% } %>
         </main>
     </div>
     <input type="hidden" id="logged-in" value=<%= isLoggedIn %>>
