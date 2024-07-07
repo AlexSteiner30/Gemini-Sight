@@ -36,7 +36,7 @@ Write here about the product
 ## Backend
 Gemini Sight functions thanks to two different web sockets one written in javascript and the other one written in dart, the purpose of this is to have additional security and to separate the two main background tasks. This concept can be visualized by the following sketch.
 <h1 align="center">
- <img src="https://github.com/AlexSteiner30/GeminiSight/blob/5623f733cf60c59ace5a7b79ee43568da24f177b/resources/backend.png?raw=true" style="height: 80%; width:80%; align:center">
+ <img src="resources/backend.png?raw=true" style="height: 80%; width:80%; align:center">
 </h1>
 
 At the first login in the app from the user information from his emails and docs are gathered in order to enhance a personalized experience, secondly the application sends to the javasript website the loging authorization code which the server processes in order to ge the refresh token which is then saved is ecnrypted and then saved in the database. From the app, once the glasses are connected through Bleuthooth data such as access key,location and contacts are shared to the glasses, furthermore this is used as communication channel in order to perform tasks such as launching a phone call or sending a message.
@@ -54,15 +54,15 @@ Response: speak(|I am retriving information about the project document|)¬ speak
 You can setup your own project by going to the [Google Cloud Console](https://console.cloud.google.com/welcome/new?project=sinuous-branch-426313-q6) and creating a new project
 
 <h1 align="center">
- <img src="https://github.com/AlexSteiner30/GeminiSight/blob/5623f733cf60c59ace5a7b79ee43568da24f177b/resources/new_project.png?raw=true" style="height: 80%; width:80%; align:center">
+ <img src="resources/new_project.png?raw=true" style="height: 80%; width:80%; align:center">
 </h1>
 
 Navigate to API and Services and add `Gmail, Calendar, Docs, Sheet, Drive, Tasks, Youtube Analytics, Google Maps Places, Google Maps Directions`. Then create a new API key and OAuth client IDs (one for mobile devices and one web), save them for later on.
 
 <h1 align="center">
  <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-     <img src="https://github.com/AlexSteiner30/GeminiSight/blob/7b66fd2065726c01c1fb07d718ef3f64d1e29d04/resources/api.png?raw=true" style="width: 49%;" />
-     <img src="https://github.com/AlexSteiner30/GeminiSight/blob/7b66fd2065726c01c1fb07d718ef3f64d1e29d04/resources/keys.png?raw=true" style="width: 49%;" />
+     <img src="resources/api.png?raw=true" style="width: 49%;" />
+     <img src="resources/keys.png?raw=true" style="width: 49%;" />
  </div>
 </h1>
 
