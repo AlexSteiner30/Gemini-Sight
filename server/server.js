@@ -13,6 +13,10 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 let previousChats = [];
 
+/* previousChats.push({role: 'user', parts: [{text: "What is 1+1?"}]});
+previousChats.push({role: 'model', parts: [{text: "1+1=2"}]});
+previousChats.push({role: 'user', parts: [{text: "When is Christmas?"}]});
+previousChats.push({role: 'model', parts: [{text: "Christmas is on the 25th of December"}]}); */
 
 const app = express();
 const PORT = 8080;
@@ -30,7 +34,8 @@ app.get('/', (req, res) => {
 });
 
 app.get('/:id', (req, res) => {
-    if (allowedPages.includes(req.params.id)) res.render(req.params.id, {
+    if (req.params.id == "admin" && req.cookies["cookie-token"]) res.redirect("index");
+    else if (allowedPages.includes(req.params.id)) res.render(req.params.id, {
         isLoggedIn: req.cookies["cookie-token"],
         chats: JSON.stringify(previousChats)
     });
@@ -43,6 +48,10 @@ app.get('/:id', (req, res) => {
 });
 
 app.post('/signin', bodyparser.urlencoded(), async (req, res) => {
+    previousChats.push({role: 'user', parts: [{text: "What is 1+1?"}]});
+    previousChats.push({role: 'model', parts: [{text: "1+1=2"}]});
+    previousChats.push({role: 'user', parts: [{text: "When is Christmas?"}]});
+    previousChats.push({role: 'model', parts: [{text: "Christmas is on the 25th of December"}]});
     let token = req.body.token;
     const decoded = jwtDecode(token);
     let email = decoded.email;
