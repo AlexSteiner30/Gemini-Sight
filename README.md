@@ -125,10 +125,10 @@ To clone and run this application, you'll need [Git](https://git-scm.com), [Node
 
 ```bash
 # Clone this repository
-$ git clone https://github.com/AlexSteiner30/GeminiSight/
+$ git clone https://github.com/AlexSteiner30/GEMIN-EYE/
 
 # Go into the repository
-$ cd GeminiSight
+$ cd GEMIN-EYE
 
 # Go into the wss directory
 $ cd wss
@@ -158,7 +158,7 @@ To start the websocket server, run the following:
 $ npm start
 ```
 
-Navigate to the `/GeminiSight/app` directory and set up your application as follows:
+Navigate to the `/GEMIN-EYE/app` directory and set up your application as follows:
 
 ```bash
 # Get device IP address
