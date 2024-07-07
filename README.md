@@ -1,8 +1,5 @@
 <h1 align="center">
-  <br>
-  <a href="https://gemini.google.com"><img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Gemini_language_model_logo.png" alt="Gemin-Eye" width="500"></a>
-  <br>
-  <br>
+  <a href="https://gemini.google.com"><img src="resources/logo.png?raw=true#gh-light-mode-only" alt="Gemin-Eye" width="400"></a>
 </h1>
 
 <h4 align="center">AI-powered smart glasses connected to your Google interface, entry for the <a href="https://ai.google.dev/competition" target="_blank">Gemini API Competition</a>.</h4>
@@ -39,7 +36,7 @@
 
 ## Competition
 
-This repository is the submission for the Gemini API Developer Competition by [Alex Steiner](https://github.com/AlexSteiner30), [Fotios Vaitsopoulos](https://github.com/Epic-legend128), and [Lorenzo Dominijani](https://www.instagram.com/lorenzo.dominijanni/). We are a group of students attending H-Farm International School of Treviso, who wanted to challenge ourselves by joining the Gemini Developer Competition to improve our skill set and create something we could be proud of. The competition consists of a worldwide competition hosted by Google, showcasing how the new Gemini model can be implemented in real-world applications, with a cash prize for the winner.
+This repository is the submission for the Gemini API Developer Competition by [Alex Steiner](https://github.com/AlexSteiner30), [Fotios Vaitsopoulos](https://github.com/Epic-legend128), and [Lorenzo Dominijani](https://www.instagram.com/lorenzo.dominijanni/). Whereas the logo was designed by [Lilian Piovesana](https://www.linkedin.com/in/lilian-piovesana-333b572b1/) We are a group of students attending H-Farm International School of Treviso, who wanted to challenge ourselves by joining the Gemini Developer Competition to improve our skill set and create something we could be proud of. The competition consists of a worldwide competition hosted by Google, showcasing how the new Gemini model can be implemented in real-world applications, with a cash prize for the winner.
 
 Unfortunately, we joined the competition one month after it began because we were overwhelmed by internal exams. However, this didn't stop us from joining the competition in early/mid-June. We came up with the idea to create smart glasses completely powered by Gemini and fully connected to all Google services such as Google Docs, Google Drive, Gmail, YouTube Music, Google Maps, Google Calendar, and Google Events, to automate tasks from a single voice command. The glasses, equipped with a camera, also allow the user to ask for information about what is in front of them, with the model responding in real time.
 
