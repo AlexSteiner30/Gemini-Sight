@@ -34,6 +34,8 @@ class Model {
       const out = response.text();
 
       return out;
+
+      // streaming -> split )¬ -> append [] send
     } catch (error) {
       console.error('Error processing input:', error);
       throw error;

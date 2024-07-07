@@ -577,7 +577,7 @@ class User {
           }
         }
       }
-      return complete_information.isNotEmpty
+      return complete_information == ''
           ? complete_information
           : 'you do not have any calendar events';
     } catch (error) {
@@ -760,7 +760,7 @@ class User {
           }
         }
       }
-      return complete_information.isNotEmpty
+      return complete_information == ''
           ? complete_information
           : 'you do not have any calendar events';
     } catch (error) {

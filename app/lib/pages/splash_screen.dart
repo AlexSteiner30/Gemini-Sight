@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:app/helper/socket.dart';
+import 'package:app/main.dart';
 import 'package:app/pages/device.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:flutter/material.dart';
@@ -34,19 +35,17 @@ class _SplashScreenState extends State<SplashScreen> {
       await prefs.setBool('blind_support', false);
     }
     if ((prefs.getBool('logged') ?? false)) {
-      final GoogleSignIn _googleSignIn = GoogleSignIn(
-          clientId:
-              '910242255946-b70mhjrb2225nmapdvsgrr0mk66r9pid.apps.googleusercontent.com',
-          scopes: [
-            calendar.CalendarApi.calendarScope,
-            gmail.GmailApi.gmailReadonlyScope,
-            gmail.GmailApi.gmailSendScope,
-            gmail.GmailApi.gmailComposeScope,
-            gmail.GmailApi.gmailModifyScope,
-            drive.DriveApi.driveScope,
-            tasks.TasksApi.tasksScope,
-            sheets.SheetsApi.spreadsheetsScope,
-          ]);
+      final GoogleSignIn _googleSignIn =
+          GoogleSignIn(clientId: CLIENT_ID, scopes: [
+        calendar.CalendarApi.calendarScope,
+        gmail.GmailApi.gmailReadonlyScope,
+        gmail.GmailApi.gmailSendScope,
+        gmail.GmailApi.gmailComposeScope,
+        gmail.GmailApi.gmailModifyScope,
+        drive.DriveApi.driveScope,
+        tasks.TasksApi.tasksScope,
+        sheets.SheetsApi.spreadsheetsScope,
+      ]);
 
       account = await _googleSignIn.signInSilently();
 

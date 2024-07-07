@@ -17,13 +17,13 @@ ws.onopen = async () => {
 };
 
 ws.onmessage = async (message) => {
-  console.log(message.data);
+  console.log(`Gemma: ${message.data}`);
 
   promptUserInput();
 };
 
 function promptUserInput() {
-  rl.question('Enter a message: ', (input) => {
+  rl.question('You: ', (input) => {
     ws.send(`${authentication_key}¬Hey Gemma, ${input}`);
   });
 }

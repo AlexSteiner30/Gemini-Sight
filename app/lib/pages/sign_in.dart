@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:app/helper/socket.dart';
 import 'package:app/helper/loading_screen.dart';
 import 'package:app/helper/query.dart';
+import 'package:app/main.dart';
 import 'package:app/pages/device.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -29,8 +30,7 @@ class _SignInPageState extends State<SignInPage> {
   bool isLoading = false;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-      clientId:
-          '910242255946-b70mhjrb2225nmapdvsgrr0mk66r9pid.apps.googleusercontent.com',
+      clientId: CLIENT_ID,
       scopes: [
         calendar.CalendarApi.calendarScope,
         gmail.GmailApi.gmailReadonlyScope,
@@ -42,8 +42,7 @@ class _SignInPageState extends State<SignInPage> {
         sheets.SheetsApi.spreadsheetsScope,
       ],
       forceCodeForRefreshToken: true,
-      serverClientId:
-          '910242255946-3okgle3e78inrabcm39807h21cumhvkj.apps.googleusercontent.com');
+      serverClientId: SERVER_CLIENT_ID);
 
   GoogleSignInAccount? user;
 

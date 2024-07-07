@@ -32,7 +32,7 @@ class Audio {
                 },
                 voice: {
                     languageCode: "en-US",
-                    name: "en-US-Studio-O"
+                    name: "en-US-Journey-O"
                 }
             };
             
