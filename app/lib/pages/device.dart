@@ -7,8 +7,6 @@ import 'package:app/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
-import 'package:permission_handler/permission_handler.dart';
-import 'qr_code.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -42,56 +40,6 @@ class _DevicePageState extends State<DevicePage> {
   bool isLoading = false;
   int _currentIndex = 0;
 
-  Future<void> _scanQRCode(BuildContext context) async {
-    const permission = Permission.camera;
-
-    if (await permission.isDenied) {
-      await permission.request();
-    }
-
-    var status = await Permission.camera.status;
-
-    if (status.isGranted) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => QRCodeScreen(),
-        ),
-      );
-    } else {
-      showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Camera Access Not Granted'),
-            content: const SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  Text(
-                    'In order to connect a new device, camera access is necessary.',
-                  ),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Okay'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
-
-  void scanQRCode() {
-    _scanQRCode(context);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -100,6 +48,18 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void settings() {
+    Navigator.push(
+      // ignore: use_build_context_synchronously
+      context,
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) =>
+            DeviceSettings(user: widget.user, device: device),
+        transitionDuration: const Duration(seconds: 0),
+      ),
+    );
   }
 
   Future<drive.File?> folderExistsInDrive(
@@ -140,9 +100,6 @@ class _DevicePageState extends State<DevicePage> {
       } else {
         throw 'Could not launch $folder_url';
       }
-    } else if (_currentIndex == 2) {
-      await _scanQRCode(context);
-      _currentIndex = 0;
     }
   }
 
@@ -289,7 +246,7 @@ class _DevicePageState extends State<DevicePage> {
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
                             ),
-                            onPressed: scanQRCode,
+                            onPressed: settings,
                             icon: const Icon(Icons.qr_code),
                             label: const Text('Connect'),
                           ),
@@ -323,7 +280,7 @@ class _DevicePageState extends State<DevicePage> {
                               widget.blind_support
                                   ? 'Blind support is currently enabled'
                                   : 'Blind support is currently disabled',
-                              style: TextStyle(color: Colors.grey)),
+                              style: const TextStyle(color: Colors.grey)),
                           onTap: () async {
                             final prefs = await SharedPreferences.getInstance();
                             widget.blind_support =
@@ -344,44 +301,15 @@ class _DevicePageState extends State<DevicePage> {
                           subtitle: const Text(
                               'Get info and configure your device',
                               style: TextStyle(color: Colors.grey)),
-                          onTap: () async {
-                            final prefs = await SharedPreferences.getInstance();
-
-                            // ignore: no_leading_underscores_for_local_identifiers
-                            bool _googleMaps =
-                                prefs.getBool('googleMaps') ?? false;
-                            // ignore: no_leading_underscores_for_local_identifiers
-                            bool _googleDrive =
-                                prefs.getBool('googleDrive') ?? false;
-                            // ignore: no_leading_underscores_for_local_identifiers
-                            bool _gmail = prefs.getBool('gmail') ?? false;
-                            // ignore: no_leading_underscores_for_local_identifiers
-                            bool _googleCalendar =
-                                prefs.getBool('googleCalendar') ?? false;
-                            // ignore: no_leading_underscores_for_local_identifiers
-                            bool _youtube = prefs.getBool('youtube') ?? false;
-                            // ignore: no_leading_underscores_for_local_identifiers
-                            bool _location = prefs.getBool('location') ?? false;
-                            // ignore: no_leading_underscores_for_local_identifiers
-                            bool _contacts = prefs.getBool('contacts') ?? false;
-                            // ignore: no_leading_underscores_for_local_identifiers
-                            bool _phone = prefs.getBool('phone') ?? false;
-
+                          onTap: () {
                             Navigator.push(
                               // ignore: use_build_context_synchronously
                               context,
                               PageRouteBuilder(
                                 pageBuilder: (_, __, ___) => DeviceSettings(
-                                    user: widget.user,
-                                    device: device,
-                                    googleMaps: _googleMaps,
-                                    googleDrive: _googleDrive,
-                                    gmail: _gmail,
-                                    googleCalendar: _googleCalendar,
-                                    youtube: _youtube,
-                                    location: _location,
-                                    contacts: _contacts,
-                                    phone: _phone),
+                                  user: widget.user,
+                                  device: device,
+                                ),
                                 transitionDuration: const Duration(seconds: 0),
                               ),
                             );

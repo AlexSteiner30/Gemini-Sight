@@ -25,10 +25,6 @@ class BottomNavBar extends StatelessWidget {
           icon: Icon(Icons.photo),
           label: 'Gallery',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.qr_code),
-          label: 'Connection',
-        )
       ],
     );
   }

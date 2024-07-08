@@ -30,6 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToLogin() async {
+    await Future.delayed(const Duration(seconds: 2));
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool('blind_support') == null) {
       await prefs.setBool('blind_support', false);
@@ -91,8 +92,8 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Center(
         child: Image.asset(
           'assets/images/logo.png',
-          width: 250,
-          height: 250,
+          width: 275,
+          height: 275,
         ),
       ),
     );
