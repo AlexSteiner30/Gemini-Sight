@@ -99,6 +99,7 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
     };
 
     ws.listen((message) async {
+      print(message);
       List<String> messageParts = message.toString().split('¬');
 
       if (messageParts.length == 1 && devices[message.toString()] == null) {

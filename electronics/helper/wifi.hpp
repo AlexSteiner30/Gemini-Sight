@@ -1,17 +1,16 @@
 #include <WiFi.h>
 
-void connectWiFi(char* ssid, char* password){
+void connect_wifi(char* ssid, char* password){
+    WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
-    WiFi.setSleep(false);
+    Serial.println("\nConnecting");
 
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
+    while(WiFi.status() != WL_CONNECTED){
         Serial.print(".");
+        delay(1000);
     }
-    Serial.println("");
-    Serial.println("WiFi connected");
 
-    Serial.print("Camera Ready! Use 'http://");
-    Serial.print(WiFi.localIP());
-    Serial.println("' to connect");
+    Serial.println("\nConnected to the WiFi network");
+    Serial.print("Local ESP32 IP: ");
+    Serial.println(WiFi.localIP());
 }
