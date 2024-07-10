@@ -106,8 +106,6 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
           user.expiration =
               DateTime.now().subtract(const Duration(minutes: 50));
 
-          print(message);
-
           final entry = <String, User>{message: user};
           devices.addEntries(entry.entries);
         } else if (devices[message] != null) {

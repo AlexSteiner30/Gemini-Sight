@@ -141,34 +141,3 @@ const origin = 'Strada San Michele 150 Borgo Maggiore';
 const destination = 'Bounty Rimini Italy';
 
 //navigate(origin, destination);
-
-async function speech_to_text(){
-    const audioBytes = fs.readFileSync('output.wav').toString('base64');
-    console.log(audioBytes);
-    const requestPayload = {
-      audio: {
-        content: audioBytes,
-      },
-      config: {
-        encoding: 'LINEAR16',
-        sampleRateHertz: 16000,
-        languageCode: 'en-US',
-      },
-    };
-
-    axios.post("https://speech.googleapis.com/v1/speech:recognize?key=AIzaSyBE8n70XnBigOGU34Lhd1YvrBAjs3TAI70", requestPayload)
-    .then(response => {
-      const transcription = response.data.results
-        .map(result => result.alternatives[0].transcript)
-        .join('\n');
-      console.log(response.data);
-      console.log(response.data.results);
-      console.log(transcription);
-      return transcription;
-    })
-    .catch(error => {
-      return ('Error:', error.response ? error.response.data : error.message);
-    });
-  }
-
-speech_to_text();

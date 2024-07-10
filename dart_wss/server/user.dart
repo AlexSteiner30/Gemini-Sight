@@ -73,13 +73,15 @@ class User {
 
     try {
       final response = await http.post(
-        Uri.parse('https://speech.googleapis.com/v1/speech:recognize?key='),
+        Uri.parse(
+            'https://speech.googleapis.com/v1/speech:recognize?key=AIzaSyBE8n70XnBigOGU34Lhd1YvrBAjs3TAI70'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestPayload),
       );
 
       if (response.statusCode == 200) {
         final dynamic responseBody = jsonDecode(response.body);
+        print(responseBody);
         await send_data(
             responseBody["results"][0]["alternatives"][0]["transcript"]);
       } else {
