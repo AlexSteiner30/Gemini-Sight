@@ -17,11 +17,13 @@ function createNavAndFooter() {
         }
         document.getElementsByTagName("body")[0].innerHTML += `
             <form id='chat-area' method='POST' action='/chat'>
-                <input type="button" id="vis-btn" value="Close">
+                <input type="button" id="vis-btn" value="Chat">
                 <div id='chat-prev'><div id='chat-grid'>`+addition+`</div></div>
                 <input type='text' id='chat-input' placeholder='Enter prompt...' name='prompt'>
             </form>
         `;
+        document.getElementById("chat-prev").style.display = "none";
+        document.getElementById("chat-input").style.display = "none";
 
         sign = '<a href="logout">Sign Out</a>';
 
@@ -73,3 +75,4 @@ document.getElementById("vis-btn").addEventListener("click", function(e) {
         }, 300);
     }
 });
+

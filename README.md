@@ -111,8 +111,9 @@ Navigate to API and Services and add `Gmail, Calendar, Docs, Sheet, Drive, Tasks
 Next, go to MongoDB and create a new project [here](https://cloud.mongodb.com) and copy the connection URI.
 
 ## Website
-The website was created to expand upon our product's publicity, enable the distribution of our product and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to GEMIN-EYE.<br>
-The website can be accessed online [here](). However, you can also run it locally on your computer by installing the required packages and setting up the right environment variables.<br>
+The website was created to expand upon our product's publicity, enable the distribution of our product and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to GEMIN-EYE. The website can be accessed online [here]().<br>
+In total the website offers 5 pages. The first one is the homepage, the second one is the about us section where some you can be provided with some information about our team. Then there is the functioning page which describes how the glasses work altough the gtihub repo does a better job at it. Then the order section is where you can order the glasses and finally a sign in part of the site which is required for you to order the glasses and access the chatbot feature.<br>
+However, you can also run it locally on your computer by installing the required packages and setting up the right environment variables.<br>
 For the environemnt variables you need to have the following:
 ```
 MONGODB_URI = ""
