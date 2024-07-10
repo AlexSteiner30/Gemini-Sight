@@ -42,7 +42,7 @@ footer {
 nav {
     position: fixed;
     display: grid;
-    grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
     background-color: rgb(1, 12, 21, 0.9);
     width: 100%;
     transition: all ease-in-out 300ms;
