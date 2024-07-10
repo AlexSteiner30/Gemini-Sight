@@ -111,12 +111,32 @@ Navigate to API and Services and add `Gmail, Calendar, Docs, Sheet, Drive, Tasks
 Next, go to MongoDB and create a new project [here](https://cloud.mongodb.com) and copy the connection URI.
 
 ## Website
+The website was created to expand upon our product's publicity, enable the distribution of our product and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to GEMIN-EYE.<br>
+The website can be accessed online [here](). However, you can also run it locally on your computer by installing the required packages and setting up the right environment variables.<br>
+For the environemnt variables you need to have the following:
+```
+MONGODB_URI = ""
+GEMINI_API = ""
+CLIENT_ID = ""
+```
+The `MONGODB_URI` is just the connection uri for MongoDB which you can copy once you have created a new project [here](https://cloud.mongodb.com). Then, the `GEMINI_API` is just the Gemini API key which you can just create by going [here](https://aistudio.google.com/app/apikey). Finally, the `CLIENT_ID` is the client id for the google authentication which you can access by going to the google developer console like shown in the [backend section](#backend).<br>
+Then you will need to head to the server directory, install some packages and run the site like so:
+```bash
+# head to the right directory
+$ cd server
 
-(Leave this empty for now.)
+# install the required packages
+$ npm install
+
+# run the site
+$ node server.js
+```
+After that just head to [localhost:8080](localhost:8080) where your site will be running.<br>
+_Note_: It is important to mention that the ordering of the glasses, although already set up in the website with google pay, does not work due to the fact that there is currently no way for our team to mass produce and distribute these glasses to a wider audience, so it has just been created as a demo part of the site.
 
 ## Flutter App
 
-(Details about the Flutter app here.)
+(Details about the Flutter app here)
 
 ## How To Use
 
@@ -229,15 +249,6 @@ This software uses the following open-source packages and tools:
 - [MongoDB](https://www.mongodb.com/)
 - [EJS](https://ejs.co)
 
-## Support
-
-<a href="https://buymeacoffee.com/alexsteiner" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png" alt="Buy Me A Coffee" style="height: 41px; width: 174px; box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5); -webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5);"></a>
-
-<p>Or</p> 
-
-<a href="https://www.patreon.com/amitmerchant">
-  <img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="160">
-</a>
 
 > [alexsteiner.dev](https://www.alexsteiner.dev) &nbsp;&middot;&nbsp;
 > [epic-legend128](https://github.com/Epic-legend128) &nbsp;&middot;&nbsp;
