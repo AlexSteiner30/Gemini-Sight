@@ -131,7 +131,7 @@ $ npm install
 # run the site
 $ node server.js
 ```
-After that just head to [localhost:8080](localhost:8080) where your site will be running.<br>
+After that just head to [localhost:8080](https://localhost:8080) where your site will be running.<br>
 _Note_: It is important to mention that the ordering of the glasses, although already set up in the website with google pay, does not work due to the fact that there is currently no way for our team to mass produce and distribute these glasses to a wider audience, so it has just been created as a demo part of the site.
 
 ## Flutter App
