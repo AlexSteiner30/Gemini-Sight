@@ -1,3 +1,14 @@
+function processOutput(text) {
+    let counter = 0;
+    text = text.replace(/(\*\*)/g, function(match, captured) {
+        counter++;
+        return (counter&1 ? "<strong>" : "</strong>");
+    });
+    return text.replace(/(\*)/g, function(match, captured) {
+        return "<br>";
+    });
+}
+
 function createNavAndFooter() {
     let sign;
     if (document.getElementById("logged-in").value) {
@@ -6,7 +17,7 @@ function createNavAndFooter() {
         if (chats.length > 0 && chats != []) { 
             chats.forEach(x => {
                 if (x.role == "user") addition += "<div></div>";
-                addition += "<label>"+x.parts[0].text+"</label>";
+                addition += "<label>"+processOutput(x.parts[0].text)+"</label>";
                 if (x.role == "model") addition += "<div></div>";
             });
         }

@@ -100,7 +100,7 @@ button:hover {
     border-radius: 0.4vw;
     border: 1px solid rgb(30, 37, 60);
     background-color: rgb(3, 3, 41);
-    max-width: 15vw;
+    max-width: 20vw;
 }
 
 #chat-prev {
@@ -115,7 +115,7 @@ button:hover {
 
 #chat-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 3fr 2fr;
     width: 100%;
 }
 
