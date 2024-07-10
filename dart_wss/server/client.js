@@ -27,4 +27,3 @@ function promptUserInput() {
     ws.send(`${authentication_key}¬Hey Gemma, ${input}`);
   });
 }
-a
