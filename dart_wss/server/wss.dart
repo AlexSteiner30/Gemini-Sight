@@ -99,20 +99,22 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
     };
 
     ws.listen((message) async {
-      print(message);
-      List<String> messageParts = message.toString().split('¬');
+      if (message is String) {
+        if (devices[message] == null) {
+          user.authentication_key = message;
+          user.refresh_key = await get_refresh_token(message);
+          user.expiration =
+              DateTime.now().subtract(const Duration(minutes: 50));
 
-      if (messageParts.length == 1 && devices[message.toString()] == null) {
-        user.authentication_key = messageParts[0];
-        user.refresh_key = await get_refresh_token(messageParts[0]);
+          print(message);
 
-        user.expiration = DateTime.now().subtract(const Duration(minutes: 50));
-        final entry = <String, User>{message.toString(): user};
-        devices.addEntries(entry.entries);
-      } else if (messageParts.isEmpty && devices[message.toString()] == null) {
-        user = devices[message.toString()]!;
-      } else if (messageParts.length == 2) {
-        await user.send_data(messageParts[1]);
+          final entry = <String, User>{message: user};
+          devices.addEntries(entry.entries);
+        } else if (devices[message] != null) {
+          user = devices[message.toString()]!;
+        }
+      } else if (message is List<int>) {
+        await user.speech_to_text(message);
       }
     }, onDone: () {
       ws.close();

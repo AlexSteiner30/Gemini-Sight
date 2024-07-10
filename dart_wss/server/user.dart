@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
@@ -11,6 +12,7 @@ import 'helper.dart';
 import 'parser.dart';
 import 'wss.dart';
 import 'package:web_socket_client/web_socket_client.dart';
+import 'package:http/http.dart' as http;
 
 class User {
   String displayName;
@@ -54,6 +56,40 @@ class User {
       required this.expiration});
 
   // General
+  Future<void> speech_to_text(List<int> byte_input) async {
+    print('Speech To Text');
+    String audioBytes = base64Encode(byte_input);
+
+    Map<String, dynamic> requestPayload = {
+      'audio': {
+        'content': audioBytes,
+      },
+      'config': {
+        'encoding': 'LINEAR16',
+        'sampleRateHertz': 16000,
+        'languageCode': 'en-US',
+      },
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://speech.googleapis.com/v1/speech:recognize?key='),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestPayload),
+      );
+
+      if (response.statusCode == 200) {
+        final dynamic responseBody = jsonDecode(response.body);
+        await send_data(
+            responseBody["results"][0]["alternatives"][0]["transcript"]);
+      } else {
+        print('Error: ${response.body}');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
   Future<String> process(String input, String context) async {
     String data = '$input $context';
     await socket.connection.firstWhere((state) => state is Connected);
@@ -99,7 +135,6 @@ class User {
       await completer.future;
       await subscription.cancel();
     } catch (error) {
-      print(error);
       await speak(await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
@@ -116,6 +151,7 @@ class User {
 
     final subscription = socket.messages.listen((pcm) {
       //ws.add(pcm);
+      // send to server
       completer.complete();
     });
 

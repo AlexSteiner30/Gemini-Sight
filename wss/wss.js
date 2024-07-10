@@ -9,6 +9,7 @@ if (cluster.isMaster) {
 }else{
     const fs = require('fs');
     const axios = require('axios');
+    const wav = require('wav');
     const querystring = require('querystring');
     const { Database } = require('./func/db.js');
     const { Audio } = require('./func/audio.js');
@@ -39,6 +40,8 @@ if (cluster.isMaster) {
                 const messageParts = data.toString('utf8').split('¬');
                 const command = messageParts[0];
                 const access_key = messageParts[1];
+
+                console.log(command);
 
                 ws.access_key = access_key;
 
@@ -430,6 +433,14 @@ if (cluster.isMaster) {
                                 const response = await sessions.get(access_key).additional_query == additional_query ? await sessions.get(access_key).ai.process_input(input) : await sessions.get(access_key).ai.process_input(input + '{' + additional_query + '}'); 
                                 ws.send(response);
                                 console.log(response);
+                            }
+                            break;
+
+                        case 'speech_to_text':
+                            {
+                                const binaryPart = data.slice(data.toString('utf-8').lastIndexOf('¬') + 1);
+                                const response = await ai.speech_to_text(binaryPart);
+                                ws.send(`^${response}`);
                             }
                             break;
                     }

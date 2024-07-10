@@ -1,4 +1,5 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const axios = require('axios');
 require('dotenv').config({ path: './database/.env' });
 
 class Model {
@@ -24,6 +25,9 @@ class Model {
     });
 
     this.chat = chat;
+
+    const speech_to_text_url = `https://speech.googleapis.com/v1/speech:recognize?key=${process.env.API_KEY}`;
+    this.speech_to_text_url = speech_to_text_url;
   }
 
   async process_input(prompt) {
@@ -53,6 +57,33 @@ class Model {
       console.error('Error processing data:', error);
       throw error;
     }
+  }
+
+  async speech_to_text(data){
+    const audioBytes = data.toString('base64');
+
+    const requestPayload = {
+      audio: {
+        content: audioBytes,
+      },
+      config: {
+        encoding: 'LINEAR16',
+        sampleRateHertz: 16000,
+        languageCode: 'en-US',
+      },
+    };
+
+    axios.post(this.speech_to_text_url, requestPayload)
+    .then(response => {
+      const transcription = response.data.results
+        .map(result => result.alternatives[0].transcript)
+        .join('\n');
+      console.log(transcription);
+      return transcription;
+    })
+    .catch(error => {
+      return ('Error:', error.response ? error.response.data : error.message);
+    });
   }
 }
 
