@@ -1,12 +1,6 @@
 function processOutput(text) {
     let counter = 0;
-    text = text.replace(/(\*\*)/g, function(match, captured) {
-        counter++;
-        return (counter&1 ? "<strong>" : "</strong>");
-    });
-    return text.replace(/(\*)/g, function(match, captured) {
-        return "<br>";
-    });
+    return (text.replace(/(\*\*)/g, _ => ((++counter)&1 ? "<strong>" : "</strong>"))).replace(/(\*)/g, "<br>");
 }
 
 function createNavAndFooter() {
