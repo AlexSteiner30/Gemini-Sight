@@ -45,7 +45,28 @@ You can set up your own project by visiting the Google Cloud Console and creatin
 Navigate to API and Services and add Gmail, Calendar, Docs, Sheet, Drive, Tasks, YouTube Analytics, Google Maps Places, Google Maps Directions. Then create a new API key and OAuth client IDs (one for mobile devices and one for the web) and save them for later use.
 Next, go to MongoDB, create a new project and copy the connection URI.
 Website:
-(Missing info)
+The website was created to expand upon our product's publicity, enable the distribution of our product and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to GEMIN-EYE.
+The website can be accessed online here. However, you can also run it locally on your computer by installing the required packages and setting up the right environment variables.
+For the environment variables you need to have the following:
+MONGODB_URI = ""
+GEMINI_API = ""
+CLIENT_ID = ""
+
+
+The MONGODB_URI is just the connection uri for MongoDB which you can copy once you have created a new project here. Then, the GEMINI_API is just the Gemini API key which you can just create by going here. Finally, the CLIENT_ID is the client ID for the Google authentication which you can access by going to the Google developer console as shown in the backend section.
+Then you will need to head to the server directory, install some packages and run the site like so:
+# head to the right directory
+$ cd server
+
+
+# install the required packages
+$ npm install
+
+
+# run the site
+$ node server.js
+After that just head to localhost:8080 where your site will be running.
+Note: It is important to mention that the ordering of the glasses, although already set up on the website with Google Pay, does not work due to the fact that there is currently no way for our team to mass produce and distribute these glasses to a wider audience, so it has just been created as a demo part of the site.
 Flutter App:
 (Missing info)
 How To Use:
