@@ -47,7 +47,7 @@ Alex Steiner developed the Flutter application, the glasses' circuit and code, a
 Gemin-Eye is an innovative application that leverages the Gemini language model to create AI-powered smart glasses integrated with various Google services. The core features of our submission include:
 
 - **Voice Commands Integration**: Users can perform tasks such as sending emails, scheduling events, and retrieving documents using voice commands.
-- **Real-Time Visual Recognition**: The glasses' camera can recognize objects and provide information about them in real-time.
+- **Real-Time Visual Recognition**: The glasses' camera can recognize objects and provide information about them in real time.
 - **Google Services Connectivity**: Seamless integration with Google Docs, Drive, Gmail, YouTube Music, Maps, Calendar, and Events to enhance productivity.
 - **Secure Data Handling**: User data is securely managed and encrypted, ensuring privacy and protection.
 
@@ -70,7 +70,7 @@ Down below you can find the table with the components used to build the glasses
    | 3.7v Lithium Battery                          | 1          | €9.33     | [Buy Here](https://t.ly/6TUde)  |
    | Jumper Wire Cables                            | 1          | €9.15     | [Buy Here](http://amoz.onl/2Pp) |
 
-The glasses can connect in two different ways, through Bluetooth and WiFi. Bluethooth is used to share data between the app and the glasses (location, access key, contacts or sending commands), on the other hand the glasses connect to the WiFi scanning a QR Code whihch is created in the app in order to connect to the websockets.
+The glasses can connect in two different ways, through Bluetooth and WiFi. Bluetooth is used to share data between the app and the glasses (location, access key, contacts or sending commands), on the other hand, the glasses connect to the WiFi by scanning a QR Code which is created in the app in order to connect to the websockets.
 
 ## Backend
 
@@ -108,19 +108,19 @@ Navigate to API and Services and add `Gmail, Calendar, Docs, Sheet, Drive, Tasks
 </h1>
 
 
-Next, go to MongoDB and create a new project [here](https://cloud.mongodb.com) and copy the connection URI.
+Next, go to MongoDB, create a new project [here](https://cloud.mongodb.com) and copy the connection URI.
 
 ## Website
-The website was created to expand upon our product's publicity, enable the distribution of our product and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to GEMIN-EYE. The website can be accessed online [here]().<br>
-In total the website offers 5 pages. The first one is the homepage, the second one is the about us section where some you can be provided with some information about our team. Then there is the functioning page which describes how the glasses work altough the gtihub repo does a better job at it. Then the order section is where you can order the glasses and finally a sign in part of the site which is required for you to order the glasses and access the chatbot feature.<br>
-However, you can also run it locally on your computer by installing the required packages and setting up the right environment variables.<br>
-For the environemnt variables you need to have the following:
-```
+The website was created to expand upon our product's publicity, enable its distribution and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to Gemin-Eye. The website can be accessed online [here]().<br>
+In total the website offers 5 pages. The first one is the "Home" and the second one is the "About Us" section where you are provided with some information about our team. Then there is the "Functioning" page which describes how the glasses work although the Gtihub repository does a better job at it. Then the "Order" section is where you can order the glasses and finally a "Sign In" part of the site which is required for you to order the glasses and access the chatbot feature.<br>
+You can also run the site locally on your computer by installing the required packages and setting up the right environment variables.<br>
+For the environment variables you need to have the following:
+```js
 MONGODB_URI = ""
 GEMINI_API = ""
 CLIENT_ID = ""
 ```
-The `MONGODB_URI` is just the connection uri for MongoDB which you can copy once you have created a new project [here](https://cloud.mongodb.com). Then, the `GEMINI_API` is just the Gemini API key which you can just create by going [here](https://aistudio.google.com/app/apikey). Finally, the `CLIENT_ID` is the client id for the google authentication which you can access by going to the google developer console like shown in the [backend section](#backend).<br>
+The `MONGODB_URI` is just the connection URI for MongoDB which you can copy once you have created a new project [here](https://cloud.mongodb.com). Then, the `GEMINI_API` is just the Gemini API key which you can just create by going [here](https://aistudio.google.com/app/apikey). Finally, the `CLIENT_ID` is the client ID for the Google authentication which you can access by going to the Google developer console as shown in the [backend section](#backend).<br>
 Then you will need to head to the server directory, install some packages and run the site like so:
 ```bash
 # head to the right directory
@@ -133,7 +133,7 @@ $ npm install
 $ node server.js
 ```
 After that just head to [localhost:8080](https://localhost:8080) where your site will be running.<br>
-_Note_: It is important to mention that the ordering of the glasses, although already set up in the website with google pay, does not work due to the fact that there is currently no way for our team to mass produce and distribute these glasses to a wider audience, so it has just been created as a demo part of the site.
+_Note_: It is important to mention that the ordering of the glasses, although already set up on the website with Google Pay, does not work due to the fact that there is currently no way for our team to mass produce and distribute these glasses to a wider audience, so it has just been created as a demo part of the site.
 
 ## Flutter App
 
