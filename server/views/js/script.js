@@ -50,29 +50,30 @@ function createNavAndFooter() {
 
 createNavAndFooter();
 
-document.getElementById("vis-btn").addEventListener("click", function(e) {
-    if (e.target.value == "Close") {
-        document.getElementById("chat-area").style.animationDuration = "300ms";
-        document.getElementById("chat-area").style.animationFillMode = "forwards";
-        document.getElementById("chat-area").style.animationName = "hide";
+if (document.getElementById("logged-in").value) {
+    document.getElementById("vis-btn").addEventListener("click", function(e) {
+        if (e.target.value == "Close") {
+            document.getElementById("chat-area").style.animationDuration = "300ms";
+            document.getElementById("chat-area").style.animationFillMode = "forwards";
+            document.getElementById("chat-area").style.animationName = "hide";
 
-        setTimeout(_ => {
-            document.getElementById("vis-btn").value = "Chat";
-            document.getElementById("chat-prev").style.display = "none";
-            document.getElementById("chat-input").style.display = "none";
-            document.getElementById("chat-area").style.animationName = "show";
-        }, 300);
-    }
-    else if (e.target.value == "Chat") {
-        document.getElementById("chat-area").style.animationDuration = "300ms";
-        document.getElementById("chat-area").style.animationFillMode = "forwards";
-        document.getElementById("chat-area").style.animationName = "hide";
-        setTimeout(_ => {
-            document.getElementById("vis-btn").value = "Close";
-            document.getElementById("chat-prev").style.display = "block";
-            document.getElementById("chat-input").style.display = "inline";
-            document.getElementById("chat-area").style.animationName = "show";
-        }, 300);
-    }
-});
-
+            setTimeout(_ => {
+                document.getElementById("vis-btn").value = "Chat";
+                document.getElementById("chat-prev").style.display = "none";
+                document.getElementById("chat-input").style.display = "none";
+                document.getElementById("chat-area").style.animationName = "show";
+            }, 300);
+        }
+        else if (e.target.value == "Chat") {
+            document.getElementById("chat-area").style.animationDuration = "300ms";
+            document.getElementById("chat-area").style.animationFillMode = "forwards";
+            document.getElementById("chat-area").style.animationName = "hide";
+            setTimeout(_ => {
+                document.getElementById("vis-btn").value = "Close";
+                document.getElementById("chat-prev").style.display = "block";
+                document.getElementById("chat-input").style.display = "inline";
+                document.getElementById("chat-area").style.animationName = "show";
+            }, 300);
+        }
+    });
+}

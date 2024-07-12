@@ -14,15 +14,21 @@
         </header>
         <main>
             <section id="bying-section">
-                <div>
-                    
-                </div>
+                <figure>
+                    <img id="img" alt="Glasses model" src="https://camo.githubusercontent.com/4e7828cccfd026e02b28ada34d7b18b649cc5c4bd52413ea7ed5e9e4cade54ea/68747470733a2f2f63646e2e63732e31776f726c6473796e632e636f6d2f66652f30642f66653064666366612d623736322d343363612d393531392d3333343234343961333366622e6a7067">
+                    <figcaption>Gemin-Eye Glasses at <strong>€200.00</strong></figcaption>
+                </figure>
+                <div id="container"> </div>
             </section>
         </main>
     </div>
     <input type="hidden" id="logged-in" value="<%= isLoggedIn %>">
     <input type="hidden" id="chats" value="<%= chats %>">
-    <script type="text/javascript" src="../js/order.js"></script>
+    <script type="text/javascript" src="../js/order2.js"></script>
     <script type="text/javascript" src="../js/script.js"> </script>
+    <% if (isLoggedIn) { %>
+        <script type="text/javascript" src="../js/order.js"></script>
+        <script async src="https://pay.google.com/gp/p/js/pay.js" onload="onGooglePayLoaded()"></script>
+    <% } %>
 </body>
 </html>

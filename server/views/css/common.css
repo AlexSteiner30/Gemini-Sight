@@ -17,6 +17,7 @@ html, body {
 header, section {
     text-align: center;
     padding: 8vh 5vw;
+    padding-top: calc(12vh + 20px);
 }
 
 p, h1, h3, label {
@@ -42,6 +43,7 @@ footer {
 nav {
     position: fixed;
     display: grid;
+    align-items: center;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
     background-color: rgb(1, 12, 21, 0.9);
     width: 100%;

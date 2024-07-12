@@ -1,6 +1,12 @@
+figcaption, h2 {
+    color: white;
+}
+
 #bying-section {
     padding: 0 !important;
-    background-color: white;
-    /* display: grid;
-    grid-template-columns: 1fr 1fr; */
+}
+
+#img {
+    width: 20vw;
+    border-radius: 10px;
 }
