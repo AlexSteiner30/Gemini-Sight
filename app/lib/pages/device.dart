@@ -193,13 +193,6 @@ class _DevicePageState extends State<DevicePage> {
                                   SizedBox(height: 5),
                                 ],
                               ),
-                              SizedBox(width: 40),
-                              Column(
-                                children: [
-                                  Icon(Icons.wifi, color: Colors.white),
-                                  SizedBox(height: 5),
-                                ],
-                              ),
                             ],
                           ),
                         if (!widget.connected)
