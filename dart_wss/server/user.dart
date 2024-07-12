@@ -56,7 +56,26 @@ class User {
       required this.expiration});
 
   // General
-  Future<void> speech_to_text(List<int> byte_input) async {
+  Future<String> listen_microphone() async {
+    await socket.connection.firstWhere((state) => state is Connected);
+
+    final Completer<List<int>> completer = Completer<List<int>>();
+
+    ws.add('listen¬$authentication_key');
+
+    final subscription = socket.messages.listen((bytes) {
+      if (bytes is List<int>) {
+        // ignore: null_argument_to_non_null_type
+        completer.complete();
+      }
+    });
+
+    final result = await completer.future;
+    await subscription.cancel();
+    return await speech_to_text(result);
+  }
+
+  Future<String> speech_to_text(List<int> byte_input) async {
     print('Speech To Text');
     String audioBytes = base64Encode(byte_input);
 
@@ -81,14 +100,12 @@ class User {
 
       if (response.statusCode == 200) {
         final dynamic responseBody = jsonDecode(response.body);
-        print(responseBody);
-        await send_data(
-            responseBody["results"][0]["alternatives"][0]["transcript"]);
+        return responseBody["results"][0]["alternatives"][0]["transcript"];
       } else {
-        print('Error: ${response.body}');
+        return ('error');
       }
     } catch (error) {
-      print('Error: $error');
+      return ('error');
     }
   }
 
@@ -112,33 +129,38 @@ class User {
   }
 
   Future<void> send_data(String data) async {
-    try {
-      if (expiration.isBefore(DateTime.now())) {
-        auth_headers = await generate_headers(authentication_key, refresh_key);
-        expiration = DateTime.now().add(const Duration(minutes: 50));
-      }
-      await socket.connection.firstWhere((state) => state is Connected);
-
-      final Completer<void> completer = Completer<void>();
-
-      socket.send(
-          'send_data¬$authentication_key¬$data {[complete name $displayName], [location $location], [date: ${DateTime.now().toString()}, Weekday ${weekdays[DateTime.now().weekday - 1]}], }');
-
-      final subscription = socket.messages.listen((commands_list) async {
-        if (commands_list == 'Request is not authenticated') {
-          await speak('Request is not authenticated');
-          return;
+    if (data == 'error') {
+      await speak('An error occured while processing your input');
+    } else {
+      try {
+        if (expiration.isBefore(DateTime.now())) {
+          auth_headers =
+              await generate_headers(authentication_key, refresh_key);
+          expiration = DateTime.now().add(const Duration(minutes: 50));
         }
+        await socket.connection.firstWhere((state) => state is Connected);
 
-        parser.parse(commands_list);
-        completer.complete();
-      });
+        final Completer<void> completer = Completer<void>();
 
-      await completer.future;
-      await subscription.cancel();
-    } catch (error) {
-      await speak(await process("$error",
-          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
+        socket.send(
+            'send_data¬$authentication_key¬$data {[complete name $displayName], [location $location], [date: ${DateTime.now().toString()}, Weekday ${weekdays[DateTime.now().weekday - 1]}], }');
+
+        final subscription = socket.messages.listen((commands_list) async {
+          if (commands_list == 'Request is not authenticated') {
+            await speak('Request is not authenticated');
+            return;
+          }
+
+          parser.parse(commands_list);
+          completer.complete();
+        });
+
+        await completer.future;
+        await subscription.cancel();
+      } catch (error) {
+        await speak(await process("$error",
+            ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
+      }
     }
   }
 
@@ -166,17 +188,14 @@ class User {
   }
 
   Future<bool> approve(String context) async {
-    // start microphone
-    // process information
-    // true or false
-    return true;
+    String isApproved = await process(await listen(context),
+        'the input consist in an approval if the is conseted return true else return false, do not respons with anything else besides true or false.');
+    return (isApproved == 'true') ? true : false;
   }
 
   Future<String> listen(String data) async {
-    await speak(data); // speak certain data is missing
-    // listen to microphone
-    // process
-    return data; // return result
+    await speak(data);
+    return await listen_microphone();
   }
 
   // Camera

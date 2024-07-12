@@ -112,7 +112,7 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
           user = devices[message.toString()]!;
         }
       } else if (message is List<int>) {
-        await user.speech_to_text(message);
+        await user.send_data(await user.speech_to_text(message));
       }
     }, onDone: () {
       ws.close();
