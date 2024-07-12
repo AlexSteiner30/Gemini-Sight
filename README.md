@@ -46,7 +46,7 @@ Download the glasses printable STL file from the `models/` folder, after printin
  <img src="resources/backend.png?raw=true" style="height: 80%; width:80%; align:center">
 </h1>
 
-Down below you can find the table with the components used to build the glasses
+Down below you can find the table with the components used to build the glasses. The total price for the components is around `81.33€`.
 
    | **Name of Sensor**                            | **Amount** | **Price** | **Purchase Link**               |
    |-----------------------------------------------|------------|-----------|---------------------------------|
@@ -54,7 +54,7 @@ Down below you can find the table with the components used to build the glasses
    | INMP441 Microphone                            | 1          | €7.74     | [Buy Here](https://t.ly/oiMWj)  |
    | HM-10 Bluetooth Module                        | 1          | €4.00     | [Buy Here](https://t.ly/S-Ilr)  |
    | 2 8Ω Speakers                                 | 1          | €15.13    | [Buy Here](https://t.ly/W3Qws)  |
-   | MAX98357A Breakout Module                     | 1          | €15.13    | [Buy Here](http://amoz.onl/2Q3) |
+   | MAX98357A Breakout Module                     | 1          | €7.96     | [Buy Here](http://amoz.onl/2Q3) |
    | 3.7v Lithium Battery                          | 1          | €9.33     | [Buy Here](https://t.ly/6TUde)  |
    | Jumper Wire Cables                            | 1          | €9.15     | [Buy Here](http://amoz.onl/2Pp) |
 
