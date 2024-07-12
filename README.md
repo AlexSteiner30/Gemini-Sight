@@ -54,6 +54,7 @@ Down below you can find the table with the components used to build the glasses
    | INMP441 Microphone                            | 1          | €7.74     | [Buy Here](https://t.ly/oiMWj)  |
    | HM-10 Bluetooth Module                        | 1          | €4.00     | [Buy Here](https://t.ly/S-Ilr)  |
    | 2 8Ω Speakers                                 | 1          | €15.13    | [Buy Here](https://t.ly/W3Qws)  |
+   | MAX98357A Breakout Module                     | 1          | €15.13    | [Buy Here](http://amoz.onl/2Q3) |
    | 3.7v Lithium Battery                          | 1          | €9.33     | [Buy Here](https://t.ly/6TUde)  |
    | Jumper Wire Cables                            | 1          | €9.15     | [Buy Here](http://amoz.onl/2Pp) |
 
