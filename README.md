@@ -5,21 +5,6 @@
 <h4 align="center">AI-powered smart glasses connected to your Google interface, entry for the <a href="https://ai.google.dev/competition" target="_blank">Gemini API Competition</a>.</h4>
 
 <p align="center">
-  <a href="https://badge.fury.io/js/electron-markdownify">
-    <img src="https://badge.fury.io/js/electron-markdownify.svg" alt="Gitter">
-  </a>
-  <a href="https://gitter.im/amitmerchant1990/electron-markdownify">
-    <img src="https://badges.gitter.im/amitmerchant1990/electron-markdownify.svg" alt="Gitter">
-  </a>
-  <a href="https://saythanks.io/to/bullredeyes@gmail.com">
-    <img src="https://img.shields.io/badge/SayThanks.io-%E2%98%BC-1EAEDB.svg" alt="Say Thanks">
-  </a>
-  <a href="https://www.paypal.me/AmitMerchant">
-    <img src="https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&amp;style=flat" alt="Donate">
-  </a>
-</p>
-
-<p align="center">
   <a href="#competition">Competition</a> •
   <a href="#submission">Submission</a> •
   <a href="#glasses">Glasses</a> •
@@ -27,6 +12,7 @@
   <a href="#website">Website</a> •
   <a href="#flutter-app">Flutter App</a> •
   <a href="#how-to-use">How To Use</a> •
+  <a href="#future">Future</a> •
   <a href="#credits">Credits</a> 
 </p>
 
@@ -54,7 +40,8 @@ Gemin-Eye is an innovative application that leverages the Gemini language model 
 Our submission demonstrates the practical applications of the Gemini model in everyday life, enhancing user convenience and accessibility through advanced AI technology.
 
 ## Glasses
-Download the glasses printable STL file from [here](), after printing the 3D model use this circuit diagram to create the wiring.
+Download the glasses printable STL file from the `models/` folder, after printing the 3D model use this circuit diagram to create the wiring. It is not necessary to solder the pieces together however it is higly recommended for space optimation.
+
 <h1 align="center">
  <img src="resources/backend.png?raw=true" style="height: 80%; width:80%; align:center">
 </h1>
@@ -107,13 +94,14 @@ Navigate to API and Services and add `Gmail, Calendar, Docs, Sheet, Drive, Tasks
  </div>
 </h1>
 
-
 Next, go to MongoDB, create a new project [here](https://cloud.mongodb.com) and copy the connection URI.
 
 ## Website
 The website was created to expand upon our product's publicity, enable its distribution and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to Gemin-Eye. The website can be accessed online [here]().<br>
 In total the website offers 5 pages. The first one is the "Home" and the second one is the "About Us" section where you are provided with some information about our team. Then there is the "Functioning" page which describes how the glasses work although the Gtihub repository does a better job at it. Then the "Order" section is where you can order the glasses and finally a "Sign In" part of the site which is required for you to order the glasses and access the chatbot feature.<br>
-You can also run the site locally on your computer by installing the required packages and setting up the right environment variables.<br>
+
+
+You can also run the website locally on your computer by installing the required packages and setting up the right environment variables.<br>
 For the environment variables you need to have the following:
 ```js
 MONGODB_URI = ""
@@ -136,8 +124,16 @@ After that just head to [localhost:8080](https://localhost:8080) where your site
 _Note_: It is important to mention that the ordering of the glasses, although already set up on the website with Google Pay, does not work due to the fact that there is currently no way for our team to mass produce and distribute these glasses to a wider audience, so it has just been created as a demo part of the site.
 
 ## Flutter App
+The Flutter app serves multiple functions to enhance the capabilities of your smart glasses. Initially, thanks to it you can connect your glasses to a WiFi network via Bluetooth module. The app also functions as a control system, allowing Gemini to learn about you and your writing style for emails or documents using your Google data, activate blind mode to enhance and simplify daily tasks for the blind throught the Gemini vision model, and access recordings and pictures takend by the glasses stored on your Google Drive. Additionally, when the glasses are connected to Bluetooth, the app serves as a bridge in order for Gemini to automatize services on your phone, such as sending texts and making calls.
 
-(Details about the Flutter app here)
+<h1 align="center">
+ <div style="display: flex; justify-content: center; align-items: center; gap: 0px;">
+     <img src="resources/mockup_1.png?raw=true" style="width: 24%;" />
+     <img src="resources/mockup_2.png?raw=true" style="width: 24%;" />
+     <img src="resources/mockup_3.png?raw=true" style="width: 24%;" />
+     <img src="resources/mockup_4.png?raw=true" style="width: 24%;" />
+ </div>
+</h1>
 
 ## How To Use
 
@@ -211,25 +207,7 @@ flutter run --web-port 8080 --observatory-port 8080
 
 *Note:* Currently, the Flutter app was developed and tested only on iOS systems, but it should still be able to run on the most recent Android devices.
 
-After setting up the circuit for the glasses, install Arduino from [here](https://www.arduino.cc/en/software). Configure the IDE for ESP32 boards:
-
-1. Go to **File > Preferences**
-2. Enter the following in the “Additional Board Manager URLs” field: `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`
-3. Click “OK”
-4. Open Boards Manager: **Tools > Board > Boards Manager…**
-5. Search for ESP32 and install “ESP32 by Espressif Systems” version 2.0.5
-6. Download the [ArduinoWebsockets](https://www.arduino.cc/reference/en/libraries/arduinowebsockets/) library
-7. Include the library in Arduino IDE: **Sketch > Include Library > Add .zip Library**
-
-Upload Code to ESP32:
-
-1. Navigate to the `electronics/` directory and upload the `electronics.ino` file to your ESP32 Board
-2. Go to **Tools > Board** and select **AI-Thinker ESP32-CAM**
-3. Go to **Tools > Port** and select the COM port the ESP32-CAM is connected to
-4. Click the **Upload** button
-5. When you see dots on the debugging window, press the ESP32-CAM on-board RST button
-6. After a few seconds, the code should upload successfully
-7. When you see the “Done uploading” message, remove `GPIO 0` from `GND` and press the RST button
+After setting up the circuit for the glasses, install and set up PlatformIO from [here](https://docs.platformio.org/en/latest/integration/ide/vscode.html#installation). Build your project and then upload it to the ESP32 XIAO Board.
 
 **You have successfully set up the project! Use the app to connect your glasses and test Gemin-Eye.**
 
@@ -237,19 +215,21 @@ Upload Code to ESP32:
 
 You can [download](https://github.com/amitmerchant1990/electron-markdownify/releases/tag/v1.2.0) the latest installable iOS version of the Gemin-Eye App.
 
+## Future
+Unfortunately the GPS module didn't arrive in time meaning that the functionalities such as Google Maps directions or recording the speed are not functioning however from a coding point of view they are alredy developed and functioning only the actual data from the GPS that needs to be passed is missing. We plan into implementing it and many other features if the project keeps getting mantained. One major problem furthermore is the Google Sheets API as the Gemini model performs poorly with creating 2D arrays from a given input, this however can be improved by feeding the model with more training data.
+
 ## Credits
 
 This software uses the following open-source packages and tools:
 
 - [Flutter](https://flutter.dev/)
 - [Node.js](https://nodejs.org/)
-- [Arduino](https://www.arduino.cc/)
-- [ESP32 by Espressif Systems](https://www.espressif.com/)
+- [PlatformIO](https://platformio.org)
+- [ESP32](https://www.espressif.com/)
 - [ArduinoWebsockets](https://www.arduino.cc/reference/en/libraries/arduinowebsockets/)
 - [Google Cloud Platform](https://cloud.google.com/)
 - [MongoDB](https://www.mongodb.com/)
 - [EJS](https://ejs.co)
-
 
 > [alexsteiner.dev](https://www.alexsteiner.dev) &nbsp;&middot;&nbsp;
 > [epic-legend128](https://github.com/Epic-legend128) &nbsp;&middot;&nbsp;
