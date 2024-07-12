@@ -165,8 +165,6 @@ class User {
   }
 
   Future<void> speak(String data) async {
-    ws.add(data);
-
     await socket.connection.firstWhere((state) => state is Connected);
 
     final Completer<void> completer = Completer<void>();
@@ -174,8 +172,7 @@ class User {
     socket.send('speak¬$authentication_key¬$data');
 
     final subscription = socket.messages.listen((pcm) {
-      //ws.add(pcm);
-      // send to server
+      ws.add('play¬$authentication_key¬$pcm');
       completer.complete();
     });
 
@@ -209,6 +206,8 @@ class User {
   }
 
   Future<void> start_recording() async {
+    await socket.connection.firstWhere((state) => state is Connected);
+    ws.add('start_recording¬$authentication_key');
     recording = true;
   }
 
@@ -242,7 +241,7 @@ class User {
   }
 
   Future<void> change_volume(String volume) async {
-    ws.add('volume¬$authentication_key¬${int.parse(volume)}');
+    ws.add('volume¬$authentication_key¬$volume');
   }
 
   // Docs
@@ -555,7 +554,7 @@ class User {
     socket.send('stream_song¬$authentication_key¬$song');
 
     final subscription = socket.messages.listen((pcm) async {
-      ws.add(pcm);
+      ws.add('play¬$authentication_key¬$pcm');
       completer.complete();
     });
 

@@ -3,6 +3,7 @@
 #include "helper/camera/camera.hpp"
 #include "helper/microphone.hpp"
 #include "helper/wifi.hpp"
+#include "helper/helper.hpp"
 
 using namespace websockets;
 
@@ -11,6 +12,7 @@ const char* AUTH_KEY = "peJ0AMmumNwHwk3U6IMcRqtLqFWO0Ao9oT3BaijuZA1s5f5NqPyvPnhy
 WebsocketsClient client;
 bool isConnected = false;
 bool isTalking = false;
+int volume = 100;
 
 void micTask(void* parameter) {
   i2s_install();
@@ -31,8 +33,21 @@ void micTask(void* parameter) {
 }
 
 void onMessageCallback(WebsocketsMessage message) {
-  Serial.print("Got Message: ");
-  Serial.println(message.data());
+  vector<string> message_parts = split(message.data().c_str(), "¬");
+
+  if(message_parts[1] == AUTH_KEY){
+    if(message_parts[0] == "start_recording"){
+
+    }else if(message_parts[0] == "get_recording"){
+      
+    }else if(message_parts[0] == "volume"){
+      volume = stoi(message_parts[2]);
+    }
+    else if(message_parts[0] == "play"){
+      // string to bytes
+      // play bytes
+    }
+  }
 }
 
 void onEventsCallback(WebsocketsEvent event, String data) {
