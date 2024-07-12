@@ -46,7 +46,7 @@ Download the glasses printable STL file from the `models/` folder, after printin
  <img src="resources/backend.png?raw=true" style="height: 80%; width:80%; align:center">
 </h1>
 
-Down below you can find the table with the components used to build the glasses. The total price for the components is around `81.33€`.
+Down below you can find the table with the components used to build the glasses. The total price for the components is around `79.09€`.
 
    | **Name of Sensor**                            | **Amount** | **Price** | **Purchase Link**               |
    |-----------------------------------------------|------------|-----------|---------------------------------|
@@ -56,7 +56,7 @@ Down below you can find the table with the components used to build the glasses.
    | 2 8Ω Speakers                                 | 1          | €15.13    | [Buy Here](https://t.ly/W3Qws)  |
    | MAX98357A Breakout Module                     | 1          | €7.96     | [Buy Here](http://amoz.onl/2Q3) |
    | 3.7v Lithium Battery                          | 1          | €9.33     | [Buy Here](https://t.ly/6TUde)  |
-   | Jumper Wire Cables                            | 1          | €9.15     | [Buy Here](http://amoz.onl/2Pp) |
+   | Wire Cables                                   | 1          | €6.91     | [Buy Here](http://amoz.onl/2Q4) |
 
 The glasses can connect in two different ways, through Bluetooth and WiFi. Bluetooth is used to share data between the app and the glasses (location, access key, contacts or sending commands), on the other hand, the glasses connect to the WiFi by scanning a QR Code which is created in the app in order to connect to the websockets.
 
