@@ -122,7 +122,7 @@ $ npm install
 $ node server.js
 ```
 After that just head to [localhost:8080](https://localhost:8080) where your site will be running.<br>
-_Note_: It is important to mention that the ordering of the glasses, although already set up on the website with Google Pay, does not work due to the fact that there is currently no way for our team to mass produce and distribute these glasses to a wider audience, so it has just been created as a demo part of the site.
+_Note_: It is important to mention that the ordering of the glasses, although already set up on the website with Google Pay, does not work due to the fact that there is currently no way for our team to mass produce and distribute these glasses to a wider audience, so it has just been created as a demo part of the site and is in test mode so no payments will be accepted.
 
 ## Flutter App
 The Flutter app serves multiple functions to enhance the capabilities of your smart glasses. Initially, thanks to it you can connect your glasses to a WiFi network via Bluetooth module. The app also functions as a control system, allowing Gemini to learn about you and your writing style for emails or documents using your Google data, activate blind mode to enhance and simplify daily tasks for the blind throught the Gemini vision model, and access recordings and pictures takend by the glasses stored on your Google Drive. Additionally, when the glasses are connected to Bluetooth, the app serves as a bridge in order for Gemini to automatize services on your phone, such as sending texts and making calls.
@@ -225,12 +225,13 @@ This software uses the following open-source packages and tools:
 
 - [Flutter](https://flutter.dev/)
 - [Node.js](https://nodejs.org/)
-- [PlatformIO](https://platformio.org)
+- [PlatformIO](https://platformio.org/)
 - [ESP32](https://www.espressif.com/)
 - [ArduinoWebsockets](https://www.arduino.cc/reference/en/libraries/arduinowebsockets/)
 - [Google Cloud Platform](https://cloud.google.com/)
 - [MongoDB](https://www.mongodb.com/)
-- [EJS](https://ejs.co)
+- [EJS](https://ejs.co/)
+- [Google Pay](https://pay.google.com/about/)
 
 > [alexsteiner.dev](https://www.alexsteiner.dev) &nbsp;&middot;&nbsp;
 > [epic-legend128](https://github.com/Epic-legend128) &nbsp;&middot;&nbsp;
