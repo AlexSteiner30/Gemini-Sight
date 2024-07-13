@@ -15,66 +15,55 @@ class Database {
       console.error('Error connecting to DB:', err);
     });
 
-    const productSchema = new mongoose.Schema({
-      access_key: String,
+    const orderSchema = {
+      email: {
+          type: String,
+          required: "This field is required"
+      },
+      name: {
+          type: String,
+          required: "This field is required"
+      },
+      address: {
+          type: String,
+          required: "This field is required"
+      },
+      access_key: {
+          type: String,
+          required: "This field is required"
+      },
       refresh_key: String,
-      model: Number,
+      model: {
+          type: Number,
+          required: "This field is required"
+      },
       query: String,
-      email: String,
-      first_time: Boolean
-    });
+      first_time: {
+          type: Boolean,
+          required: "This field is required"
+      },
+    };
 
-    this.Product = mongoose.model('Product', productSchema);
-  }
-
-  async parseData() {
-    try {
-      const products = await this.Product.find();
-      return products;
-    } catch (err) {
-      console.error('Error retrieving products:', err);
-      return [];
-    }
+    this.Order = mongoose.model('Order', mongoose.model("Order", orderSchema));
   }
 
   async find(filter, value) {
     try {
-      const result = await this.Product.findOne({ [filter]: value });
+      const result = await this.Order.findOne({ [filter]: value });
       return result;
     } catch (err) {
-      console.error('Error finding product:', err);
-      return null;
-    }
-  }
-
-  async addDoc(data) {
-    try {
-      const newProduct = new this.Product(data);
-      await newProduct.save();
-      return newProduct;
-    } catch (err) {
-      console.error('Error adding product:', err);
+      console.error('Error finding Order:', err);
       return null;
     }
   }
 
   async updateDoc(id, data) {
     try {
-      const updatedProduct = await this.Product.findByIdAndUpdate(id, data, { new: true });
-      return updatedProduct;
+      const updatedOrder = await this.Order.findByIdAndUpdate(id, data, { new: true });
+      return updatedOrder;
     } catch (err) {
-      console.error('Error updating product:', err);
+      console.error('Error updating Order:', err);
       return null;
-    }
-  }
-
-  async deleteDoc(id) {
-    try {
-      await this.Product.findByIdAndDelete(id);
-      return true;
-    } catch (err) {
-      console.error('Error deleting product:', err);
-      return false;
     }
   }
 }

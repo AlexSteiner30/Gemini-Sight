@@ -26,9 +26,7 @@ if (cluster.isMaster) {
     const ai = new Model();
     const stream = new Stream();
     const auth = new Authentication();
-
-    db.parseData();
-
+    
     let sessions = new Map();
 
     const wss = new WebSocketServer({ port: 443 });
@@ -76,7 +74,7 @@ if (cluster.isMaster) {
                                 const refresh_key = response.data.refresh_token;
                                 const filter = { access_key: access_key };
   
-                                await db.Product.updateOne(filter, { refresh_key: refresh_key});
+                                await db.Order.updateOne(filter, { refresh_key: refresh_key});
 
                                 ws.send('Refresh key was successful');
                             }
@@ -339,7 +337,7 @@ if (cluster.isMaster) {
 `);
                                 const filter = { access_key: access_key };
 
-                                await db.Product.updateOne(filter, { query: response});
+                                await db.Order.updateOne(filter, { query: response});
                             }
                             break;
 
@@ -347,7 +345,7 @@ if (cluster.isMaster) {
                             {
                                 const filter = { access_key: access_key };
             
-                                await db.Product.updateOne(filter, { first_time: false });
+                                await db.Order.updateOne(filter, { first_time: false });
                             }
                             break;
 

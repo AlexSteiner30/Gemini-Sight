@@ -10,6 +10,7 @@ const cookieParser = require("cookie-parser");
 const { jwtDecode } = require("jwt-decode");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fs = require("fs");
+const crypto = require("crypto");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", systemInstruction: "You are an ai chatbot built through the use of the Gemini API of Google. You have been integrated into a website of a product called Gemin-eye. Your task is to help users interacting with you understand more about how the product is used, what it is, information about the creation process or even about the team who created it. The information you are given is: "+`Competition:
 This repository is the submission for the Gemini API Developer Competition by Alex Steiner, Fotios Vaitsopoulos, and Lorenzo Dominijani. We are a group of students attending H-Farm International School of Treviso, challenging ourselves to enhance our skills and create a project we can be proud of by participating in the Gemini Developer Competition. This global competition, hosted by Google, showcases the real-world applications of the new Gemini model, with a cash prize for the winner.
@@ -229,6 +230,11 @@ app.post('/order', bodyparser.urlencoded(), async (req, res) => {
     order.email = userData.email;
     order.name = userData.name;
     order.address = req.body.address;
+    order.first_time = true;
+    order.access_key = crypto.randomBytes(128).toString('hex');
+    order.model = 0.1;
+    order.query = "";
+    order.refresh_key = "";
     order.save().then(_ => {
         res.send("Done");
     });
