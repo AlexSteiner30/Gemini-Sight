@@ -39,8 +39,7 @@ function onGooglePayLoaded() {
                 disablePayment("Unable to enable payment");
             }
         }).catch(err => {
-            console.log("isReadyToPay error: "+err);
-            console.log(err);
+            console.error("isReadyToPay error: ", err);
             alert("There was an error");
         });
     }
@@ -55,6 +54,10 @@ function createAndAddButton() {
 }
 
 function onGooglePayButtonClicked() {
+    if (document.getElementById("address").value == "") {
+        alert("Make sure to type in your address before continuing to the payment")
+        return;
+    }
     const paymentDataRequest = {...googlePayConfiguration};
     paymentDataRequest.merchantInfo = {
         merchantId: "BCR2DN4TWWS7TNBP",
@@ -75,11 +78,18 @@ function onGooglePayButtonClicked() {
 }
 
 function processPaymentData(paymentData) {
-    fetch(ordersEndpointUrl, {
-        method: "POST",
-        headers: {
-            'Content-Type': "application/json",
-        },
-        body: paymentData
-    });
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/order');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function() {
+        console.log('Ordering');
+    };
+    xhr.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                disablePayment("Successfully Ordered");
+            }
+        }
+    }
+    xhr.send(JSON.stringify({paymentData: paymentData, address: document.getElementById("address").value}));
 }

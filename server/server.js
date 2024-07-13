@@ -4,6 +4,7 @@ const express = require('express');
 const path = require("path");
 const mongoose = require("mongoose");
 const User = mongoose.model("User");
+const Order = mongoose.model("Order");
 const bodyparser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const { jwtDecode } = require("jwt-decode");
@@ -146,6 +147,7 @@ EJS
 
 `});
 let previousChats = [];
+let userData = {};
 
 const app = express();
 const PORT = 8080;
@@ -170,6 +172,7 @@ app.get('/:id', (req, res) => {
     });
     else if (req.params.id == "logout") {
         previousChats = [];
+        userData = {};
         res.clearCookie('cookie-token');
         res.redirect("index");
     }
@@ -186,6 +189,8 @@ app.post('/signin', bodyparser.urlencoded(), async (req, res) => {
         users.forEach(user => {
             if (email == user.email) found = true;
         });
+        userData.name = decoded.name;
+        userData.email = email;
         if (!found) {
             let user = new User();
             user.email = email;
@@ -217,6 +222,16 @@ app.post('/chat', bodyparser.urlencoded(), async (req, res) => {
         res.redirect("notFound");
     }
     res.redirect("/");
+});
+
+app.post('/order', bodyparser.urlencoded(), async (req, res) => {
+    let order = new Order();
+    order.email = userData.email;
+    order.name = userData.name;
+    order.address = req.body.address;
+    order.save().then(_ => {
+        res.send("Done");
+    });
 });
 
 app.listen(PORT, _ => console.log(`Server running on port ${PORT}`));

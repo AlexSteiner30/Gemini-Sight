@@ -7,3 +7,4 @@ mongoose.connect(process.env.MONGODB_URI, {
 });
 
 require("./user.model");
+require("./order.model");

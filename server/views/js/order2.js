@@ -1,5 +1,5 @@
 function disablePayment(text) {
-    document.getElementById("container").innerHTML = `<h2>${text}</h2>`;
+    document.getElementById("container").innerHTML += `<h2>${text}</h2>`;
 }
 
 if (document.getElementById("logged-in").value == '') {
