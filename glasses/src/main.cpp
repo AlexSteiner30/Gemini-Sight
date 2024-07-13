@@ -1,15 +1,13 @@
-#include <ArduinoWebsockets.h>
+#include <WebSocketsClient.h>
 #include <driver/i2s.h>
 #include "helper/camera/camera.hpp"
 #include "helper/microphone.hpp"
 #include "helper/wifi.hpp"
 #include "helper/helper.hpp"
 
-using namespace websockets;
-
 const char* AUTH_KEY = "peJ0AMmumNwHwk3U6IMcRqtLqFWO0Ao9oT3BaijuZA1s5f5NqPyvPnhyAGVPV8Kh64HxcNiux3Rq2lS6qMI6IhGztPPsvrahqux4MsxikyHCCPDsazVxJln7hJfDa4J2";
 
-WebsocketsClient client;
+WebSocketsClient client;
 bool isConnected = false;
 bool isTalking = false;
 int volume = 100;
@@ -20,7 +18,7 @@ void micTask(void* parameter) {
   i2s_start(I2S_PORT);
 
   isTalking = true;
-  bytesRead = 0;
+  size_t bytesRead = 0;
   while (bytesRead < TOTAL_SAMPLES * SAMPLE_SIZE && isTalking) {
     size_t bytesIn = 0;
     esp_err_t result = i2s_read(I2S_PORT, audioBuffer + (bytesRead / SAMPLE_SIZE), TOTAL_SAMPLES * SAMPLE_SIZE - bytesRead, &bytesIn, portMAX_DELAY);
@@ -28,43 +26,53 @@ void micTask(void* parameter) {
       bytesRead += bytesIn;
     }
   }
+
+  send_data(client, "microphone", AUTH_KEY, (char*)audioBuffer, TOTAL_SAMPLES * SAMPLE_SIZE);
+}
+
+void take_picture(){
+  camera_fb_t *fb = esp_camera_fb_get();
   
-  client.sendBinary((const char*)audioBuffer, bytesRead);
+  send_data(client, "take_picture", AUTH_KEY, (char*)fb->buf, fb->len);
+  esp_camera_fb_return(fb);
 }
 
-void onMessageCallback(WebsocketsMessage message) {
-  vector<string> message_parts = split(message.data().c_str(), "¬");
+void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
+  vector<string> message_parts = split((char*)payload, "¬");
+	switch(type) {
+		case WStype_DISCONNECTED:
+			Serial.println("[WSc] Disconnected!\n");
+			break;
+		case WStype_CONNECTED:
+			Serial.print("\n[WSc] Connected to url: ");
+      Serial.println((char*)payload);
 
-  if(message_parts[1] == AUTH_KEY){
-    if(message_parts[0] == "start_recording"){
+			client.sendTXT(AUTH_KEY);
+      delay(5000);
 
-    }else if(message_parts[0] == "get_recording"){
-      
-    }else if(message_parts[0] == "volume"){
-      volume = stoi(message_parts[2]);
-    }
-    else if(message_parts[0] == "play"){
-      // string to bytes
-      // play bytes
-    }
-  }
-}
-
-void onEventsCallback(WebsocketsEvent event, String data) {
-  if(event == WebsocketsEvent::ConnectionOpened) {
-    Serial.println("Connnection Opened");
-    client.send(AUTH_KEY);
-    delay(5000);
-
-    isConnected = true;
-    xTaskCreatePinnedToCore(micTask, "micTask", 10000, NULL, 1, NULL, 1);
-  } else if(event == WebsocketsEvent::ConnectionClosed) {
-    Serial.println("Connnection Closed");
-  } else if(event == WebsocketsEvent::GotPing) {
-    Serial.println("Got a Ping!");
-  } else if(event == WebsocketsEvent::GotPong) {
-    Serial.println("Got a Pong!");
-  }
+      isConnected = true;
+      //xTaskCreatePinnedToCore(micTask, "micTask", 10000, NULL, 1, NULL, 1);
+			break;
+		case WStype_TEXT:
+      if(message_parts[1] == AUTH_KEY){
+        if(message_parts[0] == "start_recording"){
+          break;
+        }else if(message_parts[0] == "get_recording"){
+          break;
+        }else if(message_parts[0] == "volume"){
+          volume = stoi(message_parts[2]);
+        }
+        else if(message_parts[0] == "play"){
+          // string to bytes
+          // play bytes
+          break;
+        }
+      }
+			break;
+		case WStype_BIN:
+      Serial.println("payload");
+			break;
+	}
 }
 
 void setup() {
@@ -76,14 +84,12 @@ void setup() {
   setup_camera();
   connect_wifi("3Pocket_66B9808B", "LWS36G3Hsx");
 
-  client.onMessage(onMessageCallback);
-  client.onEvent(onEventsCallback);
-
-  client.connect("192.168.0.183", 4040, "/ws"); 
+  client.begin("192.168.0.183", 4040, "/ws");
+	client.onEvent(webSocketEvent);
 }
 
 void loop() {
-  client.poll();
+  client.loop();
 }
 
 void record_audio(){
