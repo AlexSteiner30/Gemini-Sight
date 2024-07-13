@@ -29,8 +29,7 @@ class Database {
           required: "This field is required"
       },
       access_key: {
-          type: String,
-          required: "This field is required"
+          type: String
       },
       refresh_key: String,
       model: {
@@ -44,7 +43,7 @@ class Database {
       },
     };
 
-    this.Order = mongoose.model('Order', mongoose.model("Order", orderSchema));
+    this.Order = mongoose.model('Order', orderSchema);
   }
 
   async find(filter, value) {
@@ -53,16 +52,6 @@ class Database {
       return result;
     } catch (err) {
       console.error('Error finding Order:', err);
-      return null;
-    }
-  }
-
-  async updateDoc(id, data) {
-    try {
-      const updatedOrder = await this.Order.findByIdAndUpdate(id, data, { new: true });
-      return updatedOrder;
-    } catch (err) {
-      console.error('Error updating Order:', err);
       return null;
     }
   }
