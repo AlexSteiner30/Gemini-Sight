@@ -5,7 +5,7 @@
 #include "helper/wifi.hpp"
 #include "helper/helper.hpp"
 
-const char* AUTH_KEY = "peJ0AMmumNwHwk3U6IMcRqtLqFWO0Ao9oT3BaijuZA1s5f5NqPyvPnhyAGVPV8Kh64HxcNiux3Rq2lS6qMI6IhGztPPsvrahqux4MsxikyHCCPDsazVxJln7hJfDa4J2";
+const char* AUTH_KEY = "9e323100603908714f50f2a254cbf3cab972d40361d83f53dce0d214cc0df1707e1cb0c7c7bd98c4e2135d16abf79527de834abdbeff2ba2bcaa57c82a187dea2306e670a03803374a8d325956961f280350e727e8822f7ae973541f895a6a9e0c5fadc3e15afaa19d583dd50c89ca8d7a8b82713f17d276c4ee4cd5f1831000";
 
 WebSocketsClient client;
 bool isConnected = false;
@@ -31,10 +31,23 @@ void micTask(void* parameter) {
 }
 
 void take_picture(){
-  camera_fb_t *fb = esp_camera_fb_get();
+  camera_fb_t *fb = NULL;
+  esp_err_t res = ESP_OK;
+  fb = esp_camera_fb_get();
+  if(!fb){
+    Serial.println("Camera capture failed");
+    esp_camera_fb_return(fb);
+    return;
+  }
   
-  send_data(client, "take_picture", AUTH_KEY, (char*)fb->buf, fb->len);
-  esp_camera_fb_return(fb);
+  if(fb->format != PIXFORMAT_JPEG){
+    Serial.println("Non-JPEG data not implemented");
+    return;
+  }
+  
+  client.sendBIN((const uint8_t*) fb->buf, fb->len);
+  esp_camera_fb_return(fb);    
+  //send_data(client, "take_picture", AUTH_KEY, fb->buf, fb->len);
 }
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
@@ -52,6 +65,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 
       isConnected = true;
       //xTaskCreatePinnedToCore(micTask, "micTask", 10000, NULL, 1, NULL, 1);
+      take_picture();
 			break;
 		case WStype_TEXT:
       if(message_parts[1] == AUTH_KEY){
@@ -59,10 +73,12 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
           break;
         }else if(message_parts[0] == "get_recording"){
           break;
+        }else if(message_parts[0] == "take_picture"){
+          take_picture();
+          break;
         }else if(message_parts[0] == "volume"){
           volume = stoi(message_parts[2]);
-        }
-        else if(message_parts[0] == "play"){
+        }else if(message_parts[0] == "play"){
           // string to bytes
           // play bytes
           break;

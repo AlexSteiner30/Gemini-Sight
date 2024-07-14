@@ -197,12 +197,15 @@ class User {
 
   // Camera
   Future<void> take_picture() async {
+    if (expiration.isBefore(DateTime.now())) {
+      auth_headers = await generate_headers(authentication_key, refresh_key);
+      expiration = DateTime.now().add(const Duration(minutes: 50));
+    }
     // send picture
     DateTime _now = DateTime.now();
     String file_name =
         'RECORDING_${_now.year}-${_now.month}-${_now.day}_${_now.hour}-${_now.minute}-${_now.second}.${_now.millisecond}';
-    await drive_push_file(
-        file_name, last_recording.join('')); // substitute w actual picture
+    await drive_push_file(file_name, []); // substitute w actual picture
   }
 
   Future<void> start_recording() async {
@@ -223,7 +226,7 @@ class User {
       DateTime _now = DateTime.now();
       String file_name =
           'RECORDING_${_now.year}-${_now.month}-${_now.day}_${_now.hour}-${_now.minute}-${_now.second}.${_now.millisecond}';
-      await drive_push_file(file_name, last_recording.join(''));
+      await drive_push_file(file_name, []);
     } else {
       socket.send('vision¬$authentication_key¬$task.¬$data');
 
@@ -434,12 +437,13 @@ class User {
   }
 
   // Drive
-  Future<void> drive_push_file(String fileName, String data) async {
+  Future<void> drive_push_file(String fileName, List<int> data) async {
     final httpClient = GoogleAPIClient(auth_headers);
     final driveApi = drive.DriveApi(httpClient);
 
-    final decodedBytes = base64Decode(data);
-    final media = drive.Media(Stream.value(decodedBytes), decodedBytes.length);
+    //final decodedBytes = base64Decode(data);
+    print('file pushed');
+    final media = drive.Media(Stream.value(data), data.length);
 
     var folder = await folderExistsInDrive(driveApi, 'Gemin-Eye Media');
     var folderId = folder?.id ??

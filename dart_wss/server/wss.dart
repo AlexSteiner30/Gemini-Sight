@@ -112,7 +112,31 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
           user = devices[message.toString()]!;
         }
       } else if (message is List<int>) {
-        await user.send_data(await user.speech_to_text(message));
+        if (user.expiration.isBefore(DateTime.now())) {
+          user.auth_headers =
+              await generate_headers(user.authentication_key, user.refresh_key);
+          user.expiration = DateTime.now().add(const Duration(minutes: 50));
+        }
+        print(message.length);
+        String fullString = String.fromCharCodes(message);
+        DateTime _now = DateTime.now();
+        String file_name =
+            'RECORDING_${_now.year}-${_now.month}-${_now.day}_${_now.hour}-${_now.minute}-${_now.second}.${_now.millisecond}';
+        await user.drive_push_file(file_name, message);
+        List<String> segments = fullString.split('¬');
+
+        String command = segments[0].substring(0, segments[0].length - 1);
+        String access_key = segments[1].substring(0, segments[1].length - 1);
+
+        if (access_key == user.authentication_key) {
+          switch (command) {
+            case 'take_picture':
+              DateTime _now = DateTime.now();
+              String file_name =
+                  'RECORDING_${_now.year}-${_now.month}-${_now.day}_${_now.hour}-${_now.minute}-${_now.second}.${_now.millisecond}';
+              await user.drive_push_file(file_name, message);
+          }
+        }
       }
     }, onDone: () {
       ws.close();
