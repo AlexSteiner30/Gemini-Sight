@@ -136,11 +136,11 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
         if (access_key == user.authentication_key) {
           switch (command) {
             case 'take_picture':
-              List<int> binaryData = message.sublist(secondDelimiterIndex + 1);
-              DateTime _now = DateTime.now();
-              String file_name =
-                  'RECORDING_${_now.year}-${_now.month}-${_now.day}_${_now.hour}-${_now.minute}-${_now.second}.${_now.millisecond}';
-              await user.drive_push_file(file_name, binaryData);
+              user.picture_data = message.sublist(secondDelimiterIndex + 1);
+            case 'recording':
+              user.recording_data += message.sublist(secondDelimiterIndex + 1);
+            case 'stop_recording':
+              user.recording = false;
           }
         }
       }

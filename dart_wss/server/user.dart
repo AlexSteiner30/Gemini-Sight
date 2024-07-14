@@ -39,11 +39,13 @@ class User {
     'Saturday',
     'Sunday'
   ];
-  List<String> last_recording = [];
 
   final socket = WebSocket(
     Uri.parse('ws://localhost:443'),
   );
+
+  List<int> picture_data = [];
+  List<int> recording_data = [];
 
   User(
       {required this.displayName,
@@ -196,16 +198,33 @@ class User {
   }
 
   // Camera
-  Future<void> take_picture() async {
-    if (expiration.isBefore(DateTime.now())) {
-      auth_headers = await generate_headers(authentication_key, refresh_key);
-      expiration = DateTime.now().add(const Duration(minutes: 50));
+  Future<void> take_picture(String? task) async {
+    ws.add('take_picture¬$authentication_key');
+
+    if (task != null) {
+      await socket.connection.firstWhere((state) => state is Connected);
+      final Completer<void> completer = Completer<void>();
+      while (recording_data == []) {}
+      socket.send(
+          'vision¬$authentication_key¬$task.¬${recording_data.toString()}');
+
+      final subscription = socket.messages.listen((response) async {
+        if (response[0] == 'v') {
+          await speak(response.toString().substring(1));
+          completer.complete(response);
+        }
+      });
+
+      await completer.future;
+      await subscription.cancel();
+    } else {
+      DateTime now = DateTime.now();
+      String file_name =
+          'PICTURE_${now.year}-${now.month}-${now.day}_${now.hour}-${now.minute}-${now.second}.${now.millisecond}';
+      await drive_push_file(file_name, recording_data);
     }
-    // send picture
-    DateTime _now = DateTime.now();
-    String file_name =
-        'RECORDING_${_now.year}-${_now.month}-${_now.day}_${_now.hour}-${_now.minute}-${_now.second}.${_now.millisecond}';
-    await drive_push_file(file_name, []); // substitute w actual picture
+
+    recording_data = [];
   }
 
   Future<void> start_recording() async {
@@ -219,17 +238,15 @@ class User {
     await socket.connection.firstWhere((state) => state is Connected);
 
     final Completer<void> completer = Completer<void>();
-
-    String data = last_recording[0].toString();
-
     if (task == '') {
-      DateTime _now = DateTime.now();
+      DateTime now = DateTime.now();
       String file_name =
-          'RECORDING_${_now.year}-${_now.month}-${_now.day}_${_now.hour}-${_now.minute}-${_now.second}.${_now.millisecond}';
+          'RECORDING_${now.year}-${now.month}-${now.day}_${now.hour}-${now.minute}-${now.second}.${now.millisecond}';
       await drive_push_file(file_name, []);
     } else {
-      socket.send('vision¬$authentication_key¬$task.¬$data');
-
+      socket.send(
+          'vision¬$authentication_key¬$task.¬${recording_data.toString()}');
+      while (recording == true) {}
       final subscription = socket.messages.listen((response) async {
         if (response[0] == 'v') {
           await speak(response.toString().substring(1));
@@ -241,6 +258,8 @@ class User {
       await subscription.cancel();
       recording = false;
     }
+
+    recording_data = [];
   }
 
   Future<void> change_volume(String volume) async {
