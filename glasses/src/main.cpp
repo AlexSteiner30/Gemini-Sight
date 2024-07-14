@@ -39,15 +39,21 @@ void take_picture(){
     esp_camera_fb_return(fb);
     return;
   }
-  
-  if(fb->format != PIXFORMAT_JPEG){
-    Serial.println("Non-JPEG data not implemented");
-    return;
-  }
-  
-  client.sendBIN((const uint8_t*) fb->buf, fb->len);
+
+  string textMessage = "take_picture¬" + string(AUTH_KEY)+ "¬";
+
+  size_t textSize = textMessage.length();
+  size_t totalSize = textSize + fb->len;
+
+  uint8_t* combinedBuffer = new uint8_t[totalSize];
+
+  memcpy(combinedBuffer, textMessage.c_str(), textSize);
+  memcpy(combinedBuffer + textSize, fb->buf, fb->len);
+
+  client.sendBIN(combinedBuffer, totalSize);
+
+  delete[] combinedBuffer;
   esp_camera_fb_return(fb);    
-  //send_data(client, "take_picture", AUTH_KEY, fb->buf, fb->len);
 }
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
@@ -102,6 +108,8 @@ void setup() {
 
   client.begin("192.168.0.183", 4040, "/ws");
 	client.onEvent(webSocketEvent);
+
+  client.setReconnectInterval(5000);
 }
 
 void loop() {
