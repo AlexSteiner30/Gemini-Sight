@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://gemini.google.com"><img src="resources/logo.png?raw=true#gh-light-mode-only" alt="Gemin-Eye" width="400"></a>
+  <a href="https://gemini.google.com"><img src="resources/logo.png?raw=true#gh-light-mode-only" alt="Gemini Sight" width="400"></a>
 </h1>
 
 <h4 align="center">AI-powered smart glasses connected to your Google interface, entry for the <a href="https://ai.google.dev/competition" target="_blank">Gemini API Competition</a>.</h4>
@@ -30,7 +30,7 @@ Alex Steiner developed the Flutter application, the glasses' circuit and code, a
 
 ## Submission
 
-Gemin-Eye is an innovative application that leverages the Gemini language model to create AI-powered smart glasses integrated with various Google services. The core features of our submission include:
+Gemini Sight is an innovative application that leverages the Gemini language model to create AI-powered smart glasses integrated with various Google services. The core features of our submission include:
 
 - **Voice Commands Integration**: Users can perform tasks such as sending emails, scheduling events, and retrieving documents using voice commands.
 - **Real-Time Visual Recognition**: The glasses' camera can recognize objects and provide information about them in real time.
@@ -62,7 +62,7 @@ The glasses can connect in two different ways, through Bluetooth and WiFi. Bluet
 
 ## Backend
 
-Gemin-Eye functions thanks to two different web sockets, one written in JavaScript and the other in Dart. This setup provides additional security and separates the two main background tasks. This concept is visualized in the following sketch:
+Gemini Sight functions thanks to two different web sockets, one written in JavaScript and the other in Dart. This setup provides additional security and separates the two main background tasks. This concept is visualized in the following sketch:
 
 <h1 align="center">
  <img src="resources/backend.png?raw=true" style="height: 80%; width:80%; align:center">
@@ -98,7 +98,7 @@ Navigate to API and Services and add `Gmail, Calendar, Docs, Sheet, Drive, Tasks
 Next, go to MongoDB, create a new project [here](https://cloud.mongodb.com) and copy the connection URI.
 
 ## Website
-The website was created to expand upon our product's publicity, enable its distribution and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to Gemin-Eye. The website can be accessed online [here]().<br>
+The website was created to expand upon our product's publicity, enable its distribution and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to Gemini Sight. The website can be accessed online [here]().<br>
 In total the website offers 5 pages. The first one is the "Home" and the second one is the "About Us" section where you are provided with some information about our team. Then there is the "Functioning" page which describes how the glasses work although the Gtihub repository does a better job at it. Then the "Order" section is where you can order the glasses and finally a "Sign In" part of the site which is required for you to order the glasses and access the chatbot feature.<br>
 
 
@@ -142,10 +142,10 @@ To clone and run this application, you'll need [Git](https://git-scm.com), [Node
 
 ```bash
 # Clone this repository
-$ git clone https://github.com/AlexSteiner30/GEMIN-EYE/
+$ git clone https://github.com/AlexSteiner30/Gemini-Sight/
 
 # Go into the repository
-$ cd GEMIN-EYE
+$ cd Gemini-Sight
 
 # Go into the wss directory
 $ cd wss
@@ -175,7 +175,7 @@ To start the websocket server, run the following:
 $ npm start
 ```
 
-Navigate to the `/GEMIN-EYE/app` directory and set up your application as follows:
+Navigate to the `/Gemini-Sight/app` directory and set up your application as follows:
 
 ```bash
 # Get device IP address
@@ -210,11 +210,11 @@ flutter run --web-port 8080 --observatory-port 8080
 
 After setting up the circuit for the glasses, install and set up PlatformIO from [here](https://docs.platformio.org/en/latest/integration/ide/vscode.html#installation). Build your project and then upload it to the ESP32 XIAO Board.
 
-**You have successfully set up the project! Use the app to connect your glasses and test Gemin-Eye.**
+**You have successfully set up the project! Use the app to connect your glasses and test Gemini Sight.**
 
 ## Download
 
-You can [download](https://github.com/amitmerchant1990/electron-markdownify/releases/tag/v1.2.0) the latest installable iOS version of the Gemin-Eye App.
+You can [download](https://github.com/amitmerchant1990/electron-markdownify/releases/tag/v1.2.0) the latest installable iOS version of the Gemini Sight App.
 
 ## Future
 Unfortunately the GPS module didn't arrive in time meaning that the functionalities such as Google Maps directions or recording the speed are not functioning however from a coding point of view they are alredy developed and functioning only the actual data from the GPS that needs to be passed is missing. We plan into implementing it and many other features if the project keeps getting mantained. One major problem furthermore is the Google Sheets API as the Gemini model performs poorly with creating 2D arrays from a given input, this however can be improved by feeding the model with more training data.
