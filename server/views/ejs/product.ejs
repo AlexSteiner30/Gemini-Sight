@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Sight | Functions</title>
+    <link rel="stylesheet" href="css/common.css" type="text/css">
+</head>
+<body>
+    <div id="main">
+        <header>
+            <h1 id="title">Product</h1>
+        </header>
+        <main>
+            <section class="left">
+                <p>Gemin Sight is an innovative application that leverages the Gemini language model to create AI-powered smart glasses integrated with various Google services. The core features of our product include:</p>
+                <ul>
+                    <li><strong>Voice Commands Integration:</strong> Users can perform tasks such as sending emails, scheduling events, and retrieving documents using voice commands.</li>
+                    <li><strong>Real-Time Visual Recognition:</strong> The glasses' camera can recognize objects and provide information about them in real time.</li>
+                    <li><strong>Services Connectivity:</strong> Seamless integration with Google Docs, Drive, Gmail, YouTube Music, Maps, Calendar, and Events to enhance productivity.</li>
+                    <li><strong>Secure Data Handling:</strong> User data is securely managed and encrypted, ensuring privacy and protection.</li>
+                </ul>
+                <p>These special glasses contain a microphone and camera which are all connected to a Flutter App and send their inputs to Gemini through its API. Furthermore, it has an earphone so that it can communicate its results with you. A combination of Node, MongoDb and Flutter were used in the creation of this final product.</p>
+                <p>To see more about its functionalities and creation process visit our <a target="_blank" href="https://github.com/AlexSteiner30/GEMIN-EYE">Github repository</a>. If you'd like to buy them then go to the <a href="/order">Order</a> page.</p>
+            </section>
+        </main>
+    </div>
+    <input type="hidden" id="logged-in" value="<%= isLoggedIn %>">
+    <input type="hidden" id="chats" value="<%= chats %>">
+    <script type="text/javascript" src="../js/script.js"> </script>
+</body>
+</html>

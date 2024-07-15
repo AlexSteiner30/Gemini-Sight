@@ -36,7 +36,7 @@ function createNavAndFooter() {
         <a href="index"><img alt='Logo of Gemin-eye' src='../media/logo.png' width='80%'></a>
         <a href="index">Home</a>
         <a href="about">About Us</a>
-        <a href="function">Functioning</a>
+        <a href="product">Product</a>
         <a href="order">Order</a>
         `+sign+`
         <div></div>

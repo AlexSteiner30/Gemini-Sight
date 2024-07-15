@@ -20,8 +20,12 @@ header, section {
     padding-top: calc(12vh + 20px);
 }
 
-p, h1, h3, label {
+p, h1, h3, label, ul {
     color: white;
+}
+
+ul {
+    margin-left: 3vw;
 }
 
 hr {
