@@ -11,7 +11,7 @@
 #define CHANNEL_NUM 1
 #define TOTAL_SAMPLES (SAMPLE_RATE * RECORD_TIME)
 
-int16_t* audioBuffer;
+int16_t* audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
 size_t bytesRead = 0;
 
 void i2s_install() {
