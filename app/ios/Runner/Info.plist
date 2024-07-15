@@ -11,7 +11,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Gemin-Eye</string>
+	<string>Gemini Sight</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -19,7 +19,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Gemin-Eye</string>
+	<string>Gemini Sight</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -47,9 +47,9 @@
 		<true/>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>We need access to Bluetooth to allow you to connect the Gemin-Eye Glasses.</string>
+	<string>We need access to Bluetooth to allow you to connect the Gemini Sight Glasses.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>We need access to your camera to allow you to connect the Gemin-Eye Glasses.</string>
+	<string>We need access to your camera to allow you to connect the Gemini Sight Glasses.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>We need access to your contacts to enhance your social experience by connecting you with your friends.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
