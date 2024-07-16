@@ -85,7 +85,7 @@ model = models.Sequential([
     layers.Conv2D(4, 3, activation='relu'),
     layers.MaxPooling2D(),
     layers.Flatten(),
-    layers.Dense(16, activation='relu'),
+    layers.Dense(4, activation='relu'),
     layers.Dense(num_labels),
 ])
 
