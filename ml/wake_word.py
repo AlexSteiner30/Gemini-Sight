@@ -9,17 +9,14 @@ from tensorflow.keras import layers
 from tensorflow.keras import models
 from IPython import display
 
-# Set seed for reproducibility
 seed = 42
 tf.random.set_seed(seed)
 np.random.seed(seed)
 
-# Constants
 DATASET_ORIGIN = "http://download.tensorflow.org/data/speech_commands_v0.01.tar.gz"
 DATASET_PATH = 'data'
 EPOCHS = 10
 
-# Download and prepare the dataset
 data_dir = pathlib.Path(DATASET_PATH)
 if not data_dir.exists():
     tf.keras.utils.get_file(
@@ -33,7 +30,6 @@ commands = np.array(tf.io.gfile.listdir(str(data_dir)))
 commands = commands[(commands != 'README.md') & (commands != '.DS_Store')]
 print('Commands:', commands)
 
-# Prepare datasets
 train_ds, val_ds = tf.keras.utils.audio_dataset_from_directory(
     directory=data_dir,
     batch_size=64,
@@ -85,36 +81,30 @@ num_labels = len(label_names)
 norm_layer = layers.Normalization()
 norm_layer.adapt(data=train_spectrogram_ds.map(map_func=lambda spec, label: spec))
 
-# Build model
 model = models.Sequential([
     layers.Input(shape=input_shape),
     layers.Resizing(32, 32),
     norm_layer,
-    layers.Conv2D(32, 3, activation='relu'),
-    layers.Conv2D(64, 3, activation='relu'),
+    layers.Conv2D(4, 3, activation='relu'),
     layers.MaxPooling2D(),
-    layers.Dropout(0.25),
     layers.Flatten(),
-    layers.Dense(128, activation='relu'),
-    layers.Dropout(0.5),
+    layers.Dense(16, activation='relu'),
     layers.Dense(num_labels),
 ])
 
 model.summary()
 
-# Compile model
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(),
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
     metrics=['accuracy'],
 )
 
-# Train model
 history = model.fit(
     train_spectrogram_ds,
     validation_data=val_spectrogram_ds,
-    epochs=EPOCHS
+    epochs=EPOCHS,
+    batch_size=32
 )
 
-# Save the model
 model.save('model.keras')
