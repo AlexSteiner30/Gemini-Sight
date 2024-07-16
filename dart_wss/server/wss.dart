@@ -130,11 +130,15 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
 
         String command =
             ascii.decode(message.sublist(0, firstDelimiterIndex - 1));
+        print(command);
         String access_key = ascii.decode(
             message.sublist(firstDelimiterIndex + 1, secondDelimiterIndex - 1));
 
         if (access_key == user.authentication_key) {
           switch (command) {
+            case 'speech_to_text':
+              print(await user
+                  .speech_to_text(message.sublist(secondDelimiterIndex + 1)));
             case 'take_picture':
               user.picture_data = message.sublist(secondDelimiterIndex + 1);
             case 'recording':

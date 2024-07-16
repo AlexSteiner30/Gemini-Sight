@@ -68,6 +68,11 @@ NeuralNetwork::~NeuralNetwork()
     delete m_error_reporter;
 }
 
+void *NeuralNetwork::setInputBuffer(float* input_buffer)
+{
+    input->data.f = input_buffer;
+}
+
 float *NeuralNetwork::getInputBuffer()
 {
     return input->data.f;

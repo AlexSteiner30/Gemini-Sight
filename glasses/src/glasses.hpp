@@ -17,11 +17,7 @@ bool isConnected = false;
 bool isTalking = false;
 int volume = 100;
 
-void micTask(void* parameter) {
-  i2s_install();
-  i2s_setpin();
-  i2s_start(I2S_PORT);
-
+void micTask() {
   isTalking = true;
   size_t bytesRead = 0;
 
@@ -33,7 +29,21 @@ void micTask(void* parameter) {
     }
   }
 
-  send_data(client, "microphone", AUTH_KEY, (char*)audioBuffer, TOTAL_SAMPLES * SAMPLE_SIZE);
+  string textMessage = "speech_to_text¬" + string(AUTH_KEY)+ "¬";
+
+  size_t textSize = textMessage.length();
+  size_t totalSize = textSize + TOTAL_SAMPLES * SAMPLE_SIZE;
+
+  uint8_t* combinedBuffer = new uint8_t[totalSize];
+
+  memcpy(combinedBuffer, textMessage.c_str(), textSize);
+  memcpy(combinedBuffer + textSize, audioBuffer, TOTAL_SAMPLES * SAMPLE_SIZE);
+
+  client.sendBIN(combinedBuffer, totalSize);
+
+  delete[] combinedBuffer;
+
+  audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
 }
 
 void take_picture(){

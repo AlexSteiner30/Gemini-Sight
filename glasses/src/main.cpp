@@ -8,7 +8,11 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 			break;
 
 		case WStype_CONNECTED:
-			Serial.print("\n[WSc] Connected to url: ");
+			Serial.println("\n[WSc] Connected to url: /ws");
+            client.sendTXT(AUTH_KEY);
+            //delay(5000);
+            Serial.println("Recording");
+            micTask();
 			break;
 
 		case WStype_TEXT:
@@ -40,18 +44,31 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 }
 
 void setup() {
-  Serial.begin(115200);
+    Serial.begin(115200);
 
-  NeuralNetwork();
+    i2s_install();
+    i2s_setpin();
+    i2s_start(I2S_PORT);
 
-  setup_camera();
-  connect_wifi("3Pocket_66B9808B", "LWS36G3Hsx");
+    audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
 
-  client.begin("192.168.0.183", 4040, "/ws");
-  client.onEvent(webSocketEvent);
-  client.setReconnectInterval(5000);
+    /*
+    NeuralNetwork nn;
+    float input_data[10] = {1, 0.1, 5.2, 4.3, 6.5, 9.1};
+    nn.setInputBuffer(input_data);
+
+    float prediction = nn.predict();
+    Serial.println(prediction);
+    */
+
+    //setup_camera();
+    connect_wifi("3Pocket_66B9808B", "LWS36G3Hsx");
+
+    client.begin("192.168.0.183", 4040, "/ws");
+    client.onEvent(webSocketEvent);
+    client.setReconnectInterval(5000);
 }
 
 void loop() {
-  client.loop();
+    client.loop();
 }

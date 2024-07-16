@@ -79,6 +79,7 @@ class User {
 
   Future<String> speech_to_text(List<int> byte_input) async {
     print('Speech To Text');
+    print(byte_input);
     String audioBytes = base64Encode(byte_input);
 
     Map<String, dynamic> requestPayload = {

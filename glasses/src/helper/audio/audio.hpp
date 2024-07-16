@@ -2,7 +2,7 @@
 
 #define LRC 16
 #define BCLK 12 
-#define DIN 13
+#define DIN 14
 
 void play_audio(uint8_t* buffer) {
     i2s_config_t i2sConfig = {
