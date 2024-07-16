@@ -42,6 +42,8 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 void setup() {
   Serial.begin(115200);
 
+  NeuralNetwork();
+
   setup_camera();
   connect_wifi("3Pocket_66B9808B", "LWS36G3Hsx");
 
