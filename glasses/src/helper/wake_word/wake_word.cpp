@@ -6,7 +6,9 @@
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
-// approximate working size of our model
+#include <Arduino.h>
+#include "spectogram.hpp"
+
 const int kArenaSize = 25000;
 
 NeuralNetwork::NeuralNetwork()
@@ -28,7 +30,7 @@ NeuralNetwork::NeuralNetwork()
                              m_model->version(), TFLITE_SCHEMA_VERSION);
         return;
     }
-    // This pulls in the operators implementations we need
+
     m_resolver = new tflite::MicroMutableOpResolver<10>();
     m_resolver->AddConv2D();
     m_resolver->AddMaxPool2D();
@@ -40,11 +42,9 @@ NeuralNetwork::NeuralNetwork()
     m_resolver->AddQuantize();
     m_resolver->AddDequantize();
 
-    // Build an interpreter to run the model with.
     m_interpreter = new tflite::MicroInterpreter(
         m_model, *m_resolver, m_tensor_arena, kArenaSize, m_error_reporter);
 
-    // Allocate memory from the tensor_arena for the model's tensors.
     TfLiteStatus allocate_status = m_interpreter->AllocateTensors();
     if (allocate_status != kTfLiteOk)
     {
@@ -55,10 +55,10 @@ NeuralNetwork::NeuralNetwork()
     size_t used_bytes = m_interpreter->arena_used_bytes();
     TF_LITE_REPORT_ERROR(m_error_reporter, "Used bytes %d\n", used_bytes);
 
-    // Obtain pointers to the model's input and output tensors.
     input = m_interpreter->input(0);
     output = m_interpreter->output(0);
 }
+
 
 NeuralNetwork::~NeuralNetwork()
 {
@@ -68,18 +68,28 @@ NeuralNetwork::~NeuralNetwork()
     delete m_error_reporter;
 }
 
-void *NeuralNetwork::setInputBuffer(float* input_buffer)
-{
-    input->data.f = input_buffer;
-}
+int NeuralNetwork::predict(const std::vector<double>& audio){
+    int frame_length = 255;
+    int frame_step = 128;
 
-float *NeuralNetwork::getInputBuffer()
-{
-    return input->data.f;
-}
+    std::vector<std::vector<double>> spectrogram = stft(audio, frame_length, frame_step);
 
-float NeuralNetwork::predict()
-{
-    m_interpreter->Invoke();
-    return output->data.f[0];
+    auto spectrogram_new_axis = add_new_axis(spectrogram);
+    auto spectrogram_expanded = expand_dims(spectrogram_new_axis);
+
+    Serial.print(spectrogram_expanded.size());
+    Serial.print(" x ");
+    Serial.print(spectrogram_expanded[0].size());
+    Serial.print(" x ");
+    Serial.print(spectrogram_expanded[0][0].size());
+    Serial.print(" x " );
+    Serial.println(spectrogram_expanded[0][0][0].size());
+
+    //auto input_tensor = preprocess_audio(audio);
+    TfLiteTensor* input = m_interpreter->input(0);
+    
+    Serial.println(input->bytes);
+    //Serial.println(input_tensor.size());
+    
+    return 1;
 }

@@ -2,6 +2,12 @@
 #define __NeuralNetwork__
 
 #include <stdint.h>
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <complex>
+#include <algorithm>
+#include <string>
 
 namespace tflite
 {
@@ -28,9 +34,7 @@ private:
 public:
     NeuralNetwork();
     ~NeuralNetwork();
-    void *setInputBuffer(float* input_buffer);
-    float *getInputBuffer();
-    float predict();
+    int predict(const std::vector<double> &audio);
 };
 
 #endif

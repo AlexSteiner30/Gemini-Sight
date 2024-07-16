@@ -1,13 +1,10 @@
-import os
 import pathlib
 
-import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
 from tensorflow.keras import layers
 from tensorflow.keras import models
-from IPython import display
 
 seed = 42
 tf.random.set_seed(seed)
