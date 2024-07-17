@@ -24,25 +24,25 @@ namespace tflite
     class ErrorReporter;
     class Model;
     class MicroInterpreter;
-} // namespace tflite
+} 
 
 struct TfLiteTensor;
 
 class NeuralNetwork
 {
-private:
-    tflite::MicroMutableOpResolver<10> *m_resolver;
-    tflite::ErrorReporter *m_error_reporter;
-    const tflite::Model *m_model;
-    tflite::MicroInterpreter *m_interpreter;
-    TfLiteTensor *input;
-    TfLiteTensor *output;
-    uint8_t *m_tensor_arena;
+    private:
+        tflite::MicroMutableOpResolver<10> *m_resolver;
+        tflite::ErrorReporter *m_error_reporter;
+        const tflite::Model *m_model;
+        tflite::MicroInterpreter *m_interpreter;
+        TfLiteTensor *input;
+        TfLiteTensor *output;
+        uint8_t *m_tensor_arena;
 
-public:
-    NeuralNetwork();
-    ~NeuralNetwork();
-    int predict(std::vector<double> audio);
+    public:
+        NeuralNetwork();
+        ~NeuralNetwork();
+        int predict(std::vector<double> audio);
 };
 
 #endif

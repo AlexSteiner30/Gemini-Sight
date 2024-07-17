@@ -1,5 +1,11 @@
 #include "glasses.h"
 
+Glasses::Glasses(){
+    i2s_install();
+    i2s_setpin();
+    i2s_start(I2S_PORT);
+}
+
 void Glasses::webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     vector<string> message_parts = split((char*)payload, "¬");
     switch(type) {
@@ -40,12 +46,6 @@ void Glasses::webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 		case WStype_BIN:
 			break;
 	}
-}
-
-Glasses::Glasses(){
-    microphone.i2s_install();
-    microphone.i2s_setpin();
-    microphone.i2s_start(I2S_PORT);
 }
 
 void Glasses::connect(){

@@ -1,6 +1,14 @@
-#include "microphone.h"
+#include <driver/i2s.h>
+#include <vector>
+#include <stdint.h>
+#include <iostream>
 
-void Microphone::i2s_install() {
+#include "glasses.h"
+
+int16_t* audioBuffer;
+size_t bytesRead = 0;
+
+void Glasses::i2s_install() {
   const i2s_config_t i2s_config = {
     .mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_RX),
     .sample_rate = SAMPLE_RATE,
@@ -15,7 +23,7 @@ void Microphone::i2s_install() {
   i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL);
 }
 
-void Microphone::i2s_setpin() {
+void Glasses::i2s_setpin() {
   const i2s_pin_config_t pin_config = {
     .bck_io_num = I2S_SCK,
     .ws_io_num = I2S_WS,
@@ -25,7 +33,7 @@ void Microphone::i2s_setpin() {
   i2s_set_pin(I2S_PORT, &pin_config);
 }
 
-std::vector<double> Microphone::processAudioData(int16_t* audioBuffer, size_t bufferSize) {
+std::vector<double> Glasses::processAudioData(int16_t* audioBuffer, size_t bufferSize) {
     std::vector<double> audioVector;
     audioVector.reserve(bufferSize);
 
@@ -39,10 +47,10 @@ std::vector<double> Microphone::processAudioData(int16_t* audioBuffer, size_t bu
     return audioVector;
 }
 
-void Microphone::record_microphone(Glasses glasses) {
+void Glasses::record_microphone() {
   size_t bytesRead = 0;
 
-  while (bytesRead < TOTAL_SAMPLES * SAMPLE_SIZE && glasses.isTalking) {
+  while (bytesRead < TOTAL_SAMPLES * SAMPLE_SIZE && isTalking) {
     size_t bytesIn = 0;
     esp_err_t result = i2s_read(I2S_PORT, audioBuffer + (bytesRead / SAMPLE_SIZE), TOTAL_SAMPLES * SAMPLE_SIZE - bytesRead, &bytesIn, portMAX_DELAY);
     if (result == ESP_OK) {
@@ -50,7 +58,7 @@ void Microphone::record_microphone(Glasses glasses) {
     }
   }
 
-  string textMessage = "speech_to_text¬" + string(glasses.AUTH_KEY)+ "¬";
+  string textMessage = "speech_to_text¬" + string(AUTH_KEY)+ "¬";
 
   size_t textSize = textMessage.length();
   size_t totalSize = textSize + TOTAL_SAMPLES * SAMPLE_SIZE;
@@ -60,20 +68,20 @@ void Microphone::record_microphone(Glasses glasses) {
   memcpy(combinedBuffer, textMessage.c_str(), textSize);
   memcpy(combinedBuffer + textSize, audioBuffer, TOTAL_SAMPLES * SAMPLE_SIZE);
 
-  glasses.client.sendBIN(combinedBuffer, totalSize);
+  client.sendBIN(combinedBuffer, totalSize);
 
   delete[] combinedBuffer;
 
   audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
 
-  glasses.isTalking = true;
+  isTalking = true;
 }
 
-std::vector<double> Microphone::get_speech_command(Glasses glasses) {
+std::vector<double> Glasses::get_speech_command() {
   size_t bytesRead = 0;
   int16_t* buffer = (int16_t*)malloc(SAMPLE_RATE * SAMPLE_SIZE);
 
-  while (bytesRead < SAMPLE_RATE * SAMPLE_SIZE && glasses.isTalking) {
+  while (bytesRead < SAMPLE_RATE * SAMPLE_SIZE && isTalking) {
     size_t bytesIn = 0;
     esp_err_t result = i2s_read(I2S_PORT, buffer + (bytesRead / SAMPLE_SIZE), SAMPLE_RATE * SAMPLE_SIZE - bytesRead, &bytesIn, portMAX_DELAY);
     if (result == ESP_OK) {
