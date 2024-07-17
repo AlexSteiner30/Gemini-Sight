@@ -53,6 +53,7 @@ def get_spectrogram(waveform):
     spectrogram = tf.signal.stft(waveform, frame_length=255, frame_step=128)
     spectrogram = tf.abs(spectrogram)
     spectrogram = spectrogram[..., tf.newaxis]
+    spectrogram = tf.image.resize(spectrogram, [32, 32])
     return spectrogram
 
 def make_spec_ds(ds):
@@ -75,13 +76,8 @@ for example_spectrograms, example_spect_labels in train_spectrogram_ds.take(1):
 input_shape = example_spectrograms.shape[1:]
 num_labels = len(label_names)
 
-norm_layer = layers.Normalization()
-norm_layer.adapt(data=train_spectrogram_ds.map(map_func=lambda spec, label: spec))
-
 model = models.Sequential([
     layers.Input(shape=input_shape),
-    layers.Resizing(32, 32),
-    norm_layer,
     layers.Conv2D(4, 3, activation='relu'),
     layers.MaxPooling2D(),
     layers.Flatten(),

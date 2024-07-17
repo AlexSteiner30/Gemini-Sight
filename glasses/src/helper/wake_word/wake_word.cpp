@@ -2,7 +2,9 @@
 #include "Arduino.h"
 
 const int kArenaSize = 25000;
-const char* label_names[] = {"noise", "gemma", "stop"};
+
+const int FRAME_SIZE = 512;
+const int NUM_FRAMES = 16000 / FRAME_SIZE;
 
 NeuralNetwork::NeuralNetwork()
 {
@@ -25,18 +27,13 @@ NeuralNetwork::NeuralNetwork()
         return;
     }
 
-    m_resolver = new tflite::MicroMutableOpResolver<10>();
-    m_resolver->AddResizeBilinear();
+    m_resolver = new tflite::MicroMutableOpResolver<7>();
     m_resolver->AddConv2D();
     m_resolver->AddMaxPool2D();
-    m_resolver->AddFullyConnected();
-    m_resolver->AddFullyConnected();
-    m_resolver->AddMul();
-    m_resolver->AddAdd();
-    m_resolver->AddLogistic();
     m_resolver->AddReshape();
+    m_resolver->AddFullyConnected();
+    m_resolver->AddFullyConnected();
     m_resolver->AddQuantize();
-    m_resolver->AddDequantize();
     m_resolver->AddDequantize();
 
     m_interpreter = new tflite::MicroInterpreter(
@@ -73,7 +70,7 @@ int NeuralNetwork::predict(std::vector<double> audio){
 
     auto& spec = spectrogram_expanded;
 
-    Serial.println("spec");
+    Serial.println("process");
 
     spec.resize(1);
     spec[0].resize(32);
@@ -83,8 +80,6 @@ int NeuralNetwork::predict(std::vector<double> audio){
             col.resize(1);
         }
     }
-
-    Serial.println("resize");
 
     const int kNumElements = 32 * 32 * 1;
     float input_data[kNumElements];

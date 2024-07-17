@@ -34,7 +34,7 @@ struct TfLiteTensor;
 class NeuralNetwork
 {
 private:
-    tflite::MicroMutableOpResolver<2> *m_resolver;
+    tflite::MicroMutableOpResolver<7> *m_resolver;
     tflite::ErrorReporter *m_error_reporter;
     const tflite::Model *m_model;
     tflite::MicroInterpreter *m_interpreter;
@@ -48,7 +48,9 @@ public:
     int predict(std::vector<double> audio);
 
 private:
-    std::vector<std::vector<float>> stft(const std::vector<float>& waveform, int frame_length, int frame_step);
+    void fft(std::vector<double> &frame, std::vector<double> &real, std::vector<double> &imag);
+    void computeMagnitude(const std::vector<double> &real, const std::vector<double> &imag, std::vector<double> &magnitude);
+    std::vector<std::vector<double>> stft(const std::vector<double> &waveform, int frame_length, int frame_step);
     std::vector<std::vector<std::vector<double>>> add_new_axis(const std::vector<std::vector<double>> &spectrogram);
     std::vector<std::vector<std::vector<std::vector<double>>>> expand_dims(const std::vector<std::vector<std::vector<double>>> &spectrogram);
 };
