@@ -9,6 +9,14 @@
 #include <algorithm>
 #include <string>
 
+#include "model.h"
+#include "tensorflow/lite/micro/all_ops_resolver.h"
+#include "tensorflow/lite/micro/micro_error_reporter.h"
+#include "tensorflow/lite/micro/micro_interpreter.h"
+#include "tensorflow/lite/schema/schema_generated.h"
+
+#include "spectogram.hpp"
+
 namespace tflite
 {
     template <unsigned int tOpCount>
@@ -34,7 +42,7 @@ private:
 public:
     NeuralNetwork();
     ~NeuralNetwork();
-    int predict(const std::vector<double> &audio);
+    int predict(std::vector<double> audio);
 };
 
 #endif

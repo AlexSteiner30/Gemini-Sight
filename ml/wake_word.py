@@ -1,8 +1,6 @@
 import pathlib
-
 import numpy as np
 import tensorflow as tf
-
 from tensorflow.keras import layers
 from tensorflow.keras import models
 
@@ -22,7 +20,7 @@ if not data_dir.exists():
         extract=True,
         cache_dir='.', cache_subdir='data'
     )
-  
+
 commands = np.array(tf.io.gfile.listdir(str(data_dir)))
 commands = commands[(commands != 'README.md') & (commands != '.DS_Store')]
 print('Commands:', commands)
@@ -52,7 +50,7 @@ val_ds = val_ds.shard(num_shards=2, index=1)
 def get_spectrogram(waveform):
     spectrogram = tf.signal.stft(waveform, frame_length=255, frame_step=128)
     spectrogram = tf.abs(spectrogram)
-    spectrogram = spectrogram[..., tf.newaxis]
+    spectrogram = tf.image.resize(spectrogram[..., tf.newaxis], [32, 32])
     return spectrogram
 
 def make_spec_ds(ds):
@@ -80,13 +78,11 @@ norm_layer.adapt(data=train_spectrogram_ds.map(map_func=lambda spec, label: spec
 
 model = models.Sequential([
     layers.Input(shape=input_shape),
-    layers.Resizing(32, 32),
     norm_layer,
     layers.Conv2D(4, 3, activation='relu'),
     layers.MaxPooling2D(),
     layers.Flatten(),
-    layers.Dense(4, activation='relu'),
-    layers.Dense(num_labels),
+    layers.Dense(num_labels, activation='relu'),
 ])
 
 model.summary()

@@ -1,15 +1,9 @@
 #include "wake_word.h"
 
-#include "model.h"
-#include "tensorflow/lite/micro/all_ops_resolver.h"
-#include "tensorflow/lite/micro/micro_error_reporter.h"
-#include "tensorflow/lite/micro/micro_interpreter.h"
-#include "tensorflow/lite/schema/schema_generated.h"
-
-#include <Arduino.h>
-#include "spectogram.hpp"
-
 const int kArenaSize = 25000;
+
+const int FRAME_SIZE = 512;
+const int NUM_FRAMES = 16000 / FRAME_SIZE;
 
 NeuralNetwork::NeuralNetwork()
 {
@@ -24,6 +18,7 @@ NeuralNetwork::NeuralNetwork()
     TF_LITE_REPORT_ERROR(m_error_reporter, "Loading model");
 
     m_model = tflite::GetModel(converted_model_tflite);
+
     if (m_model->version() != TFLITE_SCHEMA_VERSION)
     {
         TF_LITE_REPORT_ERROR(m_error_reporter, "Model provided is schema version %d not equal to supported version %d.",
@@ -68,28 +63,57 @@ NeuralNetwork::~NeuralNetwork()
     delete m_error_reporter;
 }
 
-int NeuralNetwork::predict(const std::vector<double>& audio){
-    int frame_length = 255;
-    int frame_step = 128;
-
-    std::vector<std::vector<double>> spectrogram = stft(audio, frame_length, frame_step);
+int NeuralNetwork::predict(std::vector<double> audio){
+    std::vector<std::vector<double>> spectrogram = stft(audio, 255, 128);
 
     auto spectrogram_new_axis = add_new_axis(spectrogram);
     auto spectrogram_expanded = expand_dims(spectrogram_new_axis);
 
-    Serial.print(spectrogram_expanded.size());
-    Serial.print(" x ");
-    Serial.print(spectrogram_expanded[0].size());
-    Serial.print(" x ");
-    Serial.print(spectrogram_expanded[0][0].size());
-    Serial.print(" x " );
-    Serial.println(spectrogram_expanded[0][0][0].size());
+    auto& spec = spectrogram_expanded;
 
-    //auto input_tensor = preprocess_audio(audio);
-    TfLiteTensor* input = m_interpreter->input(0);
+    spec.resize(1);
+    spec[0].resize(32);
+    for (auto& row : spec[0]) {
+        row.resize(32);
+        for (auto& col : row) {
+            col.resize(1);
+        }
+    }
+
+    const int kNumElements = 32 * 32 * 1;
+    float input_data[kNumElements];
+
+
+    int index = 0;
+    for (const auto& dim1 : spec) {
+        for (const auto& dim2 : dim1) {
+            for (const auto& dim3 : dim2) {
+                for (const auto& value : dim3) {
+                    input_data[index++] = static_cast<float>(value);
+                }
+            }
+        }
+    }
     
-    Serial.println(input->bytes);
-    //Serial.println(input_tensor.size());
+    TfLiteTensor* input_tensor = m_interpreter->input(0);
+    memcpy(input_tensor->data.f, input_data, kNumElements * sizeof(float));
+
+    m_interpreter->Invoke();
+
+    TfLiteTensor* output = m_interpreter->output(0);
+
+    float* results = output->data.f;
+
+    int num_results = output->bytes / sizeof(float);
+
+    int max_index = 0;
+    float max_value = results[0];
+    for (int i = 1; i < num_results; i++) {
+        if (results[i] > max_value) {
+            max_value = results[i];
+            max_index = i;
+        }
+    }
     
-    return 1;
+    return max_index;
 }
