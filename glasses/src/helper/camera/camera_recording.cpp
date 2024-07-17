@@ -1,10 +1,6 @@
-#include "camera_recording.h"
+#include "glasses.h"
 
-CameraRecording::CameraRecording(){
-  setup_camera();
-}
-
-void CameraRecording::take_picture(Glasses glasses){
+void Glasses::take_picture(){
   camera_fb_t *fb = NULL;
   esp_err_t res = ESP_OK;
 
@@ -16,7 +12,7 @@ void CameraRecording::take_picture(Glasses glasses){
     return;
   }
 
-  string textMessage = "take_picture¬" + string(glasses.AUTH_KEY)+ "¬";
+  string textMessage = "take_picture¬" + string(AUTH_KEY)+ "¬";
 
   size_t textSize = textMessage.length();
   size_t totalSize = textSize + fb->len;
@@ -26,7 +22,7 @@ void CameraRecording::take_picture(Glasses glasses){
   memcpy(combinedBuffer, textMessage.c_str(), textSize);
   memcpy(combinedBuffer + textSize, fb->buf, fb->len);
 
-  glasses.client.sendBIN(combinedBuffer, totalSize);
+  client.sendBIN(combinedBuffer, totalSize);
 
   delete[] combinedBuffer;
   esp_camera_fb_return(fb);    

@@ -3,11 +3,9 @@
 
 #include <WebSocketsClient.h>
 
-#include "helper/camera/camera_recording.h"
 #include "helper/audio/audio.h"
 
 #include "helper/helper.hpp"
-
 #include "helper/wake_word/wake_word.h"
 
 class Microphone;
@@ -15,17 +13,18 @@ class CameraRecording;
 class Glasses
 {
   public:
-  #define I2S_WS 15
-  #define I2S_SD 13
-  #define I2S_SCK 2
-  #define I2S_PORT I2S_NUM_0
-          
-  #define SAMPLE_RATE 16000
-  #define RECORD_TIME 90
-  #define SAMPLE_SIZE 2
-  #define CHANNEL_NUM 1
-  #define TOTAL_SAMPLES (SAMPLE_RATE * RECORD_TIME)
+    #define I2S_WS 15
+    #define I2S_SD 13
+    #define I2S_SCK 2
+    #define I2S_PORT I2S_NUM_0
+            
+    #define SAMPLE_RATE 16000
+    #define RECORD_TIME 90
+    #define SAMPLE_SIZE 2
+    #define CHANNEL_NUM 1
+    #define TOTAL_SAMPLES (SAMPLE_RATE * RECORD_TIME)
 
+  public:
     Glasses();
 
     WebSocketsClient client;
@@ -35,10 +34,11 @@ class Glasses
     bool isTalking = false;
     int volume = 100;
 
-    void webSocketEvent(WStype_t type, uint8_t *payload, size_t length);
     void connect();
 
+  public:
     std::vector<double> get_speech_command();
+    void take_picture();
 
     Audio audio;
     NeuralNetwork nn;
