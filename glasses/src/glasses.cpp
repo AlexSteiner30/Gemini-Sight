@@ -4,6 +4,8 @@ Glasses::Glasses(){
     i2s_install();
     i2s_setpin();
     i2s_start(I2S_PORT);
+
+    create_camera();
 }
 
 void Glasses::connect(){

@@ -1,8 +1,3 @@
-#include <driver/i2s.h>
-#include <vector>
-#include <stdint.h>
-#include <iostream>
-
 #include "glasses.h"
 
 int16_t* audioBuffer;

@@ -1,4 +1,9 @@
 #include "glasses.h"
+#include "camera.hpp"
+
+void Glasses::create_camera(){
+  setup_camera();
+}
 
 void Glasses::take_picture(){
   camera_fb_t *fb = NULL;

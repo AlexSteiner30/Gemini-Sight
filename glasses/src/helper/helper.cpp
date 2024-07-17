@@ -1,10 +1,6 @@
-#include <vector>
-#include <string>
-#include <iostream>
+#include "glasses.h"
 
-using namespace std;
-
-vector<string> split(string s, string delimiter){
+vector<string> Glasses::split(string s, string delimiter){
     vector<string> list;
     size_t pos = 0;
     string token;

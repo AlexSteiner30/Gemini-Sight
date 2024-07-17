@@ -1,12 +1,8 @@
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <complex>
-#include <typeinfo>
+#include "wake_word.h"
 
 const double pi = 3.14159265358979323846;
 
-void fft_recursive(std::vector<std::complex<double>>& x) {
+void NeuralNetwork::fft_recursive(std::vector<std::complex<double>>& x) {
     int n = x.size();
     if (n <= 1) return;
 
@@ -26,7 +22,7 @@ void fft_recursive(std::vector<std::complex<double>>& x) {
     }
 }
 
-std::vector<std::complex<double>> fft(const std::vector<double>& input) {
+std::vector<std::complex<double>> NeuralNetwork::fft(const std::vector<double>& input) {
     int n = input.size();
     int padded_size = 1;
     while (padded_size < n) padded_size *= 2;
@@ -43,7 +39,7 @@ std::vector<std::complex<double>> fft(const std::vector<double>& input) {
     return padded_input;
 }
 
-std::vector<std::vector<double>> stft(const std::vector<double>& waveform, int frame_length, int frame_step) {
+std::vector<std::vector<double>> NeuralNetwork::stft(const std::vector<double>& waveform, int frame_length, int frame_step) {
     int n_frames = 1 + (waveform.size() - frame_length) / frame_step;
     int fft_length = frame_length;
     
@@ -73,7 +69,7 @@ std::vector<std::vector<double>> stft(const std::vector<double>& waveform, int f
     return spectrogram;
 }
 
-std::vector<std::vector<std::vector<double>>> add_new_axis(const std::vector<std::vector<double>>& spectrogram) {
+std::vector<std::vector<std::vector<double>>> NeuralNetwork::add_new_axis(const std::vector<std::vector<double>>& spectrogram) {
     std::vector<std::vector<std::vector<double>>> result;
     result.reserve(spectrogram.size());
     for (const auto& row : spectrogram) {
@@ -82,6 +78,6 @@ std::vector<std::vector<std::vector<double>>> add_new_axis(const std::vector<std
     return result;
 }
 
-std::vector<std::vector<std::vector<std::vector<double>>>> expand_dims(const std::vector<std::vector<std::vector<double>>>& spectrogram) {
+std::vector<std::vector<std::vector<std::vector<double>>>> NeuralNetwork::expand_dims(const std::vector<std::vector<std::vector<double>>>& spectrogram) {
     return std::vector<std::vector<std::vector<std::vector<double>>>>(1, spectrogram);
 }

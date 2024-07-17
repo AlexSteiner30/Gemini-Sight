@@ -1,11 +1,10 @@
 #include "glasses.h"
 #include "helper/wifi.hpp"
-#include <helper/camera/camera.hpp>
 
-Glasses glasses;
+Glasses glasses = Glasses();
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
-    vector<string> message_parts = split((char*)payload, "¬");
+    vector<string> message_parts = glasses.split((char*)payload, "¬");
     switch(type) {
 		case WStype_DISCONNECTED:
 			Serial.println("[WSc] Disconnected!\n");
@@ -50,7 +49,7 @@ void setup() {
     Serial.begin(115200);
 
     connect_wifi("3Pocket_66B9808B", "LWS36G3Hsx");
-    setup_camera();
+
     glasses.client.onEvent(webSocketEvent);
     glasses.connect();
 }
