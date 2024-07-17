@@ -1,10 +1,6 @@
-#include <driver/i2s.h>
 
-#define LRC 16
-#define BCLK 12 
-#define DIN 14
-
-void play_audio(uint8_t* buffer) {
+/*
+void Audio::play_audio(uint8_t* buffer) {
     i2s_config_t i2sConfig = {
         .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
         .sample_rate = 44100,
@@ -36,3 +32,4 @@ void play_audio(uint8_t* buffer) {
         if (bytes_read == 0) break;
     }
 }
+*/

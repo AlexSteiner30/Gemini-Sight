@@ -1,12 +1,10 @@
-#include "glasses.hpp"
+#include "glasses.h"
+#include "helper/wifi.hpp"
 
+Glasses glasses;
 
 void setup() {
     Serial.begin(115200);
-
-    i2s_install();
-    i2s_setpin();
-    i2s_start(I2S_PORT);
 
     /*
 
@@ -21,10 +19,10 @@ void setup() {
     Serial.println(result);
     */
 
-    //setup_camera();
     connect_wifi("3Pocket_66B9808B", "LWS36G3Hsx");
+    glasses.connect();
 }
 
 void loop() {
-    client.loop();
+    glasses.client.loop();
 }

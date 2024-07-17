@@ -23,7 +23,7 @@ void Glasses::webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
                     break;
                 }
                 else if(message_parts[0] == "take_picture"){
-                    take_picture();
+                    camera_recording.take_picture(*this);
                     break;
                 }
                 else if(message_parts[0] == "volume"){
@@ -43,6 +43,12 @@ void Glasses::webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 }
 
 Glasses::Glasses(){
+    microphone.i2s_install();
+    microphone.i2s_setpin();
+    microphone.i2s_start(I2S_PORT);
+}
+
+void Glasses::connect(){
     client.begin("192.168.0.183", 4040, "/ws");
     client.onEvent(webSocketEvent);
     client.setReconnectInterval(5000);
