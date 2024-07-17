@@ -1,24 +1,21 @@
-#include "glasses.h"
-#include "helper/wifi.hpp"
+#include "glasses.hpp"
 
-Glasses glasses = Glasses();
+NeuralNetwork nn;
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
-    vector<string> message_parts = glasses.split((char*)payload, "¬");
+    vector<string> message_parts = split((char*)payload, "¬");
     switch(type) {
 		case WStype_DISCONNECTED:
 			Serial.println("[WSc] Disconnected!\n");
-            glasses.isConnected = false;
 			break;
 
 		case WStype_CONNECTED:
 			Serial.println("\n[WSc] Connected to url: /ws");
-            glasses.client.sendTXT(glasses.AUTH_KEY);
-            glasses.isConnected = true;
+            client.sendTXT(AUTH_KEY);
 			break;
 
 		case WStype_TEXT:
-            if(message_parts[1] == glasses.AUTH_KEY){
+            if(message_parts[1] == AUTH_KEY){
                 if(message_parts[0] == "start_recording"){
                     break;
                 }
@@ -26,11 +23,11 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
                     break;
                 }
                 else if(message_parts[0] == "take_picture"){
-                    glasses.take_picture();
+                    take_picture();
                     break;
                 }
                 else if(message_parts[0] == "volume"){
-                    glasses.volume = stoi(message_parts[2]);
+                    volume = stoi(message_parts[2]);
                     break;
                 }
                 else if(message_parts[0] == "play"){
@@ -48,22 +45,25 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 void setup() {
     Serial.begin(115200);
 
+    i2s_install();
+    i2s_setpin();
+    i2s_start(I2S_PORT);
+
+    audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
+
+    //setup_camera();
     connect_wifi("3Pocket_66B9808B", "LWS36G3Hsx");
 
-    glasses.client.onEvent(webSocketEvent);
-    glasses.connect();
+    client.begin("192.168.0.183", 4040, "/ws");
+    client.onEvent(webSocketEvent);
+    client.setReconnectInterval(5000);
 }
 
 void loop() {
-    glasses.client.loop();
+    client.loop();
 
-    if(glasses.isConnected){
-        int result = glasses.nn.predict(glasses.get_speech_command());
-        while(result != 1){
-            result = glasses.nn.predict(glasses.get_speech_command());
-        };
-
-        Serial.println("Command Invoked!");
-        Serial.println(result);
+    int predicted_class_index = nn.predict(get_speech_command());
+    if(predicted_class_index == 1){
+        Serial.println("Gemma");
     }
 }
