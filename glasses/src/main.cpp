@@ -2,6 +2,17 @@
 
 NeuralNetwork nn;
 
+void listen_speech_command(){
+    int predicted_class_index = nn.predict(get_speech_command());
+    Serial.println(predicted_class_index);
+    while (predicted_class_index != 1)
+    {
+        predicted_class_index = nn.predict(get_speech_command());
+        Serial.println(predicted_class_index);
+    }
+    Serial.println("Gemma");
+}
+
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     vector<string> message_parts = split((char*)payload, "¬");
     switch(type) {
@@ -12,6 +23,8 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 		case WStype_CONNECTED:
 			Serial.println("\n[WSc] Connected to url: /ws");
             client.sendTXT(AUTH_KEY);
+
+            listen_speech_command();
 			break;
 
 		case WStype_TEXT:
@@ -61,9 +74,4 @@ void setup() {
 
 void loop() {
     client.loop();
-
-    int predicted_class_index = nn.predict(get_speech_command());
-    if(predicted_class_index == 1){
-        Serial.println("Gemma");
-    }
 }
