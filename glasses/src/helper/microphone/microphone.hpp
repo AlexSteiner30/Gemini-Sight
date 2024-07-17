@@ -41,6 +41,7 @@ void i2s_setpin() {
 }
 
 std::vector<double> processAudioData(int16_t* audioBuffer, size_t bufferSize) {
+    Serial.println("test");
     std::vector<double> audioVector;
     audioVector.reserve(bufferSize);
 
@@ -50,6 +51,8 @@ std::vector<double> processAudioData(int16_t* audioBuffer, size_t bufferSize) {
     }
 
     delete[] audioBuffer;
+
+    Serial.println("test");
 
     return audioVector;
 }

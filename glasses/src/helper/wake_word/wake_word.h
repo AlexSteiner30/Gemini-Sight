@@ -10,6 +10,9 @@
 #include <string>
 #include <typeinfo>
 
+#include "kissfft.hh"
+#include "tools/kiss_fftr.h"
+
 #include "model.h"
 
 #include "tensorflow/lite/micro/all_ops_resolver.h"
@@ -31,7 +34,7 @@ struct TfLiteTensor;
 class NeuralNetwork
 {
 private:
-    tflite::MicroMutableOpResolver<10> *m_resolver;
+    tflite::MicroMutableOpResolver<2> *m_resolver;
     tflite::ErrorReporter *m_error_reporter;
     const tflite::Model *m_model;
     tflite::MicroInterpreter *m_interpreter;
@@ -45,9 +48,7 @@ public:
     int predict(std::vector<double> audio);
 
 private:
-    void fft_recursive(std::vector<std::complex<double>> &x);
-    std::vector<std::complex<double>> fft(const std::vector<double> &input);
-    std::vector<std::vector<double>> stft(const std::vector<double> &waveform, int frame_length, int frame_step);
+    std::vector<std::vector<float>> stft(const std::vector<float>& waveform, int frame_length, int frame_step);
     std::vector<std::vector<std::vector<double>>> add_new_axis(const std::vector<std::vector<double>> &spectrogram);
     std::vector<std::vector<std::vector<std::vector<double>>>> expand_dims(const std::vector<std::vector<std::vector<double>>> &spectrogram);
 };
