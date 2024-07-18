@@ -5,9 +5,11 @@ label_names = np.array(['noise', 'gemma', 'stop'])
 
 def get_spectrogram(waveform):
     spectrogram = tf.signal.stft(waveform, frame_length=255, frame_step=128)
+    print(spectrogram.shape)
     spectrogram = tf.abs(spectrogram)
     spectrogram = spectrogram[..., tf.newaxis]
-    spectrogram = tf.image.resize(spectrogram, [32, 32])
+    print( spectrogram.shape[1:])
+    print(spectrogram.shape)
     return spectrogram
 
 model = tf.keras.models.load_model('model.keras')
@@ -17,7 +19,8 @@ def preprocess_audio():
     audio = np.array(audio, dtype=np.float32)
     
     spectrogram = get_spectrogram(audio)
-    
+    spectrogram = tf.image.resize(spectrogram, [32, 32])
+   
     return spectrogram
 
 def predict_class():
@@ -32,4 +35,6 @@ def predict_class():
 
 predicted_class, confidence = predict_class()
 print(f"Predicted class: {predicted_class}")
+print(f"Confidence: {confidence:.2f}")
+
 print(f"Confidence: {confidence:.2f}")

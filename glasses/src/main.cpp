@@ -1,31 +1,22 @@
 #include "glasses.hpp"
+#include "helper/helper.hpp"
 
-NeuralNetwork nn;
+Glasses glasses;
 
-void listen_wake_word(){
-    int predicted_class_index = nn.predict(get_speech_command());
-    while(predicted_class_index != 1){
-        predicted_class_index = nn.predict(get_speech_command());
-        Serial.println(predicted_class_index);
-    }
-    Serial.println("Gemma");
-}
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     vector<string> message_parts = split((char*)payload, "¬");
     switch(type) {
 		case WStype_DISCONNECTED:
-			Serial.println("[WSc] Disconnected!\n");
+			Serial.println("[WSc] Disconnected!");
 			break;
 
 		case WStype_CONNECTED:
-			Serial.println("\n[WSc] Connected to url: /ws");
-            client.sendTXT(AUTH_KEY);
-
-            listen_wake_word();
+			Serial.println("[WSc] Connected to url: /ws");
+            glasses.client.sendTXT(glasses.AUTH_KEY);
 			break;
 
 		case WStype_TEXT:
-            if(message_parts[1] == AUTH_KEY){
+            if(message_parts[1] == glasses.AUTH_KEY){
                 if(message_parts[0] == "start_recording"){
                     break;
                 }
@@ -33,11 +24,11 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
                     break;
                 }
                 else if(message_parts[0] == "take_picture"){
-                    take_picture();
+                    glasses.take_picture();
                     break;
                 }
                 else if(message_parts[0] == "volume"){
-                    volume = stoi(message_parts[2]);
+                    glasses.volume = stoi(message_parts[2]);
                     break;
                 }
                 else if(message_parts[0] == "play"){
@@ -54,21 +45,21 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 
 void setup() {
     Serial.begin(115200);
+    Serial.println();
 
-    i2s_install();
-    i2s_setpin();
-    i2s_start(I2S_PORT);
+    glasses.setup_microphone();
+    glasses.predict(glasses.get_speech_command());
+    //glasses.setup_camera();
 
-    audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
+    //glasses.connect_wifi("3Pocket_66B9808B", "LWS36G3Hsx");
 
-    //setup_camera();
-    connect_wifi("3Pocket_66B9808B", "LWS36G3Hsx");
-
-    client.begin("192.168.0.183", 4040, "/ws");
-    client.onEvent(webSocketEvent);
-    client.setReconnectInterval(5000);
+    /*
+    glasses.client.begin("192.168.0.183", 4040, "/ws");
+    glasses.client.onEvent(webSocketEvent);
+    glasses.client.setReconnectInterval(5000);
+    */
 }
 
 void loop() {
-    client.loop();
+    //glasses.client.loop();
 }

@@ -1,75 +1,103 @@
 #include <WebSocketsClient.h>
+#include <driver/i2s.h>
+#include <WiFi.h>
 
-#include "helper/microphone/microphone.hpp"
-#include "helper/camera/camera.hpp"
-#include "helper/audio/audio.hpp"
+#include <vector>
+#include <string>
+#include <iostream>
 
-#include "helper/wifi.hpp"
-#include "helper/helper.hpp"
+#include <arduinoFFT.h>
 
-#include "helper/wake_word/wake_word.h"
+#include "helper/wake_word/model.h"
 
-WebSocketsClient client;
+#include "tensorflow/lite/micro/all_ops_resolver.h"
+#include "tensorflow/lite/micro/micro_error_reporter.h"
+#include "tensorflow/lite/micro/micro_interpreter.h"
+#include "tensorflow/lite/schema/schema_generated.h"
 
-const char* AUTH_KEY = "9e323100603908714f50f2a254cbf3cab972d40361d83f53dce0d214cc0df1707e1cb0c7c7bd98c4e2135d16abf79527de834abdbeff2ba2bcaa57c82a187dea2306e670a03803374a8d325956961f280350e727e8822f7ae973541f895a6a9e0c5fadc3e15afaa19d583dd50c89ca8d7a8b82713f17d276c4ee4cd5f1831000";
+#include <esp_heap_caps.h>
 
-bool isConnected = false;
-bool isTalking = false;
-int volume = 100;
-
-void micTask() {
-  isTalking = true;
-  size_t bytesRead = 0;
-
-  while (bytesRead < TOTAL_SAMPLES * SAMPLE_SIZE && isTalking) {
-    size_t bytesIn = 0;
-    esp_err_t result = i2s_read(I2S_PORT, audioBuffer + (bytesRead / SAMPLE_SIZE), TOTAL_SAMPLES * SAMPLE_SIZE - bytesRead, &bytesIn, portMAX_DELAY);
-    if (result == ESP_OK) {
-      bytesRead += bytesIn;
+template <typename T>
+struct PSRAMAllocator {
+    typedef T value_type;
+    PSRAMAllocator() = default;
+    template <typename U> PSRAMAllocator(const PSRAMAllocator<U>&) {}
+    T* allocate(std::size_t n) {
+        return (T*)heap_caps_malloc(n * sizeof(T), MALLOC_CAP_SPIRAM);
     }
-  }
+    void deallocate(T* p, std::size_t n) {
+        heap_caps_free(p);
+    }
+};
 
-  string textMessage = "speech_to_text¬" + string(AUTH_KEY)+ "¬";
+namespace tflite
+{
+    template <unsigned int tOpCount>
+    class MicroMutableOpResolver;
+    class ErrorReporter;
+    class Model;
+    class MicroInterpreter;
+} // namespace tflite
 
-  size_t textSize = textMessage.length();
-  size_t totalSize = textSize + TOTAL_SAMPLES * SAMPLE_SIZE;
+struct TfLiteTensor;
 
-  uint8_t* combinedBuffer = new uint8_t[totalSize];
 
-  memcpy(combinedBuffer, textMessage.c_str(), textSize);
-  memcpy(combinedBuffer + textSize, audioBuffer, TOTAL_SAMPLES * SAMPLE_SIZE);
+using namespace std;
 
-  client.sendBIN(combinedBuffer, totalSize);
+#define I2S_WS 15
+#define I2S_SD 13
+#define I2S_SCK 2
+#define I2S_PORT I2S_NUM_0
+ 
+#define SAMPLE_RATE 16000
+#define RECORD_TIME 90
+#define SAMPLE_SIZE 2
+#define CHANNEL_NUM 1
+#define TOTAL_SAMPLES (SAMPLE_RATE * RECORD_TIME)
 
-  delete[] combinedBuffer;
+class Glasses{
+  private:
+    int16_t* audioBuffer;
+    size_t bytesRead = 0;
 
-  audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
-}
+  public:
+    WebSocketsClient client;
 
-void take_picture(){
-  camera_fb_t *fb = NULL;
-  esp_err_t res = ESP_OK;
+    const char* AUTH_KEY = "9e323100603908714f50f2a254cbf3cab972d40361d83f53dce0d214cc0df1707e1cb0c7c7bd98c4e2135d16abf79527de834abdbeff2ba2bcaa57c82a187dea2306e670a03803374a8d325956961f280350e727e8822f7ae973541f895a6a9e0c5fadc3e15afaa19d583dd50c89ca8d7a8b82713f17d276c4ee4cd5f1831000";
 
-  fb = esp_camera_fb_get();
+    int volume = 100;
 
-  if(!fb){
-    Serial.println("Camera capture failed");
-    esp_camera_fb_return(fb);
-    return;
-  }
+    enum current_state {
+      not_connected,
+      awake_word,
+      speaking
+    };
 
-  string textMessage = "take_picture¬" + string(AUTH_KEY)+ "¬";
+    current_state current_state = not_connected;
 
-  size_t textSize = textMessage.length();
-  size_t totalSize = textSize + fb->len;
+  private:
+    tflite::MicroMutableOpResolver<7> *m_resolver;
+    tflite::ErrorReporter *m_error_reporter;
+    const tflite::Model *m_model;
+    tflite::MicroInterpreter *m_interpreter;
+    TfLiteTensor *input;
+    TfLiteTensor *output;
+    uint8_t *m_tensor_arena;
 
-  uint8_t* combinedBuffer = new uint8_t[totalSize];
+  public:
+      Glasses();
+      ~Glasses();
 
-  memcpy(combinedBuffer, textMessage.c_str(), textSize);
-  memcpy(combinedBuffer + textSize, fb->buf, fb->len);
+      void setup_camera();
+      void take_picture();
+      void setup_microphone();
+      void record_microphone();
+      void play_audio(uint8_t *buffer);
 
-  client.sendBIN(combinedBuffer, totalSize);
+      std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>> get_speech_command();
+      int predict(std::vector<std::vector<double>> spectrogram);
+      std::vector<std::vector<std::vector<double>>> add_new_axis(const std::vector<std::vector<double>> &spectrogram);
+      std::vector<std::vector<std::vector<std::vector<double>>>> expand_dims(const std::vector<std::vector<std::vector<double>>> &spectrogram);
 
-  delete[] combinedBuffer;
-  esp_camera_fb_return(fb);    
-}
+      void connect_wifi(char *ssid, char *password);
+};

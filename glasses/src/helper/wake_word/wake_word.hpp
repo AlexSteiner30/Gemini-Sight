@@ -1,12 +1,11 @@
-#include "wake_word.h"
-#include "Arduino.h"
+#include "glasses.hpp"
 
 const int kArenaSize = 25000;
 
 const int FRAME_SIZE = 512;
 const int NUM_FRAMES = 16000 / FRAME_SIZE;
 
-NeuralNetwork::NeuralNetwork()
+Glasses::Glasses()
 {
     m_error_reporter = new tflite::MicroErrorReporter();
 
@@ -54,7 +53,7 @@ NeuralNetwork::NeuralNetwork()
 }
 
 
-NeuralNetwork::~NeuralNetwork()
+Glasses::~Glasses()
 {
     delete m_interpreter;
     delete m_resolver;
@@ -62,9 +61,7 @@ NeuralNetwork::~NeuralNetwork()
     delete m_error_reporter;
 }
 
-int NeuralNetwork::predict(std::vector<double> audio){
-    std::vector<std::vector<double>> spectrogram = stft(audio, 255, 128);
-
+int Glasses::predict(std::vector<std::vector<double>> spectrogram){
     auto spectrogram_new_axis = add_new_axis(spectrogram);
     auto spectrogram_expanded = expand_dims(spectrogram_new_axis);
 
