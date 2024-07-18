@@ -33,7 +33,12 @@ void Glasses::setup_microphone(){
   audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
 }
 
-void Glasses::record_microphone() {
+void Glasses::record_microphone() 
+{
+  current_state = speaking;
+
+  Serial.println("speaking");
+
   size_t bytesRead = 0;
 
   while (bytesRead < TOTAL_SAMPLES * SAMPLE_SIZE && current_state == speaking) {
@@ -54,11 +59,15 @@ void Glasses::record_microphone() {
   memcpy(combinedBuffer, textMessage.c_str(), textSize);
   memcpy(combinedBuffer + textSize, audioBuffer, TOTAL_SAMPLES * SAMPLE_SIZE);
 
+  Serial.println("spoke");
+
   client.sendBIN(combinedBuffer, totalSize);
 
   delete[] combinedBuffer;
 
   audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
+
+  Serial.println("sent");
 
   get_wake_word();
 }

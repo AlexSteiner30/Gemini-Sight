@@ -50,7 +50,7 @@ using namespace std;
 #define I2S_PORT I2S_NUM_0
  
 #define SAMPLE_RATE 16000
-#define RECORD_TIME 5
+#define RECORD_TIME 3
 #define SAMPLE_SIZE 2
 #define CHANNEL_NUM 1
 #define TOTAL_SAMPLES (SAMPLE_RATE * RECORD_TIME)

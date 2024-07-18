@@ -14,7 +14,7 @@ void Glasses::get_wake_word(){
 
     Serial.println("Gemma");
 
-    glasses.current_state = glasses.speaking;
+    glasses.record_microphone();
 }
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
@@ -32,7 +32,11 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 
 		case WStype_TEXT:
             if(message_parts[1] == glasses.AUTH_KEY){
-                if(message_parts[0] == "start_recording"){
+                if(message_parts[0] == "listen"){
+                    glasses.record_microphone();
+                    break;
+                }
+                else if(message_parts[0] == "start_recording"){
                     break;
                 }
                 else if(message_parts[0] == "get_recording"){
@@ -68,19 +72,13 @@ void setup() {
 
     Serial.println("Started");
 
-    glasses.get_wake_word();
-
-    /*
-
     glasses.connect_wifi("3Pocket_66B9808B", "LWS36G3Hsx");
 
     glasses.client.begin("192.168.0.183", 4040, "/ws");
     glasses.client.onEvent(webSocketEvent);
     glasses.client.setReconnectInterval(5000);
-
-    */
 }
 
 void loop() {
-    //glasses.client.loop();
+    glasses.client.loop();
 }
