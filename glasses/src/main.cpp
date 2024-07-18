@@ -1,6 +1,5 @@
 #include "glasses.hpp"
 #include "helper/helper.hpp"
-#include "helper/audio/sounds.h"
 
 Glasses glasses;
 
@@ -66,8 +65,6 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 void setup() {
     Serial.begin(115200);
     Serial.println();
-
-    glasses.play_audio(boot);
 
     glasses.setup_tf();
     glasses.setup_microphone();

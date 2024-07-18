@@ -12,7 +12,7 @@ np.random.seed(seed)
 
 DATASET_ORIGIN = "http://download.tensorflow.org/data/speech_commands_v0.01.tar.gz"
 DATASET_PATH = 'data'
-EPOCHS = 10
+EPOCHS = 150
 
 data_dir = pathlib.Path(DATASET_PATH)
 if not data_dir.exists():

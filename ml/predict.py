@@ -1,7 +1,8 @@
 import tensorflow as tf
 import numpy as np
 
-label_names = np.array(['noise', 'gemma', 'stop'])
+commands = np.array(tf.io.gfile.listdir(str('data/')))
+label_names = commands[(commands != 'README.md') & (commands != '.DS_Store')]
 
 def get_spectrogram(waveform):
     spectrogram = tf.signal.stft(waveform, frame_length=255, frame_step=128)

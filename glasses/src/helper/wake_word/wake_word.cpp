@@ -63,6 +63,7 @@ Glasses::~Glasses()
     delete m_error_reporter;
 }
 */
+
 int Glasses::predict(const std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>>& spectrogram) {
     TfLiteTensor* input_tensor = m_interpreter->input(0);
 
