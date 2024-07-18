@@ -60,7 +60,7 @@ void Glasses::record_microphone() {
 
   audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
 
-  current_state = awake_word;
+  get_wake_word();
 }
 
 std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>> Glasses::get_speech_command() {
@@ -104,16 +104,5 @@ std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vec
 
     heap_caps_free(buffer);
 
-    std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>> resizedSpectrogram(targetSize, std::vector<double, PSRAMAllocator<double>>(targetSize));
-
-    for (uint16_t t = 0; t < targetSize; t++) {
-        uint16_t sourceChunk = (t * numChunks) / targetSize;
-        
-        for (uint16_t f = 0; f < targetSize; f++) {
-            uint16_t sourceBin = (f * (samplesPerChunk / 2)) / targetSize;
-            resizedSpectrogram[t][f] = fullSpectrogram[sourceChunk][sourceBin];
-        }
-    }
-
-    return resizedSpectrogram;
+    return fullSpectrogram;
 }

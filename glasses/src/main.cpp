@@ -3,18 +3,20 @@
 
 Glasses glasses;
 
-void wake_word(){
-    glasses.current_state = glasses.awake_word;
+void Glasses::get_wake_word(){
+    glasses.current_state = glasses.wake_word;
 
     int prediction = glasses.predict(glasses.get_speech_command());
     while(prediction != 1){
         prediction = glasses.predict(glasses.get_speech_command());
+        Serial.println(prediction);
     }
 
     Serial.println("Gemma");
 
     glasses.current_state = glasses.speaking;
 }
+
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     vector<string> message_parts = split((char*)payload, "¬");
     switch(type) {
@@ -25,6 +27,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 		case WStype_CONNECTED:
 			Serial.println("[WSc] Connected to url: /ws");
             glasses.client.sendTXT(glasses.AUTH_KEY);
+            glasses.get_wake_word();
 			break;
 
 		case WStype_TEXT:
@@ -65,13 +68,19 @@ void setup() {
 
     Serial.println("Started");
 
+    glasses.get_wake_word();
+
+    /*
+
     glasses.connect_wifi("3Pocket_66B9808B", "LWS36G3Hsx");
 
     glasses.client.begin("192.168.0.183", 4040, "/ws");
     glasses.client.onEvent(webSocketEvent);
     glasses.client.setReconnectInterval(5000);
+
+    */
 }
 
 void loop() {
-    glasses.client.loop();
+    //glasses.client.loop();
 }

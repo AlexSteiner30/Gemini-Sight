@@ -1,6 +1,6 @@
 #include "glasses.hpp"
 
-const int kArenaSize = 25000;
+const int kArenaSize = 70000;
 
 const int FRAME_SIZE = 512;
 const int NUM_FRAMES = 16000 / FRAME_SIZE;
@@ -26,12 +26,14 @@ void Glasses::setup_tf()
         return;
     }
 
-    m_resolver = new tflite::MicroMutableOpResolver<7>();
+    m_resolver = new tflite::MicroMutableOpResolver<9>();
+    m_resolver->AddResizeBilinear(),
     m_resolver->AddConv2D();
     m_resolver->AddMaxPool2D();
     m_resolver->AddReshape();
     m_resolver->AddFullyConnected();
     m_resolver->AddFullyConnected();
+    m_resolver->AddSoftmax();
     m_resolver->AddQuantize();
     m_resolver->AddDequantize();
 
@@ -61,21 +63,22 @@ Glasses::~Glasses()
     delete m_error_reporter;
 }
 */
+int Glasses::predict(const std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>>& spectrogram) {
+    TfLiteTensor* input_tensor = m_interpreter->input(0);
 
-int Glasses::predict(const std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>>& resizedSpectrogram) {
-    const int kNumElements = 32 * 32 * 1;
-    float input_data[kNumElements];
+    int input_size = input_tensor->bytes / sizeof(float);
+    std::vector<float> input_data(input_size, 0.0f);
+
     int index = 0;
-
-    for (const auto& row : resizedSpectrogram) {
-        for (const auto& value : row) {
+    for (const auto& row : spectrogram) {
+        for (double value : row) {
             input_data[index++] = static_cast<float>(value);
+            if (index >= input_size) break;
         }
+        if (index >= input_size) break;
     }
 
-    TfLiteTensor* input_tensor = m_interpreter->input(0);
-    memcpy(input_tensor->data.f, input_data, kNumElements * sizeof(float));
-
+    memcpy(input_tensor->data.f, input_data.data(), input_size * sizeof(float));
     m_interpreter->Invoke();
 
     TfLiteTensor* output = m_interpreter->output(0);
@@ -85,6 +88,7 @@ int Glasses::predict(const std::vector<std::vector<double, PSRAMAllocator<double
 
     int max_index = 0;
     float max_value = results[0];
+
     for (int i = 1; i < num_results; i++) {
         if (results[i] > max_value) {
             max_value = results[i];
@@ -92,12 +96,5 @@ int Glasses::predict(const std::vector<std::vector<double, PSRAMAllocator<double
         }
     }
 
-    if(max_value < 300000){
-        max_index = 4;
-    }
-
-    Serial.println(max_index);
-    Serial.println(max_value);
-    
     return max_index;
 }
