@@ -29,8 +29,6 @@ void Glasses::setup_microphone(){
   i2s_install();
   i2s_setpin();
   i2s_start(I2S_PORT);
-
-  audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
 }
 
 void Glasses::record_microphone() 
@@ -40,6 +38,8 @@ void Glasses::record_microphone()
   Serial.println("speaking");
 
   size_t bytesRead = 0;
+
+  int16_t* audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
 
   while (bytesRead < TOTAL_SAMPLES * SAMPLE_SIZE && current_state == speaking) {
     size_t bytesIn = 0;

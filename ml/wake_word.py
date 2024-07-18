@@ -79,7 +79,9 @@ num_labels = len(label_names)
 model = models.Sequential([
     layers.Input(shape=input_shape),
     layers.Resizing(32, 32),
-    layers.Conv2D(4, 3, activation='relu'),
+    layers.Conv2D(32, 3, activation='relu'),
+    layers.MaxPooling2D(),
+    layers.Conv2D(16, 3, activation='relu'),
     layers.MaxPooling2D(),
     layers.Flatten(),
     layers.Dense(4, activation='relu'),

@@ -24,16 +24,20 @@ i2s_pin_config_t pinConfig = {
     .data_in_num = -1,
 };
 
+void writeI2S(const uint8_t* data, size_t len) {
+    size_t bytesWritten;
+    i2s_write(I2S_NUM_0, data, len, &bytesWritten, portMAX_DELAY);
+}
+
 void Glasses::play_audio(uint8_t* buffer) {
     i2s_driver_install(I2S_NUM_0, &i2sConfig, 0, NULL);
     i2s_set_pin(I2S_NUM_0, &pinConfig);
     i2s_set_sample_rates(I2S_NUM_0, 44100);
 
-    size_t bytes_read;
-    size_t bytes_written;
-    while ((bytes_read = bytes_written) > 0) {
-        i2s_write(I2S_NUM_0, buffer, bytes_read, &bytes_written, portMAX_DELAY);
-        if (bytes_read == 0) 
-            break;
+    const size_t chunkSize = 512; // Adjust this based on your needs and available memory
+    size_t bufferSize = sizeof(bufferSize);
+    for (size_t i = 0; i < bufferSize; i += chunkSize) {
+        size_t chunk = (bufferSize - i < chunkSize) ? (bufferSize - i) : chunkSize;
+        writeI2S(&buffer[i], chunk);
     }
 }

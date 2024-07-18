@@ -56,10 +56,6 @@ using namespace std;
 #define TOTAL_SAMPLES (SAMPLE_RATE * RECORD_TIME)
 
 class Glasses{
-  private:
-    int16_t* audioBuffer;
-    size_t bytesRead = 0;
-
   public:
     WebSocketsClient client;
 
