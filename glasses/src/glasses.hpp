@@ -50,7 +50,7 @@ using namespace std;
 #define I2S_PORT I2S_NUM_0
  
 #define SAMPLE_RATE 16000
-#define RECORD_TIME 90
+#define RECORD_TIME 5
 #define SAMPLE_SIZE 2
 #define CHANNEL_NUM 1
 #define TOTAL_SAMPLES (SAMPLE_RATE * RECORD_TIME)
@@ -85,8 +85,7 @@ class Glasses{
     uint8_t *m_tensor_arena;
 
   public:
-      Glasses();
-      ~Glasses();
+      void setup_tf();
 
       void setup_camera();
       void take_picture();
@@ -95,9 +94,7 @@ class Glasses{
       void play_audio(uint8_t *buffer);
 
       std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>> get_speech_command();
-      int predict(std::vector<std::vector<double>> spectrogram);
-      std::vector<std::vector<std::vector<double>>> add_new_axis(const std::vector<std::vector<double>> &spectrogram);
-      std::vector<std::vector<std::vector<std::vector<double>>>> expand_dims(const std::vector<std::vector<std::vector<double>>> &spectrogram);
-
+      int predict(const std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>>& resizedSpectrogram);
+      
       void connect_wifi(char *ssid, char *password);
 };

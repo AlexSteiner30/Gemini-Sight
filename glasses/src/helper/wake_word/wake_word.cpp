@@ -5,7 +5,7 @@ const int kArenaSize = 25000;
 const int FRAME_SIZE = 512;
 const int NUM_FRAMES = 16000 / FRAME_SIZE;
 
-Glasses::Glasses()
+void Glasses::setup_tf()
 {
     m_error_reporter = new tflite::MicroErrorReporter();
 
@@ -52,7 +52,7 @@ Glasses::Glasses()
     output = m_interpreter->output(0);
 }
 
-
+/*
 Glasses::~Glasses()
 {
     delete m_interpreter;
@@ -60,41 +60,19 @@ Glasses::~Glasses()
     free(m_tensor_arena);
     delete m_error_reporter;
 }
+*/
 
-int Glasses::predict(std::vector<std::vector<double>> spectrogram){
-    auto spectrogram_new_axis = add_new_axis(spectrogram);
-    auto spectrogram_expanded = expand_dims(spectrogram_new_axis);
-
-    auto& spec = spectrogram_expanded;
-
-    Serial.println("process");
-
-    spec.resize(1);
-    spec[0].resize(32);
-    for (auto& row : spec[0]) {
-        row.resize(32);
-        for (auto& col : row) {
-            col.resize(1);
-        }
-    }
-
+int Glasses::predict(const std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>>& resizedSpectrogram) {
     const int kNumElements = 32 * 32 * 1;
     float input_data[kNumElements];
-
-
     int index = 0;
-    for (const auto& dim1 : spec) {
-        for (const auto& dim2 : dim1) {
-            for (const auto& dim3 : dim2) {
-                for (const auto& value : dim3) {
-                    input_data[index++] = static_cast<float>(value);
-                }
-            }
+
+    for (const auto& row : resizedSpectrogram) {
+        for (const auto& value : row) {
+            input_data[index++] = static_cast<float>(value);
         }
     }
 
-    Serial.println("process");
-    
     TfLiteTensor* input_tensor = m_interpreter->input(0);
     memcpy(input_tensor->data.f, input_data, kNumElements * sizeof(float));
 
@@ -103,7 +81,6 @@ int Glasses::predict(std::vector<std::vector<double>> spectrogram){
     TfLiteTensor* output = m_interpreter->output(0);
 
     float* results = output->data.f;
-
     int num_results = output->bytes / sizeof(float);
 
     int max_index = 0;
@@ -115,6 +92,11 @@ int Glasses::predict(std::vector<std::vector<double>> spectrogram){
         }
     }
 
+    if(max_value < 300000){
+        max_index = 4;
+    }
+
+    Serial.println(max_index);
     Serial.println(max_value);
     
     return max_index;
