@@ -1,8 +1,8 @@
 #include "esp_camera.h"
 #include "glasses.hpp"
 
-#define CAMERA_MODEL_AI_THINKER // Has PSRAM
-//#define CAMERA_MODEL_XIAO_ESP32S3 // Has PSRAM
+//#define CAMERA_MODEL_AI_THINKER // Has PSRAM
+#define CAMERA_MODEL_XIAO_ESP32S3 // Has PSRAM
 #include "camera_pins.h"
 
 void startCameraServer();

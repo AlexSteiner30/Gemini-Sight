@@ -25,9 +25,8 @@ def predict_class():
     audio_spectrogram = tf.expand_dims(audio_spectrogram, 0)  
     predictions = model.predict(audio_spectrogram)
     predicted_class = label_names[np.argmax(predictions[0])]
-    confidence = np.argmax(predictions[0])
 
-    return predicted_class, confidence
+    return predicted_class, np.argmax(predictions[0])
 
 predicted_class, confidence = predict_class()
 print(f"Predicted class: {predicted_class}")

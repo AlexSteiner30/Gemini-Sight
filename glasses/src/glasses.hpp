@@ -44,9 +44,9 @@ struct TfLiteTensor;
 
 using namespace std;
 
-#define I2S_WS 15
-#define I2S_SD 13
-#define I2S_SCK 2
+#define I2S_WS 2
+#define I2S_SD 4
+#define I2S_SCK 3
 #define I2S_PORT I2S_NUM_0
  
 #define SAMPLE_RATE 16000

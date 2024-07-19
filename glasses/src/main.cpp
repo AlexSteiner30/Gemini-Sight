@@ -82,3 +82,44 @@ void setup() {
 void loop() {
     glasses.client.loop();
 }
+
+/*
+#include <Arduino.h>
+#include "Audio.h"
+#include "SPIFFS.h"
+
+#define I2S_DOUT 22
+#define I2S_BCLK 26
+#define I2S_LRC  25
+
+Audio audio;
+
+void setup() {
+  Serial.begin(115200);
+  
+  Serial.println("Initializing...");
+
+  if(!SPIFFS.begin(true)){
+    Serial.println("An error occurred while mounting SPIFFS");
+    return;
+  }
+  Serial.println("SPIFFS mounted successfully");
+
+  audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
+  audio.setVolume(21); // 0...21
+
+  Serial.println("Starting WAV playback");
+  audio.connecttoFS(SPIFFS, "/audio.wav");
+}
+
+void loop() {
+  audio.loop();
+  if (audio.isRunning()) {
+    Serial.print(".");
+  } else {
+    Serial.println("\nPlayback finished");
+    delay(1000);
+    ESP.restart();  // Restart ESP32 after playback
+  }
+}
+*/

@@ -75,7 +75,7 @@ void Glasses::record_microphone()
 std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>> Glasses::get_speech_command() {
     const uint16_t samplesPerChunk = 1024;
     const uint16_t numChunks = SAMPLE_RATE / samplesPerChunk;
-    const uint16_t targetSize = 32;
+
     ArduinoFFT<double> FFT = ArduinoFFT<double>();
     
     std::vector<double, PSRAMAllocator<double>> vReal(samplesPerChunk);

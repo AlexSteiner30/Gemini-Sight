@@ -12,7 +12,7 @@ np.random.seed(seed)
 
 DATASET_ORIGIN = "http://download.tensorflow.org/data/speech_commands_v0.01.tar.gz"
 DATASET_PATH = 'data'
-EPOCHS = 150
+EPOCHS = 20
 
 data_dir = pathlib.Path(DATASET_PATH)
 if not data_dir.exists():
@@ -78,15 +78,17 @@ num_labels = len(label_names)
 
 model = models.Sequential([
     layers.Input(shape=input_shape),
-    layers.Resizing(32, 32),
+    layers.Resizing(32,32),
     layers.Conv2D(32, 3, activation='relu'),
     layers.MaxPooling2D(),
-    layers.Conv2D(16, 3, activation='relu'),
+    layers.Conv2D(4, 3, activation='relu'),
     layers.MaxPooling2D(),
     layers.Flatten(),
-    layers.Dense(4, activation='relu'),
-    layers.Dense(num_labels),
-    layers.Softmax()
+    layers.Dropout(0.5),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(32, activation='relu'),
+    layers.Dense(16, activation='relu'),
+    layers.Dense(num_labels, activation='sigmoid'),
 ])
 
 model.summary()
