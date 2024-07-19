@@ -71,6 +71,8 @@ class Glasses{
 
     current_state current_state = not_connected;
 
+    bool is_recording = false;
+
   private:
     tflite::MicroMutableOpResolver<9> *m_resolver;
     tflite::ErrorReporter *m_error_reporter;
@@ -85,6 +87,7 @@ class Glasses{
 
       void setup_camera();
       void take_picture();
+      void record_video();
       void setup_microphone();
       void record_microphone();
       void play_audio(uint8_t *buffer);

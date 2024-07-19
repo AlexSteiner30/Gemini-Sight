@@ -17,11 +17,16 @@ void Glasses::get_wake_word(){
     glasses.record_microphone();
 }
 
+void record_video(void *pvParameter) {
+    glasses.record_video();
+}
+
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     vector<string> message_parts = split((char*)payload, "¬");
     switch(type) {
 		case WStype_DISCONNECTED:
 			Serial.println("[WSc] Disconnected!");
+            glasses.current_state = glasses.not_connected;
 			break;
 
 		case WStype_CONNECTED:
@@ -37,9 +42,11 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
                     break;
                 }
                 else if(message_parts[0] == "start_recording"){
+                    xTaskCreate(&record_video, "record_video", 2048, NULL, 5, NULL);
                     break;
                 }
                 else if(message_parts[0] == "get_recording"){
+                    glasses.is_recording = false;
                     break;
                 }
                 else if(message_parts[0] == "take_picture"){
@@ -56,9 +63,6 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
                 }
             }
 			break;
-            
-		case WStype_BIN:
-			break;
 	}
 }
 
@@ -68,13 +72,13 @@ void setup() {
 
     glasses.setup_tf();
     glasses.setup_microphone();
-    //glasses.setup_camera();
+    glasses.setup_camera();
 
     Serial.println("Started");
 
-    glasses.connect_wifi("3Pocket_66B9808B", "LWS36G3Hsx");
+    glasses.connect_wifi("alexnoemi", "hf73tgherhf56");
 
-    glasses.client.begin("192.168.0.183", 4040, "/ws");
+    glasses.client.begin("192.168.88.17", 4040, "/ws");
     glasses.client.onEvent(webSocketEvent);
     glasses.client.setReconnectInterval(5000);
 }
@@ -82,44 +86,3 @@ void setup() {
 void loop() {
     glasses.client.loop();
 }
-
-/*
-#include <Arduino.h>
-#include "Audio.h"
-#include "SPIFFS.h"
-
-#define I2S_DOUT 22
-#define I2S_BCLK 26
-#define I2S_LRC  25
-
-Audio audio;
-
-void setup() {
-  Serial.begin(115200);
-  
-  Serial.println("Initializing...");
-
-  if(!SPIFFS.begin(true)){
-    Serial.println("An error occurred while mounting SPIFFS");
-    return;
-  }
-  Serial.println("SPIFFS mounted successfully");
-
-  audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
-  audio.setVolume(21); // 0...21
-
-  Serial.println("Starting WAV playback");
-  audio.connecttoFS(SPIFFS, "/audio.wav");
-}
-
-void loop() {
-  audio.loop();
-  if (audio.isRunning()) {
-    Serial.print(".");
-  } else {
-    Serial.println("\nPlayback finished");
-    delay(1000);
-    ESP.restart();  // Restart ESP32 after playback
-  }
-}
-*/

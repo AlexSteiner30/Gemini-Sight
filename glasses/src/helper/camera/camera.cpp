@@ -110,3 +110,34 @@ void Glasses::take_picture(){
   delete[] combinedBuffer;
   esp_camera_fb_return(fb);    
 }
+
+void Glasses::record_video() {
+  camera_fb_t *fb = NULL;
+  esp_err_t res = ESP_OK;
+    
+  string textMessage = "record_video¬" + string(AUTH_KEY) + "¬";
+  size_t textSize = textMessage.length();
+    
+  while (is_recording) {
+    fb = esp_camera_fb_get();
+    if (!fb) {
+      Serial.println("Camera capture failed");
+      continue;
+    }
+        
+    size_t totalSize = textSize + fb->len;
+    uint8_t* combinedBuffer = new uint8_t[totalSize];
+    memcpy(combinedBuffer, textMessage.c_str(), textSize);
+    memcpy(combinedBuffer + textSize, fb->buf, fb->len);
+        
+    client.sendBIN(combinedBuffer, totalSize);
+        
+    delete[] combinedBuffer;
+    esp_camera_fb_return(fb);
+        
+    delay(33); 
+  }
+    
+  string endMessage = "stop_recording¬" + string(AUTH_KEY) + "¬";
+  client.sendBIN((uint8_t*)endMessage.c_str(), endMessage.length());
+}

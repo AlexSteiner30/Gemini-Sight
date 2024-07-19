@@ -141,10 +141,9 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
                   .speech_to_text(message.sublist(secondDelimiterIndex + 1)));
             case 'take_picture':
               user.picture_data = message.sublist(secondDelimiterIndex + 1);
-            case 'recording':
-              user.recording_data += message.sublist(secondDelimiterIndex + 1);
             case 'stop_recording':
               user.recording = false;
+              user.recording_data = message.sublist(secondDelimiterIndex + 1);
           }
         }
       }
