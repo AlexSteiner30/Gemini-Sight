@@ -26,6 +26,7 @@ const orderSchema = {
         type: Boolean,
         required: "This field is required"
     },
+    ble_id: String
 };
 
 mongoose.model("Order", orderSchema);

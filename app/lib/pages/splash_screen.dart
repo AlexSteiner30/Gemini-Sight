@@ -4,6 +4,7 @@ import 'package:app/main.dart';
 import 'package:app/pages/device.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
@@ -30,6 +31,22 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToLogin() async {
+    FlutterBlue flutterBlue = FlutterBlue.instance;
+
+    // Start scanning
+    flutterBlue.startScan(timeout: Duration(seconds: 4));
+
+    // Listen to scan results
+    var subscription = flutterBlue.scanResults.listen((results) {
+      // do something with scan results
+      for (ScanResult r in results) {
+        print('${r.device.name} found! rssi: ${r.device.id.id}');
+      }
+    });
+
+    // Stop scanning
+    flutterBlue.stopScan();
+
     await Future.delayed(const Duration(seconds: 2));
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool('blind_support') == null) {
@@ -73,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen> {
         MaterialPageRoute(
             builder: (context) => DevicePage(
                 user: account!,
-                connected: true,
+                connected: false,
                 blind_support: prefs.getBool('blind_support') ?? false)),
       );
     } else {

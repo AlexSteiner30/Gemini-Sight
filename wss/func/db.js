@@ -41,6 +41,7 @@ class Database {
           type: Boolean,
           required: "This field is required"
       },
+      ble_id: String
     };
 
     this.Order = mongoose.model('Order', orderSchema);

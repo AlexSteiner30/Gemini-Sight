@@ -189,6 +189,13 @@ class _DevicePageState extends State<DevicePage> {
                               SizedBox(width: 40),
                               Column(
                                 children: [
+                                  Icon(Icons.wifi, color: Colors.white),
+                                  SizedBox(height: 5),
+                                ],
+                              ),
+                              SizedBox(width: 40),
+                              Column(
+                                children: [
                                   Icon(Icons.bluetooth, color: Colors.white),
                                   SizedBox(height: 5),
                                 ],
@@ -240,7 +247,7 @@ class _DevicePageState extends State<DevicePage> {
                               ),
                             ),
                             onPressed: settings,
-                            icon: const Icon(Icons.qr_code),
+                            icon: const Icon(Icons.wifi),
                             label: const Text('Connect'),
                           ),
                         const SizedBox(height: 10),
@@ -254,7 +261,7 @@ class _DevicePageState extends State<DevicePage> {
                           ),
                         if (!widget.connected)
                           const Text(
-                            'Scan the QR code to connect your device',
+                            'Connect via Bluetooth for WiFi credentials',
                             style: TextStyle(color: Colors.blueAccent),
                           ),
                         const SizedBox(height: 20),
