@@ -1,8 +1,8 @@
 #include "glasses.hpp"
 
-#define LRC 16
-#define BCLK 12 
-#define DIN 14
+#define LRC 3
+#define BCLK 5 
+#define DIN 5
 
 void setup_sound() {
   i2s_config_t i2s_config = {

@@ -110,6 +110,12 @@ if (cluster.isMaster) {
                             }
                             break;
 
+                        case 'get_display_name':
+                            {
+                              ws.send((await db.find('access_key', access_key)).name);
+                            }
+                            break;
+
                         case 'add_query':
                             {
                                 const data = messageParts[2];

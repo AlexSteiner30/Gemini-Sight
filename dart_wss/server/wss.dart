@@ -106,6 +106,7 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
           user.refresh_key = await get_refresh_token(message);
           user.expiration =
               DateTime.now().subtract(const Duration(minutes: 50));
+          user.displayName = await get_display_name(message);
 
           final entry = <String, User>{message: user};
           devices.addEntries(entry.entries);
@@ -161,7 +162,5 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
 }
 
 /*
-user!.displayName = 'Nikolas Coffey'; // change this from client side
-        user!.location =
-            'Strada San Michele 150, Borgo Maggiore, 47890, San Marino'; // change this from client side
+user!.location = 'Strada San Michele 150, Borgo Maggiore, 47890, San Marino'; // implent future w GPS
 */

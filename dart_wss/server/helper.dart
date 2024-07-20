@@ -5,6 +5,21 @@ final socket = WebSocket(
   Uri.parse('ws://localhost:443'),
 );
 
+Future<String> get_display_name(String authentication_key) async {
+  await socket.connection.firstWhere((state) => state is Connected);
+  final Completer<String> completer = Completer<String>();
+
+  socket.send('get_display_name¬$authentication_key');
+  final subscription = socket.messages.listen((display_name) async {
+    completer.complete(display_name);
+  });
+
+  final refresh_token = await completer.future;
+  await subscription.cancel();
+
+  return refresh_token;
+}
+
 Future<String> get_refresh_token(String authentication_key) async {
   await socket.connection.firstWhere((state) => state is Connected);
   final Completer<String> completer = Completer<String>();
