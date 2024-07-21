@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'package:app/helper/socket.dart';
+import 'package:app/helper/ble.dart';
+import 'package:app/helper/helper.dart';
 import 'package:app/main.dart';
 import 'package:app/pages/device.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
@@ -12,7 +12,6 @@ import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:googleapis/sheets/v4.dart' as sheets;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:web_socket_client/web_socket_client.dart';
 
 GoogleSignInAccount? account;
 
@@ -31,22 +30,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToLogin() async {
-    FlutterBlue flutterBlue = FlutterBlue.instance;
-
-    // Start scanning
-    flutterBlue.startScan(timeout: Duration(seconds: 4));
-
-    // Listen to scan results
-    var subscription = flutterBlue.scanResults.listen((results) {
-      // do something with scan results
-      for (ScanResult r in results) {
-        print('${r.device.name} found! rssi: ${r.device.id.id}');
-      }
-    });
-
-    // Stop scanning
-    flutterBlue.stopScan();
-
     await Future.delayed(const Duration(seconds: 2));
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool('blind_support') == null) {
@@ -68,20 +51,12 @@ class _SplashScreenState extends State<SplashScreen> {
       account = await _googleSignIn.signInSilently();
 
       final GoogleSignInAuthentication auth = await account!.authentication;
-      final Completer<String> completer = Completer<String>();
 
-      await socket.connection.firstWhere((state) => state is Connected);
+      List<String> initial_data = await get_initial_data(auth);
+      authentication_key = initial_data[0];
+      ble_id = initial_data[1];
 
-      socket.send('authentication¬${auth.idToken}');
-
-      final subscription = socket.messages.listen((response) {
-        completer.complete(response);
-      });
-
-      final result = await completer.future;
-      await subscription.cancel();
-
-      authentication_key = result;
+      await connectToDevice(ble_id);
 
       final prefs = await SharedPreferences.getInstance();
 
@@ -90,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
         MaterialPageRoute(
             builder: (context) => DevicePage(
                 user: account!,
-                connected: false,
+                connected: check_connection(),
                 blind_support: prefs.getBool('blind_support') ?? false)),
       );
     } else {

@@ -54,7 +54,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
                     break;
                 }
                 else if(message_parts[0] == "volume"){
-                    glasses.volume = stoi(message_parts[2]);
+                    glasses.set_volume(message_parts[2]);
                     break;
                 }
                 else if(message_parts[0] == "play"){

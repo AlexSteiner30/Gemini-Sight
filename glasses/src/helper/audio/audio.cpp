@@ -1,9 +1,5 @@
 #include "glasses.hpp"
 
-#define LRC 3
-#define BCLK 5 
-#define DIN 5
-
 void setup_sound() {
   i2s_config_t i2s_config = {
       .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
@@ -28,6 +24,7 @@ void setup_sound() {
   i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
   i2s_set_pin(I2S_NUM_0, &pin_config);
 }
+
 void writeI2S(const uint8_t* data, size_t len) {
     size_t bytesWritten;
     i2s_write(I2S_NUM_0, data, len, &bytesWritten, portMAX_DELAY);
@@ -42,4 +39,9 @@ void Glasses::play_audio(uint8_t* buffer) {
         size_t chunk = (bufferSize - i < chunkSize) ? (bufferSize - i) : chunkSize;
         writeI2S(&buffer[i], chunk);
     }
+}
+
+void Glasses::set_volume(string volume){
+    int volume_temp = stoi(message_parts[2]);
+    volume = (volume_temp > 100) ? volume_temp : (volume_temp < 0) ? 0 : volume_temp;
 }

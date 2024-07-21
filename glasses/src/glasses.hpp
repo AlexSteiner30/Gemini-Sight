@@ -2,6 +2,8 @@
 #include <driver/i2s.h>
 #include <WiFi.h>
 
+#include <ESP_I2S.h>
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -37,16 +39,17 @@ namespace tflite
     class ErrorReporter;
     class Model;
     class MicroInterpreter;
-} // namespace tflite
+} 
 
 struct TfLiteTensor;
 
 
 using namespace std;
 
-#define I2S_WS 4
-#define I2S_SD 3
-#define I2S_SCK 5
+#define LRC 3
+#define BCLK 5 
+#define DIN 5
+
 #define I2S_PORT I2S_NUM_0
  
 #define SAMPLE_RATE 16000
@@ -72,6 +75,8 @@ class Glasses{
     current_state current_state = not_connected;
 
     bool is_recording = false;
+    
+    I2SClass I2S;
 
   private:
     tflite::MicroMutableOpResolver<9> *m_resolver;
@@ -97,4 +102,6 @@ class Glasses{
       
       void connect_wifi(char *ssid, char *password);
       void get_wake_word();
+
+      void evoke_error(char* err)
 };

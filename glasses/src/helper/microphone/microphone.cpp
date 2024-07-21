@@ -1,34 +1,11 @@
 #include "glasses.hpp"
 
-void i2s_install() {
-  const i2s_config_t i2s_config = {
-    .mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_RX),
-    .sample_rate = SAMPLE_RATE,
-    .bits_per_sample = i2s_bits_per_sample_t(16),
-    .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
-    .communication_format = i2s_comm_format_t(I2S_COMM_FORMAT_STAND_I2S),
-    .intr_alloc_flags = 0,
-    .dma_buf_count = 8,
-    .dma_buf_len = 64,
-    .use_apll = false
-  };
-  i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL);
-}
-
-void i2s_setpin() {
-  const i2s_pin_config_t pin_config = {
-    .bck_io_num = I2S_SCK,
-    .ws_io_num = I2S_WS,
-    .data_out_num = -1,
-    .data_in_num = I2S_SD
-  };
-  i2s_set_pin(I2S_PORT, &pin_config);
-}
-
 void Glasses::setup_microphone(){
-  i2s_install();
-  i2s_setpin();
-  i2s_start(I2S_PORT);
+  I2S.setPinsPdmRx(42, 41);
+
+  if (!I2S.begin(I2S_MODE_PDM_RX, 16000, I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_MONO)) {
+    invoke_error("setup_microphone");
+  }
 }
 
 void Glasses::record_microphone() 
@@ -38,15 +15,13 @@ void Glasses::record_microphone()
   Serial.println("speaking");
 
   size_t bytesRead = 0;
-
   int16_t* audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
 
   while (bytesRead < TOTAL_SAMPLES * SAMPLE_SIZE && current_state == speaking) {
-    size_t bytesIn = 0;
-    esp_err_t result = i2s_read(I2S_PORT, audioBuffer + (bytesRead / SAMPLE_SIZE), TOTAL_SAMPLES * SAMPLE_SIZE - bytesRead, &bytesIn, portMAX_DELAY);
-    if (result == ESP_OK) {
-      bytesRead += bytesIn;
-    }
+    int sample = I2S.read();
+    audioBuffer[bytesRead] = sample ? sample : 0;
+
+    bytesRead++;
   }
 
   string textMessage = "speech_to_text¬" + string(AUTH_KEY)+ "¬";
@@ -90,11 +65,10 @@ std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vec
         size_t bytesRead = 0;
         
         while (bytesRead < samplesPerChunk * SAMPLE_SIZE) {
-            size_t bytesIn = 0;
-            esp_err_t result = i2s_read(I2S_PORT, buffer + (bytesRead / SAMPLE_SIZE), samplesPerChunk * SAMPLE_SIZE - bytesRead, &bytesIn, portMAX_DELAY);
-            if (result == ESP_OK) {
-                bytesRead += bytesIn;
-            }
+          int sample = I2S.read();
+          buffer[bytesRead] = sample ? sample : 0;
+
+          bytesRead++;
         }
         
         for (uint16_t i = 0; i < samplesPerChunk; i++) {

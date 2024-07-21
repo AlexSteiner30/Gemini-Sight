@@ -18,6 +18,7 @@ import 'package:web_socket_client/web_socket_client.dart';
 
 // ignore: non_constant_identifier_names
 String authentication_key = '';
+String ble_id = '';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
