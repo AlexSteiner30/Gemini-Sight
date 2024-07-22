@@ -1,9 +1,9 @@
 #include "glasses.hpp"
+#include <I2S.h>
 
 void Glasses::setup_microphone(){
-  I2S.setPinsPdmRx(42, 41);
-
-  if (!I2S.begin(I2S_MODE_PDM_RX, 16000, I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_MONO)) {
+  I2S.setAllPins(-1, 42, 41, -1, -1);
+  if (!I2S.begin(PDM_MONO_MODE, 16000, 16)) {
     invoke_error("setup_microphone");
   }
 }
@@ -63,10 +63,11 @@ std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vec
 
     for (int chunk = 0; chunk < numChunks; chunk++) {
         size_t bytesRead = 0;
-        
+
+
         while (bytesRead < samplesPerChunk * SAMPLE_SIZE) {
           int sample = I2S.read();
-          buffer[bytesRead] = sample ? sample : 0;
+          buffer[bytesRead] = (sample && sample != -1 && sample != 1) ? sample : 0;
 
           bytesRead++;
         }

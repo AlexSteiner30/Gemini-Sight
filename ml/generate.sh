@@ -2,7 +2,7 @@
 
 voices=("Alex" "Daniel" "Fred" "Karen" "Moira" "Rishi" "Samantha" "Tessa" "Veena" "Victoria")
 
-output_dir="./recordings"
+output_dir="./data/gemma"
 mkdir -p $output_dir
 
 random_float() {
@@ -23,7 +23,7 @@ do
 
     filename="${output_dir}/recording_${i}_${voice}_vol${volume}_pitch${pitch}_rate${rate}.wav"
 
-    say -v "$voice" -r "$rate" "[[volm ${volume}]] [[pbas ${pitch}]] Hey Gemma" -o "${filename%.wav}.aiff"
+    say -v "$voice" -r "$rate" "[[volm ${volume}]] [[pbas ${pitch}]] Gemma" -o "${filename%.wav}.aiff"
 
     ffmpeg -i "${filename%.wav}.aiff" -acodec pcm_s16le -ac 1 "$filename"
 

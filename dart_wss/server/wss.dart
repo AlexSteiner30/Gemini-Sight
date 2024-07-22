@@ -48,7 +48,6 @@ void main() async {
 }
 
 void handleWebSocket(WebSocket ws, HttpRequest request) {
-  // only supported mac addresses
   try {
     print("A new client connected");
     Parser parser = Parser(functionRegistry: {});
@@ -131,7 +130,6 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
 
         String command =
             ascii.decode(message.sublist(0, firstDelimiterIndex - 1));
-        print(command);
         String access_key = ascii.decode(
             message.sublist(firstDelimiterIndex + 1, secondDelimiterIndex - 1));
 

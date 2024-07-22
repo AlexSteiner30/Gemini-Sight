@@ -27,13 +27,13 @@ void Glasses::setup_tf()
     }
 
     m_resolver = new tflite::MicroMutableOpResolver<9>();
-    m_resolver->AddResizeBilinear(),
     m_resolver->AddConv2D();
     m_resolver->AddMaxPool2D();
+    m_resolver->AddFullyConnected();
+    m_resolver->AddMul();
+    m_resolver->AddAdd();
+    m_resolver->AddLogistic();
     m_resolver->AddReshape();
-    m_resolver->AddFullyConnected();
-    m_resolver->AddFullyConnected();
-    m_resolver->AddSoftmax();
     m_resolver->AddQuantize();
     m_resolver->AddDequantize();
 

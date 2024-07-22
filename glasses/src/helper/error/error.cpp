@@ -1,5 +1,5 @@
 #include "glasses.hpp"
 
-void Glasses::evoke_error(char* err){
+void Glasses::invoke_error(const char* err){
    // dic -> play audio
 }

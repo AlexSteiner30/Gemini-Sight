@@ -22,7 +22,7 @@ if (cluster.isMaster) {
   const stream = new Stream();
   const auth = new Authentication();
     
-  let sessions = new Map(String, Session);
+  let sessions = new Map();
 
   const wss = new WebSocketServer({ port: 443 });
   console.log('Websocket running on port 443');

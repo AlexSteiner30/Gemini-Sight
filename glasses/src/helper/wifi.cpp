@@ -1,6 +1,6 @@
 #include "glasses.hpp"
 
-void Glasses::connect_wifi(char* ssid, char* password){
+void Glasses::connect_wifi(const char* ssid, const char* password){
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
     Serial.println("\nConnecting");

@@ -34,7 +34,7 @@ struct TfLiteTensor;
 class NeuralNetwork
 {
 private:
-    tflite::MicroMutableOpResolver<7> *m_resolver;
+    tflite::MicroMutableOpResolver<9> *m_resolver;
     tflite::ErrorReporter *m_error_reporter;
     const tflite::Model *m_model;
     tflite::MicroInterpreter *m_interpreter;

@@ -2,8 +2,6 @@
 #include <driver/i2s.h>
 #include <WiFi.h>
 
-#include <ESP_I2S.h>
-
 #include <vector>
 #include <string>
 #include <iostream>
@@ -75,8 +73,6 @@ class Glasses{
     current_state current_state = not_connected;
 
     bool is_recording = false;
-    
-    I2SClass I2S;
 
   private:
     tflite::MicroMutableOpResolver<9> *m_resolver;
@@ -97,11 +93,13 @@ class Glasses{
       void record_microphone();
       void play_audio(uint8_t *buffer);
 
+      void set_volume(string volume);
+
       std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>> get_speech_command();
       int predict(const std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>>& resizedSpectrogram);
       
-      void connect_wifi(char *ssid, char *password);
+      void connect_wifi(const char *ssid, const char *password);
       void get_wake_word();
 
-      void evoke_error(char* err)
+      void invoke_error(const char* err);
 };

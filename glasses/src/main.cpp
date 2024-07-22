@@ -76,9 +76,9 @@ void setup() {
 
     Serial.println("Started");
 
-    glasses.connect_wifi("alexnoemi", "hf73tgherhf56");
+    glasses.connect_wifi("iPhone di Alex", "12345678");
 
-    glasses.client.begin("192.168.88.17", 4040, "/ws");
+    glasses.client.begin("172.20.10.3", 4040, "/ws");
     glasses.client.onEvent(webSocketEvent);
     glasses.client.setReconnectInterval(5000);
 }

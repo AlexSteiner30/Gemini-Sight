@@ -137,7 +137,7 @@ async function navigate(origin, destination) {
     pollPosition();
 }
 
-const origin = 'Strada San Michele 150 Borgo Maggiore';
-const destination = 'Bounty Rimini Italy';
+const origin = '';
+const destination = '';
 
 //navigate(origin, destination);
