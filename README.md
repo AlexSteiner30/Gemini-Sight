@@ -121,7 +121,7 @@ $ npm install
 # run the site
 $ node server.js
 ```
-After that just head to [localhost:8080](https://localhost:8080) where your site will be running.<br>
+After that just head to [localhost:8080](http://localhost:8080) where your site will be running.<br>
 
 <h1 align="center">
  <img alt="Homepage" src="resources/homepage.png?raw=true" style="height: 80%; width:80%; align:center">

@@ -36,6 +36,7 @@ hr {
     opacity: 0.5;
     border: 0;
     border-top: 1px ridge blue;
+    z-index: 0;
 }
 
 footer {
@@ -49,6 +50,7 @@ nav img {
 }
 
 nav {
+    z-index: 1;
     position: fixed;
     display: grid;
     align-items: center;
