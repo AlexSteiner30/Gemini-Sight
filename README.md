@@ -99,7 +99,7 @@ Next, go to MongoDB, create a new project [here](https://cloud.mongodb.com) and 
 
 ## Website
 The website was created to expand upon our product's publicity, enable its distribution and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to Gemini Sight. The website can be accessed online [here]().<br>
-In total the website offers 5 pages. The first one is the "Home" and the second one is the "About Us" section where you are provided with some information about our team. Then there is the "Functioning" page which describes how the glasses work although the Gtihub repository does a better job at it. Then the "Order" section is where you can order the glasses and finally a "Sign In" part of the site which is required for you to order the glasses and access the chatbot feature.<br>
+In total the website offers 5 pages. The first one is the "Home" and the second one is the "About Us" section where you are provided with some information about our team. Then there is the "Product" page which describes how the glasses work although the Gtihub repository does a better job at it. Then the "Order" section is where you can order the glasses and finally a "Sign In" part of the site which is required for you to order the glasses and access the chatbot feature.<br>
 
 
 You can also run the website locally on your computer by installing the required packages and setting up the right environment variables.<br>
@@ -122,10 +122,15 @@ $ npm install
 $ node server.js
 ```
 After that just head to [localhost:8080](https://localhost:8080) where your site will be running.<br>
+
+<h1 align="center">
+ <img alt="Homepage" src="resources/homepage.png?raw=true" style="height: 80%; width:80%; align:center">
+</h1>
+
 _Note_: It is important to mention that the ordering of the glasses, although already set up on the website with Google Pay, does not work due to the fact that there is currently no way for our team to mass produce and distribute these glasses to a wider audience, so it has just been created as a demo part of the site and is in test mode so no payments will be accepted.
 
 ## Flutter App
-The Flutter app serves multiple functions to enhance the capabilities of your smart glasses. Initially, thanks to it you can connect your glasses to a WiFi network via Bluetooth module. The app also functions as a control system, allowing Gemini to learn about you and your writing style for emails or documents using your Google data, activate blind mode to enhance and simplify daily tasks for the blind throught the Gemini vision model, and access recordings and pictures takend by the glasses stored on your Google Drive. Additionally, when the glasses are connected to Bluetooth, the app serves as a bridge in order for Gemini to automatize services on your phone, such as sending texts and making calls.
+The Flutter app serves multiple functions to enhance the capabilities of your smart glasses. Initially, thanks to it you can connect your glasses to a WiFi network via Bluetooth module. The app also functions as a control system, allowing Gemini to learn about you and your writing style for emails or documents using your Google data, activate blind mode to enhance and simplify daily tasks for the blind through the Gemini vision model, and access recordings and pictures taken by the glasses stored on your Google Drive. Additionally, when the glasses are connected to Bluetooth, the app serves as a bridge in order for Gemini to automatize services on your phone, such as sending texts and making calls.
 
 <h1 align="center">
  <div style="display: flex; justify-content: center; align-items: center; gap: 0px;">
