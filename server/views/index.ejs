@@ -5,31 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gemini Sight | Home</title>
     <link rel="stylesheet" href="css/common.css" type="text/css">
+    <link rel="stylesheet" href="css/index.css" type="text/css">
 </head>
 <body>
     <div id="main">
         <header>
-            <h1 id="title">Smart Glasses</h1>
+            <h1 id="title">Gemini Sight</h1>
         </header>
         <main>
-            <section>
+            <div class="cards">
+                <!-- <img src="../media/abous_us.png" alt="About us icon" class="icon"> -->
                 <h1>About Us</h1>
                 <p>Learn more about our team composed of Alex Steiner, Fotios Vaitsopoulos and Lorenzo Dominijani.</p>
                 <a href="about"><button class="more-btn">See more</button></a>
-            </section>
-            <hr>
-            <section>
+            </div>
+            <div class="cards">
                 <h1>How they work</h1>
-                <p>Find out how this proudct works and what it does.</p>
+                <p>Find out how this proudct works and what it does by exploring the technologies used to create it and more.</p>
                 <a href="function"><button class="more-btn">See more</button></a>
-            </section>
+            </div>
             <% if (!isLoggedIn) { %>
-            <hr>
-            <section>
+            <div class="cards">
                 <h1>Sign In</h1>
-                <p>Sign in to use our chatbot system to help answer any of your questions.</p>
+                <p>Sign in to use our chatbot system, built with Gemini, to help answer any of your questions.</p>
                 <a href="admin"><button class="more-btn">Sign In</button></a>
-            </section>
+            </div>
             <% } %>
         </main>
     </div>

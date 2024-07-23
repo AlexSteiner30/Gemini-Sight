@@ -7,7 +7,7 @@ html, body {
     margin: 0;
     padding: 0;
     --size--: 85vh;
-    --main-color: #010c15;
+    --main-color: black;/* #010c15; */
     height: 100vh;
     width: 100vw;
     background-color: var(--main-color);
@@ -40,32 +40,54 @@ hr {
 
 footer {
     height: calc(100vh - var(--size--));
-    background: linear-gradient(rgb(0, 13, 26), rgb(5, 5, 10));
+    background: black/* linear-gradient(rgb(0, 13, 26), rgb(5, 5, 10)) */;
     text-align: center;
+}
+
+nav img {
+    width: 40%;
 }
 
 nav {
     position: fixed;
     display: grid;
     align-items: center;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
-    background-color: rgb(1, 12, 21, 0.9);
+    grid-template-columns: 12fr 4fr 4fr 4fr 4fr 7fr 4fr 1fr;
+    background-color: black;/* rgb(1, 12, 21, 0.9) */;
     width: 100%;
     transition: all ease-in-out 300ms;
 }
 
 nav:hover {
-    background-color: rgb(5, 18, 35, 1);
+    background-color: rgb(14, 16, 20);/* rgb(5, 18, 35, 1); */
+    border-bottom: rgb(3, 3, 4) ridge 2px;
+    border-radius: 6px;
 }
 
 nav a {
     text-decoration: none;
     color: white;
+    text-align: center;
 }
 
 nav a:hover {
-    text-decoration: underline;
-    color: #007aff;
+    /* text-decoration: underline;
+    color: #007aff; */
+    font-weight: bold;
+    border-bottom: 2px white solid;
+    border-radius: 3px;
+}
+
+nav a[href=admin], nav a[href=logout] {
+    background: linear-gradient(35deg, rgb(41, 43, 57), black);
+    border: 2px solid rgb(34, 40, 53);
+    border-radius: 10px;
+    transition: all 300ms ease-in-out;
+}
+
+nav a[href=admin]:hover, nav a[href=logout]:hover {
+    transform: scale(1.05);
+    font-weight: bold !important;
 }
 
 button {
@@ -87,6 +109,15 @@ button:hover {
     text-align: left;
 }
 
+#ignore {
+    text-align: left;
+}
+
+#ignore:hover {
+    font-weight: normal;
+    border-bottom: none;
+}
+
 #main {
     margin: 0;
     padding: 0;
@@ -95,6 +126,7 @@ button:hover {
 
 #title {
     font-size: 300%;
+    margin-top: 20px;
 }
 
 #chat-area {

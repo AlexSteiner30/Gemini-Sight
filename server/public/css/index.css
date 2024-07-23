@@ -1,0 +1,57 @@
+body {
+    background-image: radial-gradient(at top, rgb(77, 77, 255) 5%, transparent 50%);
+    /* background-image: radial-gradient(at top, rgb(81, 81, 191) 3%, transparent 50%); */
+}
+
+main {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.icon {
+    width: 30%;
+}
+
+.cards {
+    display: grid;
+    text-align: center;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 2fr;
+    justify-content: center;
+    align-items: center;
+    height: calc(20vh + 150px);
+    width: 25vw;
+    padding: 2vh 2vw;
+    border: 1px solid;
+    border-radius: 10px;
+    /* background-color: rgba(0, 0, 0, 0.5); */
+    transition: all 300ms ease-in-out;
+}
+
+.cards h1 {
+    font-size: 1.1rem;
+}
+
+.cards p {
+    color: rgb(171, 171, 177);
+}
+
+.cards:hover {
+    transform: scale(1.05);
+}
+
+.cards:nth-of-type(1) {
+    border-image: linear-gradient(45deg, black, rgb(77, 77, 255)) 1;
+}
+
+.cards:nth-of-type(2) {
+    border-image: radial-gradient(at bottom, black, rgb(77, 77, 255)) 1;
+}
+
+.cards:nth-last-of-type(1) {
+    border-image: linear-gradient(270deg, black, rgb(77, 77, 255)) 1 !important;
+}
+
+#title {
+    margin-bottom: 5vh;
+}

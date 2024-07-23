@@ -33,11 +33,12 @@ function createNavAndFooter() {
     }
     document.getElementsByTagName("body")[0].innerHTML = `
         <nav>    
-        <a href="index"><img alt='Logo of Gemin-eye' src='../media/logo.png' width='80%'></a>
+        <a href="index" id='ignore'><img alt='Logo of Gemin-eye' src='../media/logo.png'></a>
         <a href="index">Home</a>
         <a href="about">About Us</a>
         <a href="product">Product</a>
         <a href="order">Order</a>
+        <div></div>
         `+sign+`
         <div></div>
         </nav>
