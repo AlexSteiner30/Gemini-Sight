@@ -6,14 +6,26 @@
     <title>Gemini Sight | About</title>
     <link rel="stylesheet" href="css/common.css" type="text/css">
     <link rel="stylesheet" href="css/text.css" type="text/css">
+    <link rel="stylesheet" href="css/about.css" type="text/css">
 </head>
 <body>
     <div id="main">
         <header>
-            <h1 id="title">About Us</h1>
+            <h1 id="title"><%- title %></h1>
         </header>
         <main>
             <section class="left">
+                <%- text %>
+            </section>
+            <section class="left">
+                <h1>Also See</h1>
+                <div id="names">
+                    <a href="about?name=alex_steiner">Alex Steiner</a>
+                    <a href="about?name=fotios_vaitsopoulos">Fotios Vaitsopoulos</a>
+                    <a href="about?name=lorenzo_dominijani">Lorenzo Dominijani</a>
+                </div>
+            </section>
+            <!-- <section class="left">
                 <h1>Team</h1>
                 <p>Our team created <a target="_blank" href="https://github.com/AlexSteiner30/Gemini-Sight/">this GitHub repository</a> which is our submission for the Gemini API Developer Competition by <a target="_blank" href="https://github.com/AlexSteiner30">Alex Steiner</a>, <a target="_blank" href="https://github.com/Epic-legend128">Fotios Vaitsopoulos</a>, and <a target="_blank" href="https://www.instagram.com/lorenzo.dominijanni/">Lorenzo Dominijani</a>. We are a group of students attending H-Farm International School of Treviso, challenging ourselves to enhance our skills and create a project we can be proud of by participating in the Gemini Developer Competition. This global competition, hosted by Google, showcases the real-world applications of the new Gemini model, with a cash prize for the winner.</p>
                 <p>Although we joined the competition one month late due to internal exams, we began our project in early to mid-June. Our idea was to create smart glasses entirely powered by Gemini and fully integrated with Google services such as Google Docs, Google Drive, Gmail, YouTube Music, Google Maps, Google Calendar, and Google Events. These glasses are designed to automate tasks through a single voice command. Additionally, equipped with a camera, they allow the user to ask for information about their surroundings, with the model responding in real time.</p>
@@ -43,7 +55,7 @@
                     So, in September 2023 I concluded that I had to radically change something in my life. I decided to leave my life as a normal Italian student behind and move to one of the most innovative European campuses, H-FARM. 
                     I started my path in H-FARM as a very shy student, but after a couple of months I started to express the real side of Lorenzo, taking all the opportunities that the H-FARM environment was giving me, I created a creative studio called “A Good Eye” that help companies and small reality to express themself in the best and most natural way possible on the social media, and now I’m here, competing for Google with one of my best friends and one of the people that I consider the smartest and most genius on Earth.
                 </p>
-            </section>
+            </section> -->
         </main>
     </div>
     <input type="hidden" id="logged-in" value="<%= isLoggedIn %>">
