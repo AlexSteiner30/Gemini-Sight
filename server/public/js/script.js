@@ -1,7 +1,4 @@
-function processOutput(text) {
-    let counter = 0;
-    return (text.replace(/(\*\*)/g, _ => ((++counter)&1 ? "<strong>" : "</strong>"))).replace(/(\*)/g, "<br>");
-}
+const processOutput = (text, counter=0) => (text.replace(/(\*\*)/g, _ => ((++counter)&1 ? "<strong>" : "</strong>"))).replace(/(\*)/g, "<br>");
 
 function createNavAndFooter() {
     let sign;
@@ -26,11 +23,9 @@ function createNavAndFooter() {
         document.getElementById("chat-input").style.display = "none";
 
         sign = '<a href="logout">Sign Out</a>';
-
     }
-    else {
-        sign = '<a href="admin">Sign In</a>';
-    }
+    else sign = '<a href="admin">Sign In</a>';
+    
     document.getElementsByTagName("body")[0].innerHTML = `
         <nav>    
         <a href="index" id='ignore'><img alt='Logo of Gemin-eye' src='../media/logo.png'></a>

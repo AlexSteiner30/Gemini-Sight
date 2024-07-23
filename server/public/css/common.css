@@ -7,7 +7,7 @@ html, body {
     margin: 0;
     padding: 0;
     --size--: 85vh;
-    --main-color: black;/* #010c15; */
+    --main-color: black;
     height: 100vh;
     width: 100vw;
     background-color: var(--main-color);
@@ -46,7 +46,7 @@ hr {
 
 footer {
     height: calc(100vh - var(--size--));
-    background: black/* linear-gradient(rgb(0, 13, 26), rgb(5, 5, 10)) */;
+    background: black;
     text-align: center;
 }
 
@@ -60,13 +60,13 @@ nav {
     display: grid;
     align-items: center;
     grid-template-columns: 12fr 4fr 4fr 4fr 4fr 7fr 4fr 1fr;
-    background-color: black;/* rgb(1, 12, 21, 0.9) */;
+    background-color: black;;
     width: 100%;
     transition: all ease-in-out 300ms;
 }
 
 nav:hover {
-    background-color: rgb(14, 16, 20);/* rgb(5, 18, 35, 1); */
+    background-color: rgb(14, 16, 20);
     border-bottom: rgb(3, 3, 4) ridge 2px;
     border-radius: 6px;
 }
@@ -78,8 +78,6 @@ nav a {
 }
 
 nav a:hover {
-    /* text-decoration: underline;
-    color: #007aff; */
     font-weight: bold;
     border-bottom: 2px white solid;
     border-radius: 3px;

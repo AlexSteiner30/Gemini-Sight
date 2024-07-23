@@ -1,6 +1,5 @@
 body {
     background-image: radial-gradient(at top, rgb(77, 77, 255) 5%, transparent 50%);
-    /* background-image: radial-gradient(at top, rgb(81, 81, 191) 3%, transparent 50%); */
 }
 
 main {
@@ -24,7 +23,6 @@ main {
     padding: 2vh 2vw;
     border: 1px solid;
     border-radius: 10px;
-    /* background-color: rgba(0, 0, 0, 0.5); */
     transition: all 300ms ease-in-out;
 }
 

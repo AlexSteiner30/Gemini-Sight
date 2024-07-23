@@ -81,14 +81,11 @@ function processPaymentData(paymentData) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/order');
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onload = function() {
-        console.log('Ordering');
-    };
-    xhr.onreadystatechange = function() {
+    xhr.onload = _ => console.log('Ordering');
+    xhr.onreadystatechange = _ => {
         if (this.readyState === 4) {
-            if (this.status === 200) {
-                disablePayment("Successfully Ordered");
-            }
+            if (this.status === 200) disablePayment("Successfully Ordered");
+            else changeScreen("notFound");
         }
     }
     xhr.send(JSON.stringify({paymentData: paymentData, address: document.getElementById("address").value}));

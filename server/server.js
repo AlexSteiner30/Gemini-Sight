@@ -9,7 +9,6 @@ const bodyparser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const { jwtDecode } = require("jwt-decode");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const fs = require("fs");
 const crypto = require("crypto");
 const aboutUsText = {
     about_us: `
@@ -236,38 +235,45 @@ app.post('/signin', bodyparser.urlencoded(), async (req, res) => {
 });
 
 app.post('/chat', bodyparser.urlencoded(), async (req, res) => {
-    let prompt = req.body.prompt;
-    const chat = model.startChat({
-        history: previousChats,
-        generationConfig: {
-          maxOutputTokens: 100,
-        }
-    });
     try {
+        let prompt = req.body.prompt;
+        const chat = model.startChat({
+            history: previousChats,
+            generationConfig: {
+            maxOutputTokens: 100,
+            }
+        });
+
         const result = await model.generateContent(prompt);
         previousChats.push({role: 'user', parts: [{text: prompt}]});
         previousChats.push({role: 'model', parts: [{text: result.response.text()}]});
     }
     catch (err) {
-        console.log(err);
+        console.error("API problem: ", err);
         res.redirect("notFound");
     }
     res.redirect("/");
 });
 
 app.post('/order', bodyparser.urlencoded(), async (req, res) => {
-    let order = new Order();
-    order.email = userData.email;
-    order.name = userData.name;
-    order.address = req.body.address;
-    order.first_time = true;
-    order.access_key = crypto.randomBytes(128).toString('hex');
-    order.model = 0.1;
-    order.query = "";
-    order.refresh_key = "";
-    order.save().then(_ => {
-        res.send("Done");
-    });
+    try {
+        let order = new Order();
+        order.email = userData.email;
+        order.name = userData.name;
+        order.address = req.body.address;
+        order.first_time = true;
+        order.access_key = crypto.randomBytes(128).toString('hex');
+        order.model = 0.1;
+        order.query = "";
+        order.refresh_key = "";
+        order.save().then(_ => {
+            res.send("Done");
+        });
+    }
+    catch(err) {
+        console.error("Ordering error: ", err);
+        res.send("There was a problem");
+    }
 });
 
 app.listen(PORT, _ => console.log(`Server running on port ${PORT}`));
