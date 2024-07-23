@@ -16,8 +16,13 @@ html, body {
 
 header, section {
     text-align: center;
-    padding: 8vh 5vw;
+    padding: 0 5vw;
     padding-top: calc(12vh + 20px);
+}
+
+section {
+    padding-top: 5vh;
+    padding-bottom: 5vh;
 }
 
 p, h1, h3, label, ul {
@@ -128,7 +133,7 @@ button:hover {
 
 #title {
     font-size: 300%;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 #chat-area {

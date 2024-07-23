@@ -2,6 +2,10 @@ figcaption, h2 {
     color: white;
 }
 
+#title {
+    margin-bottom: 10px;
+}
+
 #bying-section {
     padding: 0 !important;
 }

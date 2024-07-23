@@ -25,24 +25,23 @@ let googlePayClient;
 function onGooglePayLoaded() {
     if (document.getElementById("logged-in").value == '') {
         disablePayment("You need to be <a href='/admin'>logged in</a> to order the glasses");
+        return;
     }
-    else {
-        googlePayClient = new google.payments.api.PaymentsClient({
-            environment: "TEST"
-        });
+    googlePayClient = new google.payments.api.PaymentsClient({
+        environment: "TEST"
+    });
 
-        googlePayClient.isReadyToPay(googlePayConfiguration).then(res => {
-            if (res.result) {
-                createAndAddButton();
-            }
-            else {
-                disablePayment("Unable to enable payment");
-            }
-        }).catch(err => {
-            console.error("isReadyToPay error: ", err);
-            alert("There was an error");
-        });
-    }
+    googlePayClient.isReadyToPay(googlePayConfiguration).then(res => {
+        if (res.result) {
+            createAndAddButton();
+        }
+        else {
+            disablePayment("Unable to enable payment");
+        }
+    }).catch(err => {
+        console.error("isReadyToPay error: ", err);
+        alert("There was an error");
+    });
 }
 
 
@@ -56,6 +55,7 @@ function createAndAddButton() {
 function onGooglePayButtonClicked() {
     if (document.getElementById("address").value == "") {
         alert("Make sure to type in your address before continuing to the payment")
+        document.getElementById("address").focus();
         return;
     }
     const paymentDataRequest = {...googlePayConfiguration};

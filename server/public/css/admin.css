@@ -4,3 +4,7 @@ section {
     align-items: center;
     justify-content: center;
 }
+
+#title {
+    margin-bottom: 30px;
+}
