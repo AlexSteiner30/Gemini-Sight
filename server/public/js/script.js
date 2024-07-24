@@ -35,6 +35,7 @@ function createNavAndFooter() {
         let index = !(window.localStorage[isChatOpen] == 'true');
         document.getElementsByClassName("chat-img")[index+0].style.display = "none";
         document.getElementById("chat-area").style.opacity = (!index+0).toString();
+        document.getElementById("chat-area").style.zIndex = ((!index+0) ? "1" : "-1");
 
         sign = '<a href="logout">Sign Out</a>';
     }
@@ -68,6 +69,7 @@ if (document.getElementById("logged-in").value) {
         console.log(window.localStorage[isChatOpen]);
         if (window.localStorage[isChatOpen] == "false") {
             window.localStorage[isChatOpen] = 'true';
+            area.style.zIndex = "1";
             area.style.animationDuration = "300ms";
             area.style.animationFillMode = "forwards";
             area.style.animationName = "show";
@@ -86,6 +88,7 @@ if (document.getElementById("logged-in").value) {
         }
         else {
             window.localStorage[isChatOpen] = 'false';
+            area.style.zIndex = "-1";
             area.style.animationDuration = "300ms";
             area.style.animationFillMode = "forwards";
             area.style.animationName = "hide";

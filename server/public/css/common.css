@@ -158,6 +158,7 @@ button:hover {
     border-radius: 100%;
     border: none;
     box-shadow: 0 0 5px 1px rgb(210, 210, 255);
+    z-index: 2;
 }
 
 #chat-btn:hover {
