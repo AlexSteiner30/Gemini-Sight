@@ -8,10 +8,14 @@ html, body {
     padding: 0;
     --size--: 85vh;
     --main-color: black;
-    height: 100vh;
-    width: 100vw;
+    min-height: 100vh;
+    min-width: 100vw;
     background-color: var(--main-color);
     line-height: 3rem;
+}
+
+body {
+    background: radial-gradient(rgb(16, 16, 53) 10%, transparent 90%);
 }
 
 header, section {
@@ -60,13 +64,13 @@ nav {
     display: grid;
     align-items: center;
     grid-template-columns: 12fr 4fr 4fr 4fr 4fr 7fr 4fr 1fr;
-    background-color: black;;
+    background-color: black;
     width: 100%;
     transition: all ease-in-out 300ms;
 }
 
 nav:hover {
-    background-color: rgb(14, 16, 20);
+    background-color: rgb(0, 0, 10);
     border-bottom: rgb(3, 3, 4) ridge 2px;
     border-radius: 6px;
 }
