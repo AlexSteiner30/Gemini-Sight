@@ -1,3 +1,9 @@
+String.prototype.replaceAt = function(start, end, str) {
+    return this.substring(0, start) + str + this.substring(end);
+}
+
+const changeScreen = page => location.href = location.href.replaceAt(location.href.lastIndexOf('/'), location.href.length, "/"+page);
+
 const processOutput = (text, counter=0) => (text.replace(/(\*\*)/g, _ => ((++counter)&1 ? "<strong>" : "</strong>"))).replace(/(\*)/g, "<br>");
 
 function createNavAndFooter() {

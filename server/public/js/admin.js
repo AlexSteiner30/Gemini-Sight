@@ -1,9 +1,3 @@
-String.prototype.replaceAt = function(start, end, str) {
-    return this.substring(0, start) + str + this.substring(end);
-}
-
-const changeScreen = page => location.href = location.href.replaceAt(location.href.lastIndexOf('/'), location.href.length, "/"+page);
-
 function onSignIn(googleUser) {
     var id_token = googleUser.credential;
     var xhr = new XMLHttpRequest();

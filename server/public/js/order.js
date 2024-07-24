@@ -78,15 +78,20 @@ function onGooglePayButtonClicked() {
 }
 
 function processPaymentData(paymentData) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/order');
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onload = _ => console.log('Ordering');
-    xhr.onreadystatechange = function() {
-        if (this.readyState === 4) {
-            if (this.status === 200) disablePayment("Successfully Ordered");
-            else changeScreen("notFound");
+    try {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/order');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = _ => console.log('Ordering');
+        xhr.onreadystatechange = function() {
+            if (this.readyState === 4) {
+                if (this.status === 200) disablePayment("Successfully Ordered");
+                else changeScreen("notFound");
+            }
         }
+        xhr.send(JSON.stringify({paymentData: paymentData, address: document.getElementById("address").value}));
+    } catch(err) {
+        console.error("POST request error: ", err);
+        alert("There was an error");
     }
-    xhr.send(JSON.stringify({paymentData: paymentData, address: document.getElementById("address").value}));
 }
