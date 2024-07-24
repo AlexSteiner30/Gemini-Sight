@@ -1,4 +1,6 @@
-String.prototype.replaceAt = (start, end, str) => this.substring(0, start) + str + this.substring(end);
+String.prototype.replaceAt = function(start, end, str) {
+    return this.substring(0, start) + str + this.substring(end);
+}
 
 const changeScreen = page => location.href = location.href.replaceAt(location.href.lastIndexOf('/'), location.href.length, "/"+page);
 
@@ -8,8 +10,8 @@ function onSignIn(googleUser) {
     xhr.open('POST', '/signin');
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = _ => console.log('Signed in');
-    xhr.onreadystatechange = _ => {
-        if (this.readyState === 4) changeScreen(this.status === 200 ? "index" : "notFound");
+    xhr.onreadystatechange = function() {
+        if (this.readyState === 4) changeScreen((this.status === 200 ? "index" : "notFound"));
     }
     xhr.send(JSON.stringify({token: id_token}));
 }

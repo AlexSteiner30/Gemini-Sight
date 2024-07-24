@@ -82,7 +82,7 @@ function processPaymentData(paymentData) {
     xhr.open('POST', '/order');
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = _ => console.log('Ordering');
-    xhr.onreadystatechange = _ => {
+    xhr.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200) disablePayment("Successfully Ordered");
             else changeScreen("notFound");
