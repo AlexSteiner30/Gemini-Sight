@@ -11,6 +11,7 @@ html, body {
     min-height: 100vh;
     min-width: 100vw;
     background-color: var(--main-color);
+    line-height: 48px;
     line-height: 3rem;
 }
 
@@ -42,6 +43,7 @@ hr {
     width: 90vw;
     position: relative;
     left: 5vw;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
     opacity: 0.5;
     border: 0;
     border-top: 1px ridge blue;
@@ -183,6 +185,7 @@ button:hover {
     width: 100%;
     height: 50vh;
     padding: 8px;
+    background-color: #040455;
     background-color: rgba(4, 4, 85, 0);
     overflow-y: scroll;
     overflow-x: auto;
@@ -195,6 +198,7 @@ button:hover {
 }
 
 #chat-prev label {
+    font-size: 12.8px;
     font-size: 0.8rem;
     margin: 0;
     padding: 20px;
@@ -227,18 +231,22 @@ button:hover {
 
 @keyframes hide {
     from {
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
         opacity: 1;
     }
     to {
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
         opacity: 0;
     }
 }
 
 @keyframes show {
     from {
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
         opacity: 0;
     }
     to {
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
         opacity: 1;
     }
 }
