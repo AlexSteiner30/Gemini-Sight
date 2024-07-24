@@ -40,7 +40,7 @@ Gemini Sight is an innovative application that leverages the Gemini language mod
 Our submission demonstrates the practical applications of the Gemini model in everyday life, enhancing user convenience and accessibility through advanced AI technology.
 
 ## Glasses
-Download the glasses printable STL file from the `models/` folder, after printing the 3D model use this circuit diagram to create the wiring. It is not necessary to solder the pieces together however it is higly recommended for space optimation.
+Download the glasses printable STL file from the `models/` folder, after printing the 3D model use this circuit diagram to create the wiring. It is not necessary to solder the pieces together however it is highly recommended for space optimation.
 
 <h1 align="center">
  <img src="resources/backend.png?raw=true" style="height: 80%; width:80%; align:center">
@@ -86,7 +86,7 @@ Set up your own project by visiting the [Google Cloud Console](https://console.c
  <img src="resources/new_project.png?raw=true" style="height: 80%; width:80%; align:center">
 </h1>
 
-Navigate to API and Services and add `Gmail, Calendar, Docs, Sheet, Drive, Tasks, YouTube Analytics, Google Maps Places, Google Maps Directions`. Then create a new API key and OAuth client IDs (one for mobile devices and one for the web) and save them for later use.
+Navigate to API and Services and add `Gmail, Calendar, Docs, Sheet, Drive, Tasks, YouTube Analytics, Google Maps Places and Google Maps Directions`. Then create a new API key and OAuth client IDs (one for mobile devices and one for the web) and save them for later use.
 
 <h1 align="center">
  <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
@@ -222,7 +222,7 @@ After setting up the circuit for the glasses, install and set up PlatformIO from
 You can [download](https://github.com/amitmerchant1990/electron-markdownify/releases/tag/v1.2.0) the latest installable iOS version of the Gemini Sight App.
 
 ## Future
-Unfortunately the GPS module didn't arrive in time meaning that the functionalities such as Google Maps directions or recording the speed are not functioning however from a coding point of view they are alredy developed and functioning only the actual data from the GPS that needs to be passed is missing. We plan into implementing it and many other features if the project keeps getting mantained. One major problem furthermore is the Google Sheets API as the Gemini model performs poorly with creating 2D arrays from a given input, this however can be improved by feeding the model with more training data.
+Unfortunately, the GPS module didn't arrive in time meaning that the functionalities such as Google Maps directions or recording the speed are not functioning however from a coding point of view they are already developed and functioning only the actual data from the GPS that needs to be passed is missing. We plan to implement it and many other features if the project keeps getting maintained. One major problem furthermore is the Google Sheets API as the Gemini model performs poorly with creating 2D arrays from a given input, this however can be improved by feeding the model with more training data.
 
 ## Credits
 
