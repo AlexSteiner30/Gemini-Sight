@@ -1,5 +1,6 @@
 figcaption {
     font-size: 19.2px;
+    font-size: 19.2px;
     font-size: 1.2rem;
     margin-top: -10px;
 }
@@ -30,6 +31,7 @@ figcaption, h2 {
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;
     padding: 8px;
+    font-size: 16px;
     font-size: 16px;
     font-size: 1rem;
     color: white;

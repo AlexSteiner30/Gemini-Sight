@@ -28,6 +28,7 @@ main {
 
 .cards h1 {
     font-size: 17.6px;
+    font-size: 17.6px;
     font-size: 1.1rem;
 }
 
@@ -40,15 +41,18 @@ main {
 }
 
 .cards:nth-of-type(1) {
-    border-image: linear-gradient(45deg, black, rgb(77, 77, 255)) 1;
+    -o-border-image: linear-gradient(45deg, black, rgb(77, 77, 255)) 1;
+       border-image: linear-gradient(45deg, black, rgb(77, 77, 255)) 1;
 }
 
 .cards:nth-of-type(2) {
-   border-image: radial-gradient(at bottom, black, rgb(77, 77, 255)) 1;
+   -o-border-image: radial-gradient(at bottom, black, rgb(77, 77, 255)) 1;
+      border-image: radial-gradient(at bottom, black, rgb(77, 77, 255)) 1;
 }
 
 .cards:nth-last-of-type(1) {
-    border-image: linear-gradient(270deg, black, rgb(77, 77, 255)) 1 !important;
+    -o-border-image: linear-gradient(270deg, black, rgb(77, 77, 255)) 1 !important;
+       border-image: linear-gradient(270deg, black, rgb(77, 77, 255)) 1 !important;
 }
 
 #title {
@@ -78,10 +82,12 @@ main {
     }
 
     .cards:nth-of-type(2) {
-        border-image: linear-gradient(270deg, black, rgb(77, 77, 255)) 1;
+        -o-border-image: linear-gradient(270deg, black, rgb(77, 77, 255)) 1;
+           border-image: linear-gradient(270deg, black, rgb(77, 77, 255)) 1;
     }
     
     .cards:nth-last-of-type(1) {
-        border-image: radial-gradient(at bottom, black 75%, rgb(77, 77, 255) 90%) 1 !important;
+        -o-border-image: radial-gradient(at bottom, black 75%, rgb(77, 77, 255) 90%) 1 !important;
+           border-image: radial-gradient(at bottom, black 75%, rgb(77, 77, 255) 90%) 1 !important;
     }
 }

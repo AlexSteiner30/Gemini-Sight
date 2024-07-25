@@ -12,6 +12,7 @@ html, body {
     min-width: 100vw;
     background-color: var(--main-color);
     line-height: 48px;
+    line-height: 48px;
     line-height: 3rem;
 }
 
@@ -198,6 +199,7 @@ button:hover {
 }
 
 #chat-prev label {
+    font-size: 12.8px;
     font-size: 12.8px;
     font-size: 0.8rem;
     margin: 0;
