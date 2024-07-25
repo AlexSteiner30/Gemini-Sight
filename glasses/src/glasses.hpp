@@ -44,17 +44,16 @@ struct TfLiteTensor;
 
 using namespace std;
 
-#define LRC 3
-#define BCLK 5 
-#define DIN 5
+#define LRC 7
+#define BCLK 8
+#define DIN 9
 
 #define I2S_PORT I2S_NUM_0
  
 #define SAMPLE_RATE 16000
-#define RECORD_TIME 3
+#define RECORD_TIME 5
 #define SAMPLE_SIZE 2
 #define CHANNEL_NUM 1
-#define TOTAL_SAMPLES (SAMPLE_RATE * RECORD_TIME)
 
 class Glasses{
   public:
@@ -90,6 +89,7 @@ class Glasses{
       void take_picture();
       void record_video();
       void setup_microphone();
+      void record_audio();
       void record_microphone();
       void play_audio(uint8_t *buffer);
 

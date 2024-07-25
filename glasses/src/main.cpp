@@ -21,6 +21,10 @@ void record_video(void *pvParameter) {
     glasses.record_video();
 }
 
+void record_audio(void *pvParameter) {
+    glasses.record_audio();
+}
+
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     vector<string> message_parts = split((char*)payload, "¬");
     switch(type) {
@@ -42,7 +46,9 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
                     break;
                 }
                 else if(message_parts[0] == "start_recording"){
+                    glasses.is_recording = true;
                     xTaskCreate(&record_video, "record_video", 2048, NULL, 5, NULL);
+                    xTaskCreate(&record_audio, "record_audio", 2048, NULL, 5, NULL);
                     break;
                 }
                 else if(message_parts[0] == "get_recording"){

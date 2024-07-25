@@ -8,6 +8,35 @@ void Glasses::setup_microphone(){
   }
 }
 
+void Glasses::record_audio(){
+  string textMessage = "record_audio¬" + string(AUTH_KEY)+ "¬";
+
+  while(is_recording){
+    size_t bytesRead = 0;
+    int16_t* audioBuffer = (int16_t*)malloc(SAMPLE_RATE);
+
+    while (bytesRead < SAMPLE_RATE) {
+      int sample = I2S.read();
+      audioBuffer[bytesRead] = sample ? sample : 0;
+
+      bytesRead++;
+    }
+    size_t textSize = textMessage.length();
+    size_t totalSize = textSize + SAMPLE_RATE * SAMPLE_SIZE;
+
+    uint8_t* combinedBuffer = new uint8_t[totalSize];
+
+    memcpy(combinedBuffer, textMessage.c_str(), textSize);
+    memcpy(combinedBuffer + textSize, audioBuffer, SAMPLE_RATE * SAMPLE_SIZE);
+
+    client.sendBIN(combinedBuffer, totalSize);
+
+    delete[] combinedBuffer;
+
+    audioBuffer = (int16_t*)malloc(SAMPLE_RATE * SAMPLE_SIZE);
+  }
+}
+
 void Glasses::record_microphone() 
 {
   current_state = speaking;
@@ -15,9 +44,9 @@ void Glasses::record_microphone()
   Serial.println("speaking");
 
   size_t bytesRead = 0;
-  int16_t* audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
+  int16_t* audioBuffer = (int16_t*)malloc(SAMPLE_RATE * SAMPLE_SIZE);
 
-  while (bytesRead < TOTAL_SAMPLES * SAMPLE_SIZE && current_state == speaking) {
+  while (bytesRead < SAMPLE_RATE * RECORD_TIME * SAMPLE_SIZE && current_state == speaking) {
     int sample = I2S.read();
     audioBuffer[bytesRead] = sample ? sample : 0;
 
@@ -27,20 +56,18 @@ void Glasses::record_microphone()
   string textMessage = "speech_to_text¬" + string(AUTH_KEY)+ "¬";
 
   size_t textSize = textMessage.length();
-  size_t totalSize = textSize + TOTAL_SAMPLES * SAMPLE_SIZE;
+  size_t totalSize = textSize + SAMPLE_RATE * RECORD_TIME * SAMPLE_SIZE;
 
   uint8_t* combinedBuffer = new uint8_t[totalSize];
 
   memcpy(combinedBuffer, textMessage.c_str(), textSize);
-  memcpy(combinedBuffer + textSize, audioBuffer, TOTAL_SAMPLES * SAMPLE_SIZE);
-
-  Serial.println("spoke");
+  memcpy(combinedBuffer + textSize, audioBuffer, SAMPLE_RATE * RECORD_TIME * SAMPLE_SIZE);
 
   client.sendBIN(combinedBuffer, totalSize);
 
   delete[] combinedBuffer;
 
-  audioBuffer = (int16_t*)malloc(TOTAL_SAMPLES * SAMPLE_SIZE);
+  audioBuffer = (int16_t*)malloc(SAMPLE_RATE * RECORD_TIME * SAMPLE_SIZE);
 
   Serial.println("sent");
 
