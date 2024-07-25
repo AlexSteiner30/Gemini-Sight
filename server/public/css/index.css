@@ -40,20 +40,48 @@ main {
 }
 
 .cards:nth-of-type(1) {
-    -o-border-image: linear-gradient(45deg, black, rgb(77, 77, 255)) 1;
-       border-image: linear-gradient(45deg, black, rgb(77, 77, 255)) 1;
+    border-image: linear-gradient(45deg, black, rgb(77, 77, 255)) 1;
 }
 
 .cards:nth-of-type(2) {
-    -o-border-image: radial-gradient(at bottom, black, rgb(77, 77, 255)) 1;
-       border-image: radial-gradient(at bottom, black, rgb(77, 77, 255)) 1;
+   border-image: radial-gradient(at bottom, black, rgb(77, 77, 255)) 1;
 }
 
 .cards:nth-last-of-type(1) {
-    -o-border-image: linear-gradient(270deg, black, rgb(77, 77, 255)) 1 !important;
-       border-image: linear-gradient(270deg, black, rgb(77, 77, 255)) 1 !important;
+    border-image: linear-gradient(270deg, black, rgb(77, 77, 255)) 1 !important;
 }
 
 #title {
     margin-bottom: 5vh;
+}
+
+@media screen and (max-width: 700px) {
+    .cards {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr 2fr;
+        height: calc(20vh + 150px);
+        width: 42vw;
+        padding: 2vh 2vw;
+    }
+    
+    .cards h1 {
+        font-size: 0.9rem;
+    }
+    
+    .cards p {
+        font-size: 0.8rem;
+    }
+
+    main {
+        flex-wrap: wrap;
+        row-gap: 10px;
+    }
+
+    .cards:nth-of-type(2) {
+        border-image: linear-gradient(270deg, black, rgb(77, 77, 255)) 1;
+    }
+    
+    .cards:nth-last-of-type(1) {
+        border-image: radial-gradient(at bottom, black 75%, rgb(77, 77, 255) 90%) 1 !important;
+    }
 }

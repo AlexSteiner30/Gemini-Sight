@@ -155,8 +155,8 @@ button:hover {
     padding: 1vw;
     bottom: 2vh;
     right: 2vw;
-    height: 5vw;
-    width: 5vw;
+    height: max(5vw, 5vh);
+    width: max(5vw, 5vh);
     border-radius: 100%;
     border: none;
     box-shadow: 0 0 5px 1px rgb(210, 210, 255);
@@ -248,5 +248,59 @@ button:hover {
     to {
         -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
         opacity: 1;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    #title {
+        font-size: 200%;
+        margin-top: 0px;
+    }
+
+    #chat-btn {
+        padding: max(1vw, 1vh);
+    }
+
+    #chat-area {
+        width: 70vw !important;
+    }
+    
+    #chat-input {
+        width: calc(74vw - 20px) !important;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    nav img {
+        width: 100%;
+    }
+
+    nav {
+        grid-template-columns: 7fr 6fr 6fr 6fr 6fr 1fr 7fr 1fr;
+    }
+
+    nav a {
+        font-size: 0.7rem;
+    }
+
+    #chat-area {
+        width: 50vw;
+    }
+    
+    #chat-input {
+        width: calc(54vw - 20px);
+    }
+
+    html, body {
+        line-height: 2rem;
+    }
+
+    button {
+        padding: 15px 20px;
+    }
+    
+    button:hover {
+        transform: scale(1.05);
+        cursor: grab;
     }
 }

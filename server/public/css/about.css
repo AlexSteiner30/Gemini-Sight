@@ -20,3 +20,16 @@
     transform: scale(1.1);
     cursor: grab;
 }
+
+@media screen and (max-width: 600px) {
+    #names {
+        font-size: 0.9rem;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    #names a {
+        width: 40vw;
+    }
+}
