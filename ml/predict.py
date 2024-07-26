@@ -1,62 +1,34 @@
 import tensorflow as tf
 import numpy as np
-import librosa
+import matplotlib.pyplot as plt
 
 model_path = 'model.keras'
 model = tf.keras.models.load_model(model_path)
 
-def get_spectrogram(waveform):
-    spectrogram = tf.signal.stft(waveform, frame_length=255, frame_step=128)
+def get_spectrogram(audio):
+    audio = audio - tf.reduce_mean(audio)
+    audio = audio / tf.reduce_max(tf.abs(audio))
+    spectrogram = tf.signal.stft(audio, frame_length=255, frame_step=128)
     spectrogram = tf.abs(spectrogram)
-    spectrogram = spectrogram[..., tf.newaxis]
+    return spectrogram[..., tf.newaxis]
 
-    return spectrogram
+def predict_audio(file_path):
+    x = tf.io.read_file(file_path)
+    x, _ = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000)
+    x = tf.squeeze(x, axis=-1)
+    waveform = x
+    x = get_spectrogram(x)
+    x = x[tf.newaxis, ...]
+    prediction = model(x)
+    return waveform, prediction
 
-def predict_from_wav(wav_file_path, label_names):
-    # Load the trained model
+waveform, prediction = predict_audio('test.wav')
 
-    # Load and preprocess the WAV file
-    audio, sr = librosa.load(wav_file_path, sr=16000, duration=1.0)
-    
-    # Pad or truncate the audio to 16000 samples (1 second)
-    if len(audio) < 16000:
-        audio = np.pad(audio, (0, 16000 - len(audio)))
-    else:
-        audio = audio[:16000]
-    
-    # Get the spectrogram
-    spectrogram = get_spectrogram(audio)
-    
-    # Add batch dimension
-    spectrogram = spectrogram[np.newaxis, ...]
-    
-    # Make prediction
-    prediction = model.predict(spectrogram)
+print(tf.nn.softmax(prediction[0]))
+x_labels = ['_background_noise_','backward','bed','bird','cat','dog','down','eight','five','follow','forward','four','go','happy','house','learn','left','marvin','nine','no','off','on','one','right','seven','sheila','six','stop','three','tree','two','up','visual','wow','yes','zero']
+plt.bar(x_labels, tf.nn.softmax(prediction[0]))
+plt.title('Prediction')
+plt.show()
 
-    print(prediction)
-    
-    # Get the predicted label index and probability
-    predicted_index = np.argmax(prediction)
-    predicted_probability = prediction[0][predicted_index]
-    
-    # Get the predicted label name
-    predicted_label = label_names[predicted_index]
-    
-    return predicted_label, predicted_probability
 
-# Usage example:
-wav_file_path = 'test2.wav'
-predicted_label, probability = predict_from_wav(wav_file_path,['_background_noise_' , 'gemma', 'sheila' ,'stop'])
-print(f"Predicted label: {predicted_label}")
-print(f"Probability: {probability:.4f}")
-
-x = 'test2.wav'
-x = tf.io.read_file(str(x))
-x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000,)
-x = tf.squeeze(x, axis=-1)
-waveform = x
-x = get_spectrogram(x)
-x = x[tf.newaxis,...]
-
-prediction = model(x)
-print(prediction)
+model.save('model.keras')
