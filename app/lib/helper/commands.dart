@@ -33,3 +33,5 @@ Future<void> text(String phone_number, message) async {
   String return_value = 'text¬$authentication_key¬';
   await sendSMS(message: message, recipients: [phone_number]);
 }
+
+// send return value w ble

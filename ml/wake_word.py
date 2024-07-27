@@ -80,7 +80,7 @@ model = keras.Sequential([
     layers.MaxPooling2D(),
     layers.Dropout(0.25),
     layers.Flatten(),
-    layers.Dense(64, activation='relu'),
+    layers.Dense(128, activation='relu'),
     layers.Dropout(0.5),
     layers.Dense(num_labels),
 ])

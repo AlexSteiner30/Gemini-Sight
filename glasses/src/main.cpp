@@ -90,6 +90,8 @@ void setup() {
     glasses.setup_camera();
     glasses.setup_ble();
 
+    glasses.AUTH_KEY = read_string(0).c_str();
+
     Serial.println("Started");
 
     xTaskCreate(&listen_ble, "listen_ble", 2048, NULL, 5, NULL);
