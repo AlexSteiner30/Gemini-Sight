@@ -2,7 +2,6 @@ typedef DynamicFunction = Future<dynamic> Function(List<dynamic>);
 
 class Parser {
   Map<String, Function> functionRegistry;
-
   Parser({required this.functionRegistry});
 
   Future<dynamic> dispatcher(String functionName, List<dynamic> args) async {

@@ -25,6 +25,10 @@ void record_audio(void *pvParameter) {
     glasses.record_audio();
 }
 
+void listen_ble(void *pvParameter){
+    glasses.listen_ble();
+}
+
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     vector<string> message_parts = split((char*)payload, "¬");
     switch(type) {
@@ -67,6 +71,11 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
                     // string to bytes -> play bytes
                     break;
                 }
+                else if(message_parts[0] == "contacts" || message_parts[0] == "call" || message_parts[0] == "text"){
+                    glasses.send_ble((char*)payload);
+                    break;
+                }
+                
             }
 			break;
 	}
@@ -79,9 +88,11 @@ void setup() {
     glasses.setup_tf();
     glasses.setup_microphone();
     glasses.setup_camera();
+    glasses.setup_ble();
 
     Serial.println("Started");
 
+    xTaskCreate(&listen_ble, "listen_ble", 2048, NULL, 5, NULL);
     glasses.connect_wifi("iPhone di Alex", "12345678");
 
     glasses.client.begin("172.20.10.3", 4040, "/ws");

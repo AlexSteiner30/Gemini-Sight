@@ -26,7 +26,10 @@ class User {
 
   bool recording = false;
   bool recording_speed = true;
+  bool called = false;
+  bool texted = false;
 
+  String contact_name = '';
   String temp_speed = '';
 
   List<String> weekdays = [
@@ -585,36 +588,46 @@ class User {
 
   // Phone
   Future<String> contacts(String name) async {
-    /*
-  if (await Permission.contacts.request().isGranted) {
-    Iterable<Contact> contacts = await ContactsService.getContacts();
-    Contact? contact = contacts.firstWhere(
-        (contact) => contact.displayName?.toLowerCase() == name.toLowerCase());
+    ws.add('contacts¬$authentication_key');
+    while (contact_name == '') {}
 
-    if (contact.phones!.isNotEmpty) {
-      return contact.phones?.first.value ?? 'No number found';
-    } else {
-      return 'Contact not found';
-    }
-  } else {
-    return 'No permission granted';
-  }
-  */
+    String contact_name_temp = contact_name;
+    contact_name = '';
 
-    return '';
+    return contact_name_temp;
   }
 
   Future<void> call(String phone_number) async {
-    //launchUrlString("tel://$phone_number");
+    ws.add('call¬$authentication_key');
+    if (phone_number
+            .contains("I coudn't find any matching phone number with") ||
+        phone_number.contains("I coudn't find any matching contact with") ||
+        phone_number == 'Please grant me permission to access your contacts') {
+      await speak(phone_number);
+    } else {
+      while (!called) {}
 
-    await speak(
-        'Not having access to your phone, you will have to click on the button to confirm the action on your own.');
+      called = false;
+
+      await speak(
+          'Not having access to your phone, you will have to click on the button to confirm the action on your own.');
+    }
   }
 
-  Future<void> text(String phone_number, message) async {
-    //await sendSMS(message: message, recipients: [phone_number]);
-    await speak(
-        'Not having access to your phone, you will have to click on the button to confirm the action on your own.');
+  Future<void> text(String phone_number) async {
+    ws.add('text¬$authentication_key');
+    if (phone_number
+            .contains("I coudn't find any matching phone number with") ||
+        phone_number.contains("I coudn't find any matching contact with") ||
+        phone_number == 'Please grant me permission to access your contacts') {
+      await speak(phone_number);
+    } else {
+      while (!texted) {}
+
+      texted = false;
+      await speak(
+          'Not having access to your phone, you will have to click on the button to confirm the action on your own.');
+    }
   }
 
   // Calendar

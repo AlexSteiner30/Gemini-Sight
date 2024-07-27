@@ -138,11 +138,22 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
             case 'speech_to_text':
               print(await user
                   .speech_to_text(message.sublist(secondDelimiterIndex + 1)));
+              break;
             case 'take_picture':
               user.picture_data = message.sublist(secondDelimiterIndex + 1);
+              break;
             case 'stop_recording':
               user.recording = false;
               user.recording_data = message.sublist(secondDelimiterIndex + 1);
+              break;
+            case 'call':
+              user.called = true;
+              break;
+            case 'text':
+              user.texted = true;
+            case 'contacts':
+              user.contact_name =
+                  ascii.decode(message.sublist(0, secondDelimiterIndex + 1));
           }
         }
       }

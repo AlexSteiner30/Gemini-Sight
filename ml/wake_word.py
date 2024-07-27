@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 SEED = 42
 DATASET_ORIGIN = "http://download.tensorflow.org/data/speech_commands_v0.01.tar.gz"
 DATASET_PATH = 'data'
-EPOCHS = 30
+EPOCHS = 10
 BATCH_SIZE = 64
 VALIDATION_SPLIT = 0.2
 AUDIO_LENGTH = 16000
@@ -49,6 +49,7 @@ def get_spectrogram(audio):
     audio = audio / tf.reduce_max(tf.abs(audio))
     spectrogram = tf.signal.stft(audio, frame_length=255, frame_step=128)
     spectrogram = tf.abs(spectrogram)
+    
     return spectrogram[..., tf.newaxis]
 
 def make_spec_ds(ds):
@@ -74,13 +75,12 @@ print('Input shape:', input_shape)
 num_labels = len(label_names)
 model = keras.Sequential([
     layers.Input(shape=input_shape),
-    layers.Resizing(32, 32),
     layers.Conv2D(32, 3, activation='relu'),
     layers.Conv2D(64, 3, activation='relu'),
     layers.MaxPooling2D(),
     layers.Dropout(0.25),
     layers.Flatten(),
-    layers.Dense(128, activation='relu'),
+    layers.Dense(64, activation='relu'),
     layers.Dropout(0.5),
     layers.Dense(num_labels),
 ])

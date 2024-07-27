@@ -1,4 +1,5 @@
 #include <WebSocketsClient.h>
+#include <SoftwareSerial.h>
 #include <driver/i2s.h>
 #include <WiFi.h>
 
@@ -84,6 +85,7 @@ class Glasses{
 
   public:
       void setup_tf();
+      void setup_ble();
 
       void setup_camera();
       void take_picture();
@@ -102,4 +104,6 @@ class Glasses{
       void get_wake_word();
 
       void invoke_error(const char* err);
+      void listen_ble();
+      void send_ble(char* payload);
 };
