@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:app/helper/ble.dart';
 import 'package:app/helper/helper.dart';
+import 'package:app/helper/wifi.dart';
 import 'package:app/main.dart';
 import 'package:app/pages/device.dart';
 import 'package:app/pages/sign_in.dart';
@@ -65,6 +66,7 @@ class _SplashScreenState extends State<SplashScreen> {
         MaterialPageRoute(
             builder: (context) => DevicePage(
                 user: account!,
+                wifi: wifi,
                 connected: connected,
                 blind_support: prefs.getBool('blind_support') ?? false)),
       );

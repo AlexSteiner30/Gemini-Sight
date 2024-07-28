@@ -26,10 +26,12 @@ class DevicePage extends StatefulWidget {
       {super.key,
       required this.user,
       required this.connected,
+      required this.wifi,
       required this.blind_support});
 
   final GoogleSignInAccount user;
   bool connected;
+  bool wifi;
   bool blind_support;
 
   @override
@@ -165,10 +167,10 @@ class _DevicePageState extends State<DevicePage> {
                     child: Column(
                       children: [
                         if (widget.connected)
-                          const Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Column(
+                              const Column(
                                 children: [
                                   Icon(Icons.battery_charging_full,
                                       color: Colors.white),
@@ -177,8 +179,8 @@ class _DevicePageState extends State<DevicePage> {
                                       style: TextStyle(color: Colors.white)),
                                 ],
                               ),
-                              SizedBox(width: 40),
-                              Column(
+                              const SizedBox(width: 40),
+                              const Column(
                                 children: [
                                   Icon(Icons.volume_up, color: Colors.white),
                                   SizedBox(height: 5),
@@ -186,15 +188,19 @@ class _DevicePageState extends State<DevicePage> {
                                       style: TextStyle(color: Colors.white)),
                                 ],
                               ),
-                              SizedBox(width: 40),
+                              const SizedBox(width: 40),
                               Column(
                                 children: [
-                                  Icon(Icons.wifi, color: Colors.white),
-                                  SizedBox(height: 5),
+                                  widget.wifi
+                                      ? const Icon(Icons.wifi,
+                                          color: Colors.white)
+                                      : const Icon(Icons.wifi_off,
+                                          color: Colors.red),
+                                  const SizedBox(height: 5),
                                 ],
                               ),
-                              SizedBox(width: 40),
-                              Column(
+                              const SizedBox(width: 40),
+                              const Column(
                                 children: [
                                   Icon(Icons.bluetooth, color: Colors.white),
                                   SizedBox(height: 5),

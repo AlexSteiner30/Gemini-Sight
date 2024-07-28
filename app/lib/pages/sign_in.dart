@@ -98,6 +98,7 @@ class _SignInPageState extends State<SignInPage> {
       MaterialPageRoute(
         builder: (context) => DevicePage(
           user: user!,
+          wifi: false,
           connected: false,
           blind_support: prefs.getBool('blind_support') ?? false,
         ),

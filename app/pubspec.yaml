@@ -49,7 +49,6 @@ dependencies:
   path_provider: ^2.1.3
   geolocator: ^12.0.0
   geocoding: ^3.0.0
-  qr_flutter: ^4.1.0
   flutter_bluetooth_serial: ^0.3.2
   
 dev_dependencies:

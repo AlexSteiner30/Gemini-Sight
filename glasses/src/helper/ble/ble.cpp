@@ -18,11 +18,14 @@ void Glasses::listen_ble(){
             if(message_parts[0] == "authentication_key" && message_parts.size() == 2){
                 const char* AUTH_KEY = message_parts[1].c_str();
                 save_string(0, message_parts[1]);
-            }else if(message_parts[0] == "wifi" && message_parts.size() == 3){
-                save_string(1, message_parts[1]); // ssid
-                save_string(2, message_parts[2]); // password
+            }else if(message_parts[0] == "wifi" && message_parts[1] == AUTH_KEY && message_parts.size() == 4){
+                save_string(1, message_parts[2]); // ssid
+                save_string(2, message_parts[3]); // password
 
-                connect_wifi(message_parts[1].c_str(), message_parts[2].c_str());
+                connect_wifi(message_parts[2].c_str(), message_parts[3].c_str());
+
+                String ble_data = "ip¬" + String(AUTH_KEY) + "¬" +  WiFi.localIP().toString();;
+                send_ble((char*)ble_data.c_str()); 
             }
             else{ 
                 size_t size = data.length();

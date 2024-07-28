@@ -4,6 +4,8 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'dart:typed_data';
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 BluetoothConnection? connection;
 bool connected = false;
 
@@ -30,6 +32,13 @@ void read_data(Uint8List inc_data) async {
 
     if (auth_key == authentication_key) {
       switch (command) {
+        case 'ip':
+          // save to prefs
+          if (data_parts.length == 3) {
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setString('ip', data_parts[2]);
+          }
+          break;
         case 'contacts':
           if (data_parts.length == 3) await contacts(data_parts[2]);
           break;

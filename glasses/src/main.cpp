@@ -84,6 +84,8 @@ void setup() {
     Serial.begin(115200);
     Serial.println();
 
+    // play boot sound
+
     glasses.setup_tf();
     glasses.setup_microphone();
     glasses.setup_camera();

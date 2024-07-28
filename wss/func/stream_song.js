@@ -16,10 +16,6 @@ class Stream{
                 ws.send(`play¬${access_key}¬${chunk.toString()}`);
             });
 
-            stream.on('end', () => {
-
-            });
-
             stream.on('error', (err) => {
                 console.error('Error occurred:', err);
             });

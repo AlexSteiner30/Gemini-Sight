@@ -173,7 +173,8 @@ class _DeviceSettingsState extends State<DeviceSettings> {
 
   void _connectToWifi() {
     write_data(Uint8List.fromList(
-        'wifi¬${ssidController.text}¬${passwordController.text}'.codeUnits));
+        'wifi¬$authentication_key¬${ssidController.text}¬${passwordController.text}'
+            .codeUnits));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Connecting to WiFi...')),
     );
