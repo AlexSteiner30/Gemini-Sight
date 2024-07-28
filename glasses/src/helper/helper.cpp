@@ -1,11 +1,6 @@
-#include <EEPROM.h>
-#include <vector>
-#include <string>
-#include <iostream>
+#include "glasses.hpp"
 
-using namespace std;
-
-void save_string(int addrOffset, const string &strToWrite){
+void Glasses::save_string(int addrOffset, const string &strToWrite){
   byte len = strToWrite.length();
   EEPROM.write(addrOffset, len);
   for (int i = 0; i < len; i++){
@@ -13,7 +8,7 @@ void save_string(int addrOffset, const string &strToWrite){
   }
 }
 
-String read_string(int addrOffset){
+String Glasses::read_string(int addrOffset){
   int newStrLen = EEPROM.read(addrOffset);
   char data[newStrLen + 1];
   for (int i = 0; i < newStrLen; i++){
@@ -23,7 +18,7 @@ String read_string(int addrOffset){
   return String(data);
 }
 
-vector<string> split(string s, string delimiter){
+vector<string> Glasses::split(string s, string delimiter){
     vector<string> list;
     size_t pos = 0;
     string token;

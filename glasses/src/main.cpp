@@ -1,5 +1,4 @@
 #include "glasses.hpp"
-#include "helper/helper.hpp"
 
 Glasses glasses;
 
@@ -30,7 +29,7 @@ void listen_ble(void *pvParameter){
 }
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
-    vector<string> message_parts = split((char*)payload, "¬");
+    vector<string> message_parts = glasses.split((char*)payload, "¬");
     switch(type) {
 		case WStype_DISCONNECTED:
 			Serial.println("[WSc] Disconnected!");
@@ -91,14 +90,14 @@ void setup() {
     glasses.setup_camera();
     glasses.setup_ble();
 
-    glasses.AUTH_KEY = read_string(0).c_str();
+    glasses.AUTH_KEY = glasses.read_string(0).c_str();
 
     Serial.println("Started");
 
     xTaskCreate(&listen_ble, "listen_ble", 2048, NULL, 5, NULL);
 
-    if(read_string(1) != NULL && read_string(2) != NULL)
-        glasses.connect_wifi(read_string(1).c_str(), read_string(2).c_str());
+    if(glasses.read_string(1) != NULL && glasses.read_string(2) != NULL)
+        glasses.connect_wifi(glasses.read_string(1).c_str(), glasses.read_string(2).c_str());
 
     glasses.client.begin("172.20.10.3", 4040, "/ws");
     glasses.client.onEvent(webSocketEvent);

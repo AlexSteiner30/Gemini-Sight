@@ -6,6 +6,8 @@
 #include <string>
 #include <iostream>
 
+#include <EEPROM.h>
+
 #include <arduinoFFT.h>
 
 #include "helper/wake_word/model.h"
@@ -16,6 +18,12 @@
 #include "tensorflow/lite/schema/schema_generated.h"
 
 #include <esp_heap_caps.h>
+
+#include <vector>
+#include <string>
+#include <iostream>
+
+using namespace std;
 
 template <typename T>
 struct PSRAMAllocator {
@@ -105,4 +113,8 @@ class Glasses{
       void invoke_error(const char* err);
       void listen_ble();
       void send_ble(char* payload);
+
+      void save_string(int addrOffset, const string &strToWrite);
+      String read_string(int addrOffset);
+      vector<string> split(string s, string delimiter);
 };
