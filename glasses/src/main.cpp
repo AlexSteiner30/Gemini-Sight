@@ -14,7 +14,7 @@ void Glasses::get_wake_word(){
 
     Serial.println("Gemma");
 
-    glasses.record_microphone();
+    glasses.record_microphone(false);
 }
 
 void record_video(void *pvParameter) {
@@ -46,7 +46,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 		case WStype_TEXT:
             if(message_parts[1] == glasses.AUTH_KEY){
                 if(message_parts[0] == "listen"){
-                    glasses.record_microphone();
+                    glasses.record_microphone(true);
                     break;
                 }
                 else if(message_parts[0] == "start_recording"){
@@ -56,7 +56,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
                     break;
                 }
                 else if(message_parts[0] == "get_recording"){
-                    glasses.is_recording = false;
+                    glasses.is_recording = false; 
                     break;
                 }
                 else if(message_parts[0] == "take_picture"){
@@ -75,7 +75,6 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
                     glasses.send_ble((char*)payload);
                     break;
                 }
-                
             }
 			break;
 	}

@@ -92,7 +92,7 @@ class Glasses{
       void record_video();
       void setup_microphone();
       void record_audio();
-      void record_microphone();
+      void record_microphone(bool is_listening);
       void play_audio(uint8_t *buffer);
 
       void set_volume(string volume);

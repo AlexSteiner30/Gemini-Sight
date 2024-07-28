@@ -52,6 +52,8 @@ class User {
   List<List<int>> frame_data = [];
   List<List<int>> audio_data = [];
 
+  List<int> listening_data = [];
+
   User(
       {required this.displayName,
       required this.location,
@@ -63,25 +65,6 @@ class User {
       required this.expiration});
 
   // General
-  Future<String> listen_microphone() async {
-    await socket.connection.firstWhere((state) => state is Connected);
-
-    final Completer<List<int>> completer = Completer<List<int>>();
-
-    ws.add('listen¬$authentication_key');
-
-    final subscription = socket.messages.listen((bytes) {
-      if (bytes is List<int>) {
-        // ignore: null_argument_to_non_null_type
-        completer.complete();
-      }
-    });
-
-    final result = await completer.future;
-    await subscription.cancel();
-    return await speech_to_text(result);
-  }
-
   Future<String> speech_to_text(List<int> byte_input) async {
     String audioBytes = base64Encode(byte_input);
 
@@ -198,7 +181,16 @@ class User {
 
   Future<String> listen(String data) async {
     await speak(data);
-    return await listen_microphone();
+    await socket.connection.firstWhere((state) => state is Connected);
+
+    ws.add('listen¬$authentication_key');
+
+    while (listening_data == []) {}
+
+    List<int> listening_data_temp = listening_data;
+    listening_data = [];
+
+    return await speech_to_text(listening_data_temp);
   }
 
   // Camera

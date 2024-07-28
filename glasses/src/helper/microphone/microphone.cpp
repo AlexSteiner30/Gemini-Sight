@@ -37,7 +37,7 @@ void Glasses::record_audio(){
   }
 }
 
-void Glasses::record_microphone() 
+void Glasses::record_microphone(bool is_listening) 
 {
   current_state = speaking;
 
@@ -53,7 +53,7 @@ void Glasses::record_microphone()
     bytesRead++;
   }
 
-  string textMessage = "speech_to_text¬" + string(AUTH_KEY)+ "¬";
+  string textMessage = is_listening ? "listen¬" + string(AUTH_KEY)+ "¬" : "speech_to_text¬" + string(AUTH_KEY)+ "¬";
 
   size_t textSize = textMessage.length();
   size_t totalSize = textSize + SAMPLE_RATE * RECORD_TIME * SAMPLE_SIZE;
@@ -71,7 +71,8 @@ void Glasses::record_microphone()
 
   Serial.println("sent");
 
-  get_wake_word();
+  if(!is_listening)
+    get_wake_word();
 }
 
 std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>> Glasses::get_speech_command() {

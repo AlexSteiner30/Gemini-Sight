@@ -139,6 +139,8 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
               print(await user
                   .speech_to_text(message.sublist(secondDelimiterIndex + 1)));
               break;
+            case 'listen':
+              user.listening_data = message.sublist(secondDelimiterIndex + 1);
             case 'take_picture':
               user.picture_data = message.sublist(secondDelimiterIndex + 1);
               break;
