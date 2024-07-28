@@ -171,5 +171,5 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
 }
 
 /*
-user!.location = 'Strada San Michele 150, Borgo Maggiore, 47890, San Marino'; // implent future w GPS
+user!.location = 'Location'; // implent future w GPS
 */

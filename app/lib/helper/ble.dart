@@ -1,54 +1,45 @@
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:app/helper/commands.dart';
+import 'package:app/pages/sign_in.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'dart:typed_data';
+import 'dart:convert';
 
-bool check_connection() {
-  FlutterBlue flutterBlue = FlutterBlue.instance;
+BluetoothConnection? connection;
+bool connected = false;
 
-  flutterBlue.startScan(timeout: const Duration(seconds: 4));
+Future<void> connect_device(String address) async {
+  await BluetoothConnection.toAddress(address).then((_connection) {
+    print('Connected to the device');
+    connection = _connection;
 
-  flutterBlue.scanResults.listen((results) {
-    for (ScanResult r in results) {
-      r.device.id.id;
-    }
+    connection?.input?.listen(read_data).onDone(() {});
+    connected = true;
+  }).catchError((error) {
+    print('Cannot connect, exception occured');
+    connected = false;
   });
-
-  flutterBlue.stopScan();
-
-  return false;
 }
 
-Future<void> connectToDevice(String deviceId) async {
-  FlutterBlue flutterBlue = FlutterBlue.instance;
+void read_data(Uint8List inc_data) async {
+  String data = ascii.decode(inc_data);
+  List<String> data_parts = data.split('¬');
 
-  try {
-    // Scan for devices
-    flutterBlue.startScan(timeout: const Duration(seconds: 4));
+  if (data_parts.length >= 2) {
+    String command = data_parts[0];
+    String auth_key = data_parts[1];
 
-    BluetoothDevice? targetDevice;
-
-    flutterBlue.scanResults.listen((results) async {
-      for (ScanResult r in results) {
-        if (r.device.id.id == deviceId) {
-          targetDevice = r.device;
-          await flutterBlue.stopScan();
-          await targetDevice!.connect();
-
-          // Check if the device is connected
-          BluetoothDeviceState deviceState = await targetDevice!.state.first;
-          if (deviceState == BluetoothDeviceState.connected) {
-            print('true');
-          } else {
-            print('false');
-          }
-        }
+    if (auth_key == authentication_key) {
+      switch (command) {
+        case 'contacts':
+          if (data_parts.length == 3) await contacts(data_parts[2]);
+          break;
+        case 'call':
+          if (data_parts.length == 3) await call(data_parts[2]);
+          break;
+        case 'text':
+          if (data_parts.length == 4) await text(data_parts[2], data_parts[3]);
+          break;
       }
-    });
-
-    await flutterBlue.stopScan();
-  } catch (e) {
-    // Handle any errors that occur during the connection
-    print("Error connecting to device: $e");
-    print('false');
+    }
   }
-
-  print('true');
 }

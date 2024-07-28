@@ -598,13 +598,13 @@ class User {
   }
 
   Future<void> call(String phone_number) async {
-    ws.add('call¬$authentication_key');
     if (phone_number
             .contains("I coudn't find any matching phone number with") ||
         phone_number.contains("I coudn't find any matching contact with") ||
         phone_number == 'Please grant me permission to access your contacts') {
       await speak(phone_number);
     } else {
+      ws.add('call¬$authentication_key¬$phone_number');
       while (!called) {}
 
       called = false;
@@ -614,14 +614,14 @@ class User {
     }
   }
 
-  Future<void> text(String phone_number) async {
-    ws.add('text¬$authentication_key');
+  Future<void> text(String phone_number, String message) async {
     if (phone_number
             .contains("I coudn't find any matching phone number with") ||
         phone_number.contains("I coudn't find any matching contact with") ||
         phone_number == 'Please grant me permission to access your contacts') {
       await speak(phone_number);
     } else {
+      ws.add('text¬$authentication_key¬$phone_number¬message');
       while (!texted) {}
 
       texted = false;

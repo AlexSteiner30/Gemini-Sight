@@ -56,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
       authentication_key = initial_data[0];
       ble_id = initial_data[1];
 
-      await connectToDevice(ble_id);
+      await connect_device(ble_id);
 
       final prefs = await SharedPreferences.getInstance();
 
@@ -65,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
         MaterialPageRoute(
             builder: (context) => DevicePage(
                 user: account!,
-                connected: check_connection(),
+                connected: connected,
                 blind_support: prefs.getBool('blind_support') ?? false)),
       );
     } else {

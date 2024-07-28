@@ -82,7 +82,7 @@ model = keras.Sequential([
     layers.Flatten(),
     layers.Dense(128, activation='relu'),
     layers.Dropout(0.5),
-    layers.Dense(num_labels),
+    layers.Dense(num_labels, activation='softmax'),
 ])
 
 model.summary()
@@ -111,8 +111,7 @@ def predict_audio(file_path):
 
 waveform, prediction = predict_audio('test.wav')
 
-print(tf.nn.softmax(prediction[0]))
-plt.bar(label_names, tf.nn.softmax(prediction[0]))
+plt.bar(label_names, prediction[0])
 plt.title('Prediction')
 plt.show()
 

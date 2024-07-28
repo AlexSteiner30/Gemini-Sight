@@ -22,13 +22,11 @@ def predict_audio(file_path):
     prediction = model(x)
     return waveform, prediction
 
-waveform, prediction = predict_audio('test3.wav')
+waveform, prediction = predict_audio('test2.wav')
 
-print(tf.nn.softmax(prediction[0]))
-x_labels = ['backround','noise','backward','bed','bird','cat','dog','down','eight','five','follow','forward','four','go','happy','house','learn','left','marvin','nine','no','off','on','one','right','seven','sheila','six','stop','three','tree','two','up','visual','wow','yes','zero']
-plt.bar(x_labels, tf.nn.softmax(prediction[0]))
+x_labels = ['backround','noise','sheila','stop']
+plt.bar(x_labels, prediction[0])
 plt.title('Prediction')
 plt.show()
-
 
 model.save('model.keras')
