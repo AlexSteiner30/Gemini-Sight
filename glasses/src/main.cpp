@@ -68,7 +68,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
                     break;
                 }
                 else if(message_parts[0] == "play"){
-                    // string to bytes -> play bytes
+                    //glasses.play_audio(string to bytes);
                     break;
                 }
                 else if(message_parts[0] == "contacts" || message_parts[0] == "call" || message_parts[0] == "text"){

@@ -577,18 +577,7 @@ class User {
   // Youtube
   Future<void> play_song(String song) async {
     await socket.connection.firstWhere((state) => state is Connected);
-
-    final Completer<void> completer = Completer<void>();
-
     socket.send('stream_song¬$authentication_key¬$song');
-
-    final subscription = socket.messages.listen((pcm) async {
-      ws.add('play¬$authentication_key¬$pcm');
-      completer.complete();
-    });
-
-    await completer.future;
-    await subscription.cancel();
   }
 
   // Phone

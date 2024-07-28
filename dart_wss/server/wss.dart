@@ -135,12 +135,18 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
 
         if (access_key == user.authentication_key) {
           switch (command) {
+            case 'error':
+              await user.speak(
+                  ascii.decode(message.sublist(0, secondDelimiterIndex + 1)));
+              break;
             case 'speech_to_text':
-              print(await user
+              await user.send_data(await user
                   .speech_to_text(message.sublist(secondDelimiterIndex + 1)));
               break;
             case 'listen':
               user.listening_data = message.sublist(secondDelimiterIndex + 1);
+            case 'play':
+              user.ws.add(message);
             case 'take_picture':
               user.picture_data = message.sublist(secondDelimiterIndex + 1);
               break;

@@ -153,7 +153,7 @@ class Session{
     async stream_song(messageParts){
         if(messageParts.length == 3){
             const query = messageParts[2];
-            await this.stream.stream_song(query, ws);
+            await this.stream.stream_song(query, ws, this.access_key);
         }
     }
     

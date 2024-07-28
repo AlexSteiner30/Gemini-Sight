@@ -2,25 +2,31 @@ const yts = require("yt-search");
 const ytdl = require('ytdl-core');
 
 class Stream{
-    async stream_song(query, ws){
-        const songIds = (await yts(query)).videos[0].videoId;
-        var pcmData = [];
+    async stream_song(query, ws, access_key){
+        const videos = (await yts(query)).videos
 
-        const stream = ytdl(`http://www.youtube.com/watch?v=${songIds}`, {
-            filter: 'audioonly',
-        });
+        if(videos.length > 0){
+            const songIds = videos[0].videoId;
 
-        stream.on('data', (chunk) => {
-            pcmData.push(chunk);
-        });
+            const stream = ytdl(`http://www.youtube.com/watch?v=${songIds}`, {
+                filter: 'audioonly',
+            });
 
-        stream.on('end', () => {
-            ws.send('p' + pcmData.toString());
-        });
+            stream.on('data', (chunk) => {
+                ws.send(`play¬${access_key}¬${chunk.toString()}`);
+            });
 
-        stream.on('error', (err) => {
-            console.error('Error occurred:', err);
-        });
+            stream.on('end', () => {
+
+            });
+
+            stream.on('error', (err) => {
+                console.error('Error occurred:', err);
+            });
+        }
+        else{
+            ws.send(`error¬${access_key}¬No song named ${query} was found`);
+        } 
     }
 }
 
