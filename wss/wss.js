@@ -63,10 +63,12 @@ if (cluster.isMaster) {
           }
         }else{
           if(command == "authentication"){
-            const idToken = messageParts[1];
-            const email = await auth.verifyIdToken(idToken);
-            const user = await db.find('email', email);
-            ws.send(user ? user.access_key : '');
+            if(messageParts.length == 2){
+              const idToken = messageParts[1];
+              const email = await auth.verifyIdToken(idToken);
+              const user = await db.find('email', email);
+              ws.send(user ? user.access_key : '');
+            }
           }else{
             console.log('Request is not authenticated');
             ws.send('Request is not authenticated');

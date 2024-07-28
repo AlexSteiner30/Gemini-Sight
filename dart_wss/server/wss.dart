@@ -142,9 +142,16 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
             case 'take_picture':
               user.picture_data = message.sublist(secondDelimiterIndex + 1);
               break;
+            case 'record_video':
+              user.frame_data
+                  .add(message.sublist(secondDelimiterIndex + 1)); // frame
+              break;
+            case 'record_audio':
+              user.audio_data.add(
+                  message.sublist(secondDelimiterIndex + 1)); // audio frame
+              break;
             case 'stop_recording':
               user.recording = false;
-              user.recording_data = message.sublist(secondDelimiterIndex + 1);
               break;
             case 'call':
               user.called = true;

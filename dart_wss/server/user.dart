@@ -9,6 +9,7 @@ import 'package:googleapis/docs/v1.dart' as docs;
 import 'package:googleapis/sheets/v4.dart' as sheets;
 import 'helper.dart';
 import 'parser.dart';
+import 'video.dart';
 import 'wss.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 import 'package:http/http.dart' as http;
@@ -47,7 +48,9 @@ class User {
   );
 
   List<int> picture_data = [];
-  List<int> recording_data = [];
+
+  List<List<int>> frame_data = [];
+  List<List<int>> audio_data = [];
 
   User(
       {required this.displayName,
@@ -205,9 +208,9 @@ class User {
     if (task != null) {
       await socket.connection.firstWhere((state) => state is Connected);
       final Completer<void> completer = Completer<void>();
-      while (recording_data == []) {}
-      socket.send(
-          'vision¬$authentication_key¬$task.¬${recording_data.toString()}');
+      while (picture_data == []) {}
+      socket
+          .send('vision¬$authentication_key¬$task.¬${picture_data.toString()}');
 
       final subscription = socket.messages.listen((response) async {
         if (response[0] == 'v') {
@@ -222,10 +225,10 @@ class User {
       DateTime now = DateTime.now();
       String file_name =
           'PICTURE_${now.year}-${now.month}-${now.day}_${now.hour}-${now.minute}-${now.second}.${now.millisecond}';
-      await drive_push_file(file_name, recording_data);
+      await drive_push_file(file_name, picture_data);
     }
 
-    recording_data = [];
+    picture_data = [];
   }
 
   Future<void> start_recording() async {
@@ -239,15 +242,22 @@ class User {
     await socket.connection.firstWhere((state) => state is Connected);
 
     final Completer<void> completer = Completer<void>();
+
+    while (recording == true) {}
+
+    await create_audio(audio_data, authentication_key);
+    await create_frames(frame_data, authentication_key);
+    combine_video_audio(authentication_key);
+
+    List<int> video_data = get_video(authentication_key);
+
     if (task == '') {
       DateTime now = DateTime.now();
       String file_name =
           'RECORDING_${now.year}-${now.month}-${now.day}_${now.hour}-${now.minute}-${now.second}.${now.millisecond}';
-      await drive_push_file(file_name, []);
+      await drive_push_file(file_name, video_data);
     } else {
-      socket.send(
-          'vision¬$authentication_key¬$task.¬${recording_data.toString()}');
-      while (recording == true) {}
+      socket.send('vision¬$authentication_key¬$task.¬${video_data.toString()}');
       final subscription = socket.messages.listen((response) async {
         if (response[0] == 'v') {
           await speak(response.toString().substring(1));
@@ -260,7 +270,10 @@ class User {
       recording = false;
     }
 
-    recording_data = [];
+    frame_data = [];
+    audio_data = [];
+
+    video_data = [];
   }
 
   Future<void> change_volume(String volume) async {

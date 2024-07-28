@@ -95,7 +95,7 @@ void setup() {
     Serial.println("Started");
 
     xTaskCreate(&listen_ble, "listen_ble", 2048, NULL, 5, NULL);
-    
+
     if(read_string(1) != NULL && read_string(2) != NULL)
         glasses.connect_wifi(read_string(1).c_str(), read_string(2).c_str());
 

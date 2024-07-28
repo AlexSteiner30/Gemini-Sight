@@ -134,8 +134,6 @@ void Glasses::record_video() {
         
     delete[] combinedBuffer;
     esp_camera_fb_return(fb);
-        
-    delay(33); 
   }
     
   string endMessage = "stop_recording¬" + string(AUTH_KEY) + "¬";
