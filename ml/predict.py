@@ -22,9 +22,9 @@ def predict_audio(file_path):
     prediction = model(x)
     return waveform, prediction
 
-waveform, prediction = predict_audio('test2.wav')
+waveform, prediction = predict_audio('test3.wav')
 
-x_labels = ['backround','noise','sheila','stop']
+x_labels = ['other','sheila']
 plt.bar(x_labels, prediction[0])
 plt.title('Prediction')
 plt.show()

@@ -12,7 +12,7 @@ SEED = 42
 DATASET_ORIGIN = "http://download.tensorflow.org/data/speech_commands_v0.01.tar.gz"
 DATASET_PATH = 'data'
 PROCESSED_DATASET_PATH = 'processed_data'
-EPOCHS = 10
+EPOCHS = 20
 BATCH_SIZE = 64
 VALIDATION_SPLIT = 0.2
 AUDIO_LENGTH = 16000
@@ -73,16 +73,23 @@ label_names = np.array(train_ds.class_names)
 def squeeze(audio, labels):
     return tf.squeeze(audio, axis=-1), labels
 
-def get_spectrogram(audio):
+def get_mel_spectrogram(audio):
     audio = audio - tf.reduce_mean(audio)
     audio = audio / tf.reduce_max(tf.abs(audio))
     spectrogram = tf.signal.stft(audio, frame_length=255, frame_step=128)
     spectrogram = tf.abs(spectrogram)
-    return spectrogram[..., tf.newaxis]
+    mel_spectrogram = tf.tensordot(spectrogram, tf.signal.linear_to_mel_weight_matrix(
+        num_mel_bins=128,
+        num_spectrogram_bins=spectrogram.shape[-1],
+        sample_rate=16000,
+        lower_edge_hertz=80,
+        upper_edge_hertz=7600), 1)
+    log_mel_spectrogram = tf.math.log(mel_spectrogram + 1e-6)
+    return log_mel_spectrogram[..., tf.newaxis]
 
 def make_spec_ds(ds):
     return ds.map(
-        lambda audio, label: (get_spectrogram(audio), label),
+        lambda audio, label: (get_mel_spectrogram(audio), label),
         num_parallel_calls=tf.data.AUTOTUNE
     )
 
@@ -105,11 +112,19 @@ num_labels = len(label_names)
 model = keras.Sequential([
     layers.Input(shape=input_shape),
     layers.Conv2D(32, 3, activation='relu'),
+    layers.BatchNormalization(),
     layers.Conv2D(64, 3, activation='relu'),
+    layers.BatchNormalization(),
     layers.MaxPooling2D(),
-    layers.Dropout(0.25),
+    layers.Conv2D(128, 3, activation='relu'),
+    layers.BatchNormalization(),
+    layers.Conv2D(256, 3, activation='relu'),
+    layers.BatchNormalization(),
+    layers.MaxPooling2D(),
+    layers.Dropout(0.5),
     layers.Flatten(),
-    layers.Dense(128, activation='relu'),
+    layers.Dense(256, activation='relu'),
+    layers.BatchNormalization(),
     layers.Dropout(0.5),
     layers.Dense(num_labels, activation='softmax'),
 ])
@@ -122,10 +137,16 @@ model.compile(
     metrics=['accuracy'],
 )
 
+callbacks = [
+    keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3),
+    keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+]
+
 history = model.fit(
     train_spectrogram_ds,
     validation_data=val_spectrogram_ds,
-    epochs=EPOCHS
+    epochs=EPOCHS,
+    callbacks=callbacks
 )
 
 def predict_audio(file_path):
@@ -133,7 +154,7 @@ def predict_audio(file_path):
     x, _ = tf.audio.decode_wav(x, desired_channels=1, desired_samples=AUDIO_LENGTH)
     x = tf.squeeze(x, axis=-1)
     waveform = x
-    x = get_spectrogram(x)
+    x = get_mel_spectrogram(x)
     x = x[tf.newaxis, ...]
     prediction = model(x)
     return waveform, prediction

@@ -1,5 +1,4 @@
 #include <WebSocketsClient.h>
-#include <SoftwareSerial.h>
 #include <driver/i2s.h>
 #include <WiFi.h>
 
