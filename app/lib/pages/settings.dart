@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:app/helper/ble.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -169,7 +172,8 @@ class _DeviceSettingsState extends State<DeviceSettings> {
   }
 
   void _connectToWifi() {
-    // Handle connect action
+    write_data(Uint8List.fromList(
+        'wifi¬${ssidController.text}¬${passwordController.text}'.codeUnits));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Connecting to WiFi...')),
     );

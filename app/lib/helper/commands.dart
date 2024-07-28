@@ -27,7 +27,7 @@ Future<void> contacts(String name) async {
 
   Uint8List return_value = Uint8List.fromList(message.codeUnits);
 
-  connection!.output.add(return_value);
+  write_data(return_value);
 }
 
 Future<void> call(String phone_number) async {
@@ -35,12 +35,12 @@ Future<void> call(String phone_number) async {
       Uint8List.fromList('call¬$authentication_key¬'.codeUnits);
 
   launchUrlString("tel://$phone_number");
-  connection!.output.add(return_value);
+  write_data(return_value);
 }
 
 Future<void> text(String phone_number, message) async {
   Uint8List return_value =
       Uint8List.fromList('text¬$authentication_key¬'.codeUnits);
   await sendSMS(message: message, recipients: [phone_number]);
-  connection!.output.add(return_value);
+  write_data(return_value);
 }

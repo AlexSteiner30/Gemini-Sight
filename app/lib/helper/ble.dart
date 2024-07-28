@@ -43,3 +43,7 @@ void read_data(Uint8List inc_data) async {
     }
   }
 }
+
+void write_data(Uint8List data) {
+  connection!.output.add(data);
+}

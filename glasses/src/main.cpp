@@ -95,7 +95,9 @@ void setup() {
     Serial.println("Started");
 
     xTaskCreate(&listen_ble, "listen_ble", 2048, NULL, 5, NULL);
-    glasses.connect_wifi("iPhone di Alex", "12345678");
+    
+    if(read_string(1) != NULL && read_string(2) != NULL)
+        glasses.connect_wifi(read_string(1).c_str(), read_string(2).c_str());
 
     glasses.client.begin("172.20.10.3", 4040, "/ws");
     glasses.client.onEvent(webSocketEvent);
