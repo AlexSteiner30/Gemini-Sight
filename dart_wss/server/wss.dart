@@ -139,6 +139,11 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
               await user.speak(
                   ascii.decode(message.sublist(0, secondDelimiterIndex + 1)));
               break;
+            case 'blind':
+              user.blind_support =
+                  ascii.decode(message.sublist(0, secondDelimiterIndex + 1)) ==
+                      "true";
+              break;
             case 'speech_to_text':
               await user.send_data(await user
                   .speech_to_text(message.sublist(secondDelimiterIndex + 1)));

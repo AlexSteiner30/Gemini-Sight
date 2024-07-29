@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:app/helper/commands.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:flutter_blue/flutter_blue.dart';

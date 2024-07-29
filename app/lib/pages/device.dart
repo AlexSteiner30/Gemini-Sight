@@ -330,6 +330,9 @@ class _DevicePageState extends State<DevicePage> {
                             widget.blind_support =
                                 prefs.getBool('blind_support') ?? false;
 
+                            write_data(
+                                'blind|$authentication_key|${widget.blind_support.toString()}');
+
                             await prefs.setBool(
                                 'blind_support', !widget.blind_support);
                             setState(() {

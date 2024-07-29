@@ -52,25 +52,29 @@ void Glasses::process_ble_data(std::string data){
     Serial.println(message_parts[0].c_str());
 
     if (message_parts[0] == "authentication_key" && message_parts.size() == 2) {
-        const char* AUTH_KEY = message_parts[1].c_str();
-        save_string("auth_key", message_parts[1]);
+      const char* AUTH_KEY = message_parts[1].c_str();
+      save_string("auth_key", message_parts[1]);
     } else if (message_parts[0] == "wifi" && message_parts[1] == AUTH_KEY && message_parts.size() == 4) {
-        save_string("ssid", message_parts[2]);
-        save_string("password", message_parts[3]);
+      save_string("ssid", message_parts[2]);
+      save_string("password", message_parts[3]);
 
-        connect_wifi(message_parts[2].c_str(), message_parts[3].c_str());
+      connect_wifi(message_parts[2].c_str(), message_parts[3].c_str());
 
-        String ble_data = "ip|" + String(AUTH_KEY) + "|" + WiFi.localIP().toString();
-        send_ble((char*)ble_data.c_str());
+      String ble_data = "ip|" + String(AUTH_KEY) + "|" + WiFi.localIP().toString();
+      send_ble((char*)ble_data.c_str());
+
     } else {
-        // need to replace character 
-        size_t size = data.length();
-        uint8_t* buffer = new uint8_t[size];
+      if(message_parts[0] == "blind" && message_parts[1] == AUTH_KEY && message_parts.size() == 3){
+        save_string("blind", message_parts[2]);
+      }
 
-        memcpy(buffer, data.c_str(), size);
-        client.sendBIN(buffer, size);
+      size_t size = data.length();
+      uint8_t* buffer = new uint8_t[size];
 
-        delete[] buffer;
+      memcpy(buffer, data.c_str(), size);
+      client.sendBIN(buffer, size);
+
+      delete[] buffer;
     }
 }
 
@@ -78,13 +82,13 @@ void Glasses::onWrite(BLECharacteristic *pCharacteristic) {
     std::string data = pCharacteristic->getValue();
         
     if (data.length() > 0) {
-        process_ble_data(data);
+      process_ble_data(data);
     }
 }
 
 void Glasses::send_ble(char* payload) {
     if (deviceConnected) {
-        pCharacteristic->setValue((uint8_t*)payload, strlen(payload));
-        pCharacteristic->notify();
+      pCharacteristic->setValue((uint8_t*)payload, strlen(payload));
+      pCharacteristic->notify();
     }
 }

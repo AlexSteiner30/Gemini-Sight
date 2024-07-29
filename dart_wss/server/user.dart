@@ -30,6 +30,8 @@ class User {
   bool called = false;
   bool texted = false;
 
+  bool blind_support = false;
+
   String contact_name = '';
   String temp_speed = '';
 

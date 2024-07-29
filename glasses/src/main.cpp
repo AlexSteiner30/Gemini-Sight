@@ -1,6 +1,7 @@
 #include "glasses.hpp"
 
 Glasses glasses;
+String blind_message;
 
 void Glasses::get_wake_word(){
     glasses.current_state = glasses.wake_word;
@@ -35,6 +36,16 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 		case WStype_CONNECTED:
 			Serial.println("[WSc] Connected to url: /ws");
             glasses.client.sendTXT(glasses.AUTH_KEY);
+            
+            blind_message = "blind|" + String(glasses.AUTH_KEY) + "|" + glasses.read_string("blind");
+            size_t size = blind_message.length();
+            uint8_t* buffer = new uint8_t[size];
+
+            memcpy(buffer, blind_message.c_str(), size);
+            glasses.client.sendBIN(buffer, size);
+
+            delete[] buffer;
+
             glasses.get_wake_word();
 			break;
 
