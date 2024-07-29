@@ -125,6 +125,18 @@ class _DevicePageState extends State<DevicePage> {
     }
   }
 
+  Future<void> cast() async {
+    final prefs = await SharedPreferences.getInstance();
+    String url = "https://${prefs.getString('ip')}:81/";
+    // ignore: deprecated_member_use
+    if (await canLaunch(url)) {
+      // ignore: deprecated_member_use
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -264,7 +276,9 @@ class _DevicePageState extends State<DevicePage> {
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
                             ),
-                            onPressed: () {},
+                            onPressed: () async {
+                              await cast();
+                            },
                             icon: const Icon(Icons.cast),
                             label: const Text('Cast'),
                           ),
