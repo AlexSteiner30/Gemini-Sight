@@ -31,7 +31,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToLogin() async {
-    await Future.delayed(const Duration(seconds: 2));
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool('blind_support') == null) {
       await prefs.setBool('blind_support', false);
@@ -57,8 +56,6 @@ class _SplashScreenState extends State<SplashScreen> {
       authentication_key = initial_data[0];
       ble_id = initial_data[1];
 
-      print(ble_id);
-
       final prefs = await SharedPreferences.getInstance();
 
       await scan_devices();
@@ -68,8 +65,6 @@ class _SplashScreenState extends State<SplashScreen> {
         MaterialPageRoute(
             builder: (context) => DevicePage(
                 user: account!,
-                wifi: wifi,
-                connected: connected,
                 blind_support: prefs.getBool('blind_support') ?? false)),
       );
     } else {

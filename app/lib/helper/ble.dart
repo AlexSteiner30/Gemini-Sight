@@ -4,7 +4,6 @@ import 'dart:typed_data';
 
 import 'package:app/helper/commands.dart';
 import 'package:app/pages/sign_in.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,11 +14,10 @@ bool connected = false;
 Future<void> scan_devices() async {
   FlutterBlue flutterBlue = FlutterBlue.instance;
 
-  flutterBlue.startScan(timeout: Duration(seconds: 4));
+  flutterBlue.startScan(timeout: const Duration(seconds: 4));
 
   flutterBlue.scanResults.listen((results) async {
     for (ScanResult result in results) {
-      print(result.device.id.id == ble_id);
       if (result.device.id.id == ble_id) {
         await connect_device(result.device);
         break;
@@ -27,7 +25,7 @@ Future<void> scan_devices() async {
     }
   });
 
-  await Future.delayed(Duration(seconds: 4));
+  await Future.delayed(const Duration(seconds: 4));
   flutterBlue.stopScan();
 }
 
@@ -36,23 +34,25 @@ Future<void> connect_device(BluetoothDevice device) async {
     await device.connect();
     connectedDevice = device;
     connected = true;
-    print('Connected to ${device.name}');
+
+    device.state.listen((state) {
+      if (state == BluetoothDeviceState.disconnected) {
+        connected = false;
+      }
+    });
 
     List<BluetoothService> services = await device.discoverServices();
     for (BluetoothService service in services) {
       for (BluetoothCharacteristic characteristic in service.characteristics) {
-        if (characteristic.uuid.toString() == 'your_characteristic_uuid') {
-          targetCharacteristic = characteristic;
+        targetCharacteristic = characteristic;
 
-          await characteristic.setNotifyValue(true);
-          characteristic.value.listen((value) {
-            read_data(value);
-          });
-        }
+        await characteristic.setNotifyValue(true);
+        characteristic.value.listen((value) {
+          read_data(value);
+        });
       }
     }
   } catch (error) {
-    print('Connection failed: $error');
     connected = false;
   }
 }

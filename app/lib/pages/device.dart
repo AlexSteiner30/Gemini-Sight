@@ -1,5 +1,8 @@
+import 'dart:async';
+import 'package:app/helper/ble.dart';
 import 'package:app/helper/loading_screen.dart';
 import 'package:app/helper/query.dart';
+import 'package:app/helper/wifi.dart';
 import 'package:app/pages/settings.dart';
 import 'package:app/pages/bottom_nav_bar.dart';
 import 'package:app/pages/sign_in.dart';
@@ -22,16 +25,9 @@ class Device {
 
 // ignore: must_be_immutable
 class DevicePage extends StatefulWidget {
-  DevicePage(
-      {super.key,
-      required this.user,
-      required this.connected,
-      required this.wifi,
-      required this.blind_support});
+  DevicePage({super.key, required this.user, required this.blind_support});
 
   final GoogleSignInAccount user;
-  bool connected;
-  bool wifi;
   bool blind_support;
 
   @override
@@ -42,9 +38,33 @@ class _DevicePageState extends State<DevicePage> {
   bool isLoading = false;
   int _currentIndex = 0;
 
+  int connected_time = -1;
+
   @override
   void initState() {
     super.initState();
+    update_time();
+    check_connection();
+
+    Timer.periodic(const Duration(minutes: 1), (Timer timer) {
+      update_time();
+    });
+
+    Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      check_connection();
+    });
+  }
+
+  void update_time() {
+    setState(() {
+      connected_time++;
+    });
+  }
+
+  void check_connection() {
+    setState(() {
+      connected = connected;
+    });
   }
 
   @override
@@ -134,21 +154,21 @@ class _DevicePageState extends State<DevicePage> {
                   // ignore: prefer_const_constructors
                   SizedBox(height: 20),
                   // ignore: prefer_const_constructors
-                  if (widget.connected)
+                  if (connected)
                     // ignore: prefer_const_constructors
                     Text(
                       'Connected',
                       // ignore: prefer_const_constructors
                       style: TextStyle(color: Colors.green, fontSize: 16),
                     ),
-                  if (widget.connected)
+                  if (connected)
                     // ignore: prefer_const_constructors
                     Text(
-                      'Synced 3m ago',
+                      'Synced ${connected_time >= 60 ? connected_time >= 60 * 60 ? "${connected_time ~/ 60 * 60}d" : "${connected_time ~/ 60}h" : "${connected_time}m"} ago',
                       // ignore: prefer_const_constructors
                       style: TextStyle(color: Colors.grey, fontSize: 12),
                     ),
-                  if (!widget.connected)
+                  if (!connected)
                     // ignore: prefer_const_constructors
                     Text(
                       'Not Connected',
@@ -166,7 +186,7 @@ class _DevicePageState extends State<DevicePage> {
                   Center(
                     child: Column(
                       children: [
-                        if (widget.connected)
+                        if (connected)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -191,7 +211,7 @@ class _DevicePageState extends State<DevicePage> {
                               const SizedBox(width: 40),
                               Column(
                                 children: [
-                                  widget.wifi
+                                  wifi
                                       ? const Icon(Icons.wifi,
                                           color: Colors.white)
                                       : const Icon(Icons.wifi_off,
@@ -208,7 +228,7 @@ class _DevicePageState extends State<DevicePage> {
                               ),
                             ],
                           ),
-                        if (!widget.connected)
+                        if (!connected)
                           const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -232,7 +252,7 @@ class _DevicePageState extends State<DevicePage> {
                             // ignore: prefer_const_constructors
                             style: TextStyle(color: Colors.white)),
                         const SizedBox(height: 20),
-                        if (widget.connected)
+                        if (connected)
                           ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueAccent,
@@ -244,7 +264,7 @@ class _DevicePageState extends State<DevicePage> {
                             icon: const Icon(Icons.cast),
                             label: const Text('Cast'),
                           ),
-                        if (!widget.connected)
+                        if (!connected)
                           ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueAccent,
@@ -257,7 +277,7 @@ class _DevicePageState extends State<DevicePage> {
                             label: const Text('Connect'),
                           ),
                         const SizedBox(height: 10),
-                        if (widget.connected)
+                        if (connected)
                           TextButton(
                             onPressed: () {},
                             child: const Text(
@@ -265,7 +285,7 @@ class _DevicePageState extends State<DevicePage> {
                               style: TextStyle(color: Colors.blueAccent),
                             ),
                           ),
-                        if (!widget.connected)
+                        if (!connected)
                           const Text(
                             'Connect via Bluetooth for WiFi credentials',
                             style: TextStyle(color: Colors.blueAccent),
