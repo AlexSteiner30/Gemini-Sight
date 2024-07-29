@@ -53,10 +53,10 @@ void Glasses::process_ble_data(std::string data){
 
     if (message_parts[0] == "authentication_key" && message_parts.size() == 2) {
         const char* AUTH_KEY = message_parts[1].c_str();
-        save_string(0, message_parts[1]);
+        save_string("auth_key", message_parts[1]);
     } else if (message_parts[0] == "wifi" && message_parts[1] == AUTH_KEY && message_parts.size() == 4) {
-        save_string(1, message_parts[2]);
-        save_string(2, message_parts[3]);
+        save_string("ssid", message_parts[2]);
+        save_string("password", message_parts[3]);
 
         connect_wifi(message_parts[2].c_str(), message_parts[3].c_str());
 

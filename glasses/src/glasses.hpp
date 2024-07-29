@@ -2,6 +2,8 @@
 #include <driver/i2s.h>
 #include <WiFi.h>
 
+#include <Preferences.h>
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -67,6 +69,7 @@ using namespace std;
 class Glasses : public BLECharacteristicCallbacks {
   public:
     WebSocketsClient client;
+    Preferences preferences;
 
     const char* AUTH_KEY = "9e323100603908714f50f2a254cbf3cab972d40361d83f53dce0d214cc0df1707e1cb0c7c7bd98c4e2135d16abf79527de834abdbeff2ba2bcaa57c82a187dea2306e670a03803374a8d325956961f280350e727e8822f7ae973541f895a6a9e0c5fadc3e15afaa19d583dd50c89ca8d7a8b82713f17d276c4ee4cd5f1831000";
 
@@ -115,8 +118,8 @@ class Glasses : public BLECharacteristicCallbacks {
       void listen_ble();
       void send_ble(char* payload);
 
-      void save_string(int addrOffset, const string &strToWrite);
-      String read_string(int addrOffset);
+      void save_string(String key, const string value);
+      String read_string(String key);
       vector<string> split(string s, string delimiter);
 
       void process_ble_data(std::string data);

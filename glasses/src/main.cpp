@@ -86,12 +86,14 @@ void setup() {
     glasses.setup_camera();
     glasses.setup_ble();
 
-    glasses.AUTH_KEY = glasses.read_string(0).c_str();
+    glasses.preferences.begin("glasses", false);
+
+    glasses.AUTH_KEY = glasses.read_string("auth_key").c_str();
 
     Serial.println("Started");
 
-    if(glasses.read_string(1) != NULL && glasses.read_string(2) != NULL)
-        glasses.connect_wifi(glasses.read_string(1).c_str(), glasses.read_string(2).c_str());
+    if(glasses.read_string("ssid") != NULL && glasses.read_string("password") != NULL)
+        glasses.connect_wifi(glasses.read_string("ssid").c_str(), glasses.read_string("password").c_str());
 
     glasses.client.begin("172.20.10.3", 4040, "/ws");
     glasses.client.onEvent(webSocketEvent);

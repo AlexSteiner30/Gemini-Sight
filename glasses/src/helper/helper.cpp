@@ -1,21 +1,11 @@
 #include "glasses.hpp"
 
-void Glasses::save_string(int addrOffset, const string &strToWrite){
-  byte len = strToWrite.length();
-  EEPROM.write(addrOffset, len);
-  for (int i = 0; i < len; i++){
-    EEPROM.write(addrOffset + 1 + i, strToWrite[i]);
-  }
+void Glasses::save_string(String key, const string value){
+  preferences.putString(key.c_str(), value.c_str());
 }
 
-String Glasses::read_string(int addrOffset){
-  int newStrLen = EEPROM.read(addrOffset);
-  char data[newStrLen + 1];
-  for (int i = 0; i < newStrLen; i++){
-    data[i] = EEPROM.read(addrOffset + 1 + i);
-  }
-  data[newStrLen] = '\ 0'; 
-  return String(data);
+String Glasses::read_string(String key){
+  return preferences.getString(key.c_str(), "error");
 }
 
 vector<string> Glasses::split(string s, string delimiter){
