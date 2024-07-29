@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:app/helper/ble.dart';
 import 'package:app/pages/sign_in.dart';
 import 'package:contacts_service/contacts_service.dart';

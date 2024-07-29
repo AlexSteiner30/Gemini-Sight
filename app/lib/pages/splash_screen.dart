@@ -1,7 +1,5 @@
-import 'dart:async';
 import 'package:app/helper/ble.dart';
 import 'package:app/helper/helper.dart';
-import 'package:app/helper/wifi.dart';
 import 'package:app/main.dart';
 import 'package:app/pages/device.dart';
 import 'package:app/pages/sign_in.dart';

@@ -44,7 +44,13 @@ void combine_video_audio(String path) {
 List<int> get_video(String path) {
   String full_path = 'media/$path/output.mp4';
   List<int> video = [];
-  // get buffer from file
+
+  File video_file = File(full_path);
+  if (video_file.existsSync()) {
+    video = video_file.readAsBytesSync();
+  } else {
+    print('File not found: $full_path');
+  }
 
   return video;
 }

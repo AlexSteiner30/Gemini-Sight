@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'package:app/helper/ble.dart';
 import 'package:app/helper/socket.dart';
 import 'package:app/helper/loading_screen.dart';
 import 'package:app/helper/query.dart';
-import 'package:app/helper/wifi.dart';
 import 'package:app/main.dart';
 import 'package:app/pages/device.dart';
 import 'package:flutter/material.dart';

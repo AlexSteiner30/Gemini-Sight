@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:app/helper/commands.dart';
 import 'package:app/pages/sign_in.dart';

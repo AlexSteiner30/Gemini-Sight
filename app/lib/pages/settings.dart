@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:app/helper/ble.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
