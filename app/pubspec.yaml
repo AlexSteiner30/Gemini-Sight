@@ -49,7 +49,7 @@ dependencies:
   path_provider: ^2.1.3
   geolocator: ^12.0.0
   geocoding: ^3.0.0
-  flutter_bluetooth_serial: ^0.3.2
+  flutter_blue: ^0.8.0
   
 dev_dependencies:
   flutter_test:

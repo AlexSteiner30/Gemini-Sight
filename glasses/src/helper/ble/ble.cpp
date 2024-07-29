@@ -1,6 +1,6 @@
 #include "glasses.hpp"
-
-HardwareSerial HM10(2); 
+ 
+HardwareSerial HM10(1); 
 
 void Glasses::setup_ble() {
     HM10.begin(9600);

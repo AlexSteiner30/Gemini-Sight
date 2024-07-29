@@ -57,9 +57,11 @@ class _SplashScreenState extends State<SplashScreen> {
       authentication_key = initial_data[0];
       ble_id = initial_data[1];
 
-      await connect_device(ble_id);
+      print(ble_id);
 
       final prefs = await SharedPreferences.getInstance();
+
+      await scan_devices();
 
       Navigator.pushReplacement(
         context,

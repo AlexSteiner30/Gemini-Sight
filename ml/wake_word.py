@@ -11,9 +11,8 @@ import shutil
 SEED = 42
 DATASET_ORIGIN = "http://download.tensorflow.org/data/speech_commands_v0.01.tar.gz"
 DATASET_PATH = 'data'
-PROCESSED_DATASET_PATH = 'processed_data'
 EPOCHS = 20
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 VALIDATION_SPLIT = 0.2
 AUDIO_LENGTH = 16000
 
@@ -35,32 +34,8 @@ commands = np.array(tf.io.gfile.listdir(str(data_dir)))
 commands = commands[~np.isin(commands, ['README.md', '.DS_Store'])]
 print('Commands:', commands)
 
-processed_data_dir = pathlib.Path(PROCESSED_DATASET_PATH)
-if processed_data_dir.exists():
-    shutil.rmtree(processed_data_dir)
-processed_data_dir.mkdir(parents=True, exist_ok=True)
-
-def copy_files(file_list, dest_dir):
-    for file_path in file_list:
-        dest_path = dest_dir / file_path.name
-        shutil.copy(file_path, dest_path)
-
-sheila_dir = processed_data_dir / 'sheila'
-sheila_dir.mkdir()
-sheila_files = list(data_dir.glob('sheila/*.wav'))
-copy_files(sheila_files, sheila_dir)
-
-other_dir = processed_data_dir / 'other'
-other_dir.mkdir()
-for command in commands:
-    if command != 'sheila':
-        command_files = list(data_dir.glob(f'{command}/*.wav'))
-        num_files = len(command_files)
-        sampled_files = command_files if num_files < 60 else random.sample(command_files, 60)
-        copy_files(sampled_files, other_dir)
-
 train_ds, val_ds = keras.utils.audio_dataset_from_directory(
-    directory=processed_data_dir,
+    directory=DATASET_PATH,
     batch_size=BATCH_SIZE,
     validation_split=VALIDATION_SPLIT,
     seed=SEED,
@@ -111,6 +86,7 @@ num_labels = len(label_names)
 
 model = keras.Sequential([
     layers.Input(shape=input_shape),
+    layers.Resizing(64,64),
     layers.Conv2D(32, 3, activation='relu'),
     layers.BatchNormalization(),
     layers.Conv2D(64, 3, activation='relu'),

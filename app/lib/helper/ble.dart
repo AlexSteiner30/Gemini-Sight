@@ -1,58 +1,96 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:app/helper/commands.dart';
 import 'package:app/pages/sign_in.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'dart:typed_data';
-import 'dart:convert';
-
+import 'package:flutter/material.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-BluetoothConnection? connection;
+BluetoothDevice? connectedDevice;
+BluetoothCharacteristic? targetCharacteristic;
 bool connected = false;
 
-Future<void> connect_device(String address) async {
-  await BluetoothConnection.toAddress(address).then((_connection) {
-    print('Connected to the device');
-    connection = _connection;
+Future<void> scan_devices() async {
+  FlutterBlue flutterBlue = FlutterBlue.instance;
 
-    connection?.input?.listen(read_data).onDone(() {});
-    connected = true;
-  }).catchError((error) {
-    print('Cannot connect, exception occured');
-    connected = false;
+  flutterBlue.startScan(timeout: Duration(seconds: 4));
+
+  flutterBlue.scanResults.listen((results) async {
+    for (ScanResult result in results) {
+      print(result.device.id.id == ble_id);
+      if (result.device.id.id == ble_id) {
+        await connect_device(result.device);
+        break;
+      }
+    }
   });
+
+  await Future.delayed(Duration(seconds: 4));
+  flutterBlue.stopScan();
 }
 
-void read_data(Uint8List inc_data) async {
-  String data = ascii.decode(inc_data);
-  List<String> data_parts = data.split('¬');
+Future<void> connect_device(BluetoothDevice device) async {
+  try {
+    await device.connect();
+    connectedDevice = device;
+    connected = true;
+    print('Connected to ${device.name}');
 
-  if (data_parts.length >= 2) {
-    String command = data_parts[0];
-    String auth_key = data_parts[1];
+    List<BluetoothService> services = await device.discoverServices();
+    for (BluetoothService service in services) {
+      for (BluetoothCharacteristic characteristic in service.characteristics) {
+        if (characteristic.uuid.toString() == 'your_characteristic_uuid') {
+          targetCharacteristic = characteristic;
 
-    if (auth_key == authentication_key) {
+          await characteristic.setNotifyValue(true);
+          characteristic.value.listen((value) {
+            read_data(value);
+          });
+        }
+      }
+    }
+  } catch (error) {
+    print('Connection failed: $error');
+    connected = false;
+  }
+}
+
+void read_data(List<int> data) async {
+  String dataString = ascii.decode(data);
+  List<String> dataParts = dataString.split('¬');
+
+  if (dataParts.length >= 2) {
+    String command = dataParts[0];
+    String authKey = dataParts[1];
+
+    if (authKey == authentication_key) {
       switch (command) {
         case 'ip':
-          // save to prefs
-          if (data_parts.length == 3) {
+          if (dataParts.length == 3) {
             final prefs = await SharedPreferences.getInstance();
-            prefs.setString('ip', data_parts[2]);
+            prefs.setString('ip', dataParts[2]);
           }
           break;
         case 'contacts':
-          if (data_parts.length == 3) await contacts(data_parts[2]);
+          if (dataParts.length == 3) await contacts(dataParts[2]);
           break;
         case 'call':
-          if (data_parts.length == 3) await call(data_parts[2]);
+          if (dataParts.length == 3) await call(dataParts[2]);
           break;
         case 'text':
-          if (data_parts.length == 4) await text(data_parts[2], data_parts[3]);
+          if (dataParts.length == 4) await text(dataParts[2], dataParts[3]);
           break;
       }
     }
   }
 }
 
-void write_data(Uint8List data) {
-  connection!.output.add(data);
+Future<void> write_data(Uint8List data) async {
+  if (targetCharacteristic != null) {
+    await targetCharacteristic!.write(data);
+  } else {
+    print('Target characteristic is not set.');
+  }
 }
