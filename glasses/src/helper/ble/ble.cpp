@@ -4,6 +4,7 @@
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
 
 bool deviceConnected = false;
+BLECharacteristic *pCharacteristic;
 
 class MyServerCallbacks : public BLEServerCallbacks {
   void onConnect(BLEServer* pServer) {
@@ -14,10 +15,9 @@ class MyServerCallbacks : public BLEServerCallbacks {
   void onDisconnect(BLEServer* pServer) {
     deviceConnected = false;
     Serial.println("Device disconnected");
-    pServer->startAdvertising(); 
+    pServer->startAdvertising();
   }
 };
-
 
 void Glasses::setup_ble() {
   BLEDevice::init("Gemini Sight Glasses");
@@ -26,10 +26,11 @@ void Glasses::setup_ble() {
 
   BLEService *pService = pServer->createService(SERVICE_UUID);
   
-  BLECharacteristic *pCharacteristic = pService->createCharacteristic(
+  pCharacteristic = pService->createCharacteristic(
                                          CHARACTERISTIC_UUID,
                                          BLECharacteristic::PROPERTY_READ |
-                                         BLECharacteristic::PROPERTY_WRITE
+                                         BLECharacteristic::PROPERTY_WRITE |
+                                         BLECharacteristic::PROPERTY_NOTIFY
                                        );
 
   pCharacteristic->setValue("Hello World");
@@ -44,7 +45,6 @@ void Glasses::setup_ble() {
   BLEDevice::startAdvertising();
   Serial.println("Characteristic defined! Now you can read it on your phone!");
 }
-
 
 void Glasses::process_ble_data(std::string data){
     vector<string> message_parts = split(data.c_str(), "|");
@@ -73,6 +73,7 @@ void Glasses::process_ble_data(std::string data){
         delete[] buffer;
     }
 }
+
 void Glasses::onWrite(BLECharacteristic *pCharacteristic) {
     std::string data = pCharacteristic->getValue();
         
@@ -81,6 +82,9 @@ void Glasses::onWrite(BLECharacteristic *pCharacteristic) {
     }
 }
 
-void Glasses::send_ble(char* payload){
-
+void Glasses::send_ble(char* payload) {
+    if (deviceConnected) {
+        pCharacteristic->setValue((uint8_t*)payload, strlen(payload));
+        pCharacteristic->notify();
+    }
 }

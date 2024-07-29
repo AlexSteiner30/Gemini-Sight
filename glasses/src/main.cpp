@@ -79,14 +79,12 @@ void setup() {
     Serial.begin(115200);
     Serial.println();
 
-    glasses.setup_ble();
-    
-    /*
     // play boot sound
 
     glasses.setup_tf();
     glasses.setup_microphone();
     glasses.setup_camera();
+    glasses.setup_ble();
 
     glasses.AUTH_KEY = glasses.read_string(0).c_str();
 
@@ -98,9 +96,8 @@ void setup() {
     glasses.client.begin("172.20.10.3", 4040, "/ws");
     glasses.client.onEvent(webSocketEvent);
     glasses.client.setReconnectInterval(5000);
-    */
 }
 
 void loop() {
-    //glasses.client.loop();
+    glasses.client.loop();
 }
