@@ -134,7 +134,7 @@ class User {
         final Completer<void> completer = Completer<void>();
 
         socket.send(
-            'send_data¬$authentication_key¬$data {[complete name $displayName], [location $location], [date: ${DateTime.now().toString()}, Weekday ${weekdays[DateTime.now().weekday - 1]}], }');
+            'send_data¬$authentication_key¬$data {[complete name $displayName], [location $location], [date: ${DateTime.now().toString()}, Weekday ${weekdays[DateTime.now().weekday - 1]}], ${blind_support == true ? "blind_support : user also has blind support meaning that more often request visual and describe a lot surrondings so that the blind user can experience everything around him and overall have a better experience" : ""}}');
 
         final subscription = socket.messages.listen((commands_list) async {
           if (commands_list == 'Request is not authenticated') {
