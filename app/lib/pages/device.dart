@@ -62,7 +62,8 @@ class _DevicePageState extends State<DevicePage> {
 
   void check_connection() {
     setState(() {
-      connected = connected;
+      ble = ble;
+      is_online();
     });
   }
 
@@ -153,21 +154,21 @@ class _DevicePageState extends State<DevicePage> {
                   // ignore: prefer_const_constructors
                   SizedBox(height: 20),
                   // ignore: prefer_const_constructors
-                  if (connected)
+                  if (ble || wifi)
                     // ignore: prefer_const_constructors
                     Text(
                       'Connected',
                       // ignore: prefer_const_constructors
                       style: TextStyle(color: Colors.green, fontSize: 16),
                     ),
-                  if (connected)
+                  if (ble || wifi)
                     // ignore: prefer_const_constructors
                     Text(
                       'Synced ${connected_time >= 60 ? connected_time >= 60 * 60 ? "${connected_time ~/ 60 * 60}d" : "${connected_time ~/ 60}h" : "${connected_time}m"} ago',
                       // ignore: prefer_const_constructors
                       style: TextStyle(color: Colors.grey, fontSize: 12),
                     ),
-                  if (!connected)
+                  if (!(ble || wifi))
                     // ignore: prefer_const_constructors
                     Text(
                       'Not Connected',
@@ -185,7 +186,7 @@ class _DevicePageState extends State<DevicePage> {
                   Center(
                     child: Column(
                       children: [
-                        if (connected)
+                        if (ble || wifi)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -219,15 +220,19 @@ class _DevicePageState extends State<DevicePage> {
                                 ],
                               ),
                               const SizedBox(width: 40),
-                              const Column(
+                              Column(
                                 children: [
-                                  Icon(Icons.bluetooth, color: Colors.white),
+                                  ble
+                                      ? const Icon(Icons.wifi,
+                                          color: Colors.white)
+                                      : const Icon(Icons.wifi_off,
+                                          color: Colors.red),
                                   SizedBox(height: 5),
                                 ],
                               ),
                             ],
                           ),
-                        if (!connected)
+                        if (!(ble || wifi))
                           const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -251,7 +256,7 @@ class _DevicePageState extends State<DevicePage> {
                             // ignore: prefer_const_constructors
                             style: TextStyle(color: Colors.white)),
                         const SizedBox(height: 20),
-                        if (connected)
+                        if (wifi)
                           ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueAccent,
@@ -263,7 +268,7 @@ class _DevicePageState extends State<DevicePage> {
                             icon: const Icon(Icons.cast),
                             label: const Text('Cast'),
                           ),
-                        if (!connected)
+                        if (!(ble || wifi))
                           ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueAccent,
@@ -276,7 +281,7 @@ class _DevicePageState extends State<DevicePage> {
                             label: const Text('Connect'),
                           ),
                         const SizedBox(height: 10),
-                        if (connected)
+                        if (ble || wifi)
                           TextButton(
                             onPressed: () {},
                             child: const Text(
@@ -284,7 +289,7 @@ class _DevicePageState extends State<DevicePage> {
                               style: TextStyle(color: Colors.blueAccent),
                             ),
                           ),
-                        if (!connected)
+                        if (!ble)
                           const Text(
                             'Connect via Bluetooth for WiFi credentials',
                             style: TextStyle(color: Colors.blueAccent),

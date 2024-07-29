@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 BluetoothDevice? connectedDevice;
 BluetoothCharacteristic? targetCharacteristic;
-bool connected = false;
+bool ble = false;
 
 Future<void> scan_devices() async {
   FlutterBlue flutterBlue = FlutterBlue.instance;
@@ -34,14 +34,14 @@ Future<void> connect_device(BluetoothDevice device) async {
   try {
     await device.connect();
     connectedDevice = device;
-    connected = true;
+    ble = true;
 
     device.state.listen((state) async {
       if (state == BluetoothDeviceState.disconnected) {
-        connected = false;
+        ble = false;
         connect_device(connectedDevice!);
       } else if (state == BluetoothDeviceState.connected) {
-        connected = true;
+        ble = true;
       }
     });
 
@@ -60,7 +60,7 @@ Future<void> connect_device(BluetoothDevice device) async {
       }
     }
   } catch (error) {
-    connected = false;
+    ble = false;
   }
 }
 

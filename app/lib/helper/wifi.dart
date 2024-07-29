@@ -2,23 +2,27 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 bool wifi = false;
 
-Future<bool> is_online(String ipAddress) async {
-  final Uri url = Uri.parse('http://$ipAddress');
+Future<void> is_online() async {
+  final prefs = await SharedPreferences.getInstance();
+
+  final Uri url = Uri.parse('http://${prefs.getString('ip')}');
 
   try {
     final response = await http.get(url).timeout(const Duration(seconds: 5));
     if (response.statusCode == 200) {
-      return true;
+      wifi = true;
     }
   } on SocketException {
-    return false;
+    wifi = false;
   } on TimeoutException {
-    return false;
+    wifi = false;
   } catch (e) {
-    return false;
+    wifi = false;
   }
 
-  return false;
+  wifi = false;
 }
