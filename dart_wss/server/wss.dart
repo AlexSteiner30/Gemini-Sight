@@ -119,9 +119,9 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
           user.expiration = DateTime.now().add(const Duration(minutes: 50));
         }
 
-        int firstDelimiterIndex = message.indexOf('¬'.codeUnitAt(0));
+        int firstDelimiterIndex = message.indexOf('|'.codeUnitAt(0));
         int secondDelimiterIndex =
-            message.indexOf('¬'.codeUnitAt(0), firstDelimiterIndex + 1);
+            message.indexOf('|'.codeUnitAt(0), firstDelimiterIndex + 1);
 
         if (firstDelimiterIndex == -1 || secondDelimiterIndex == -1) {
           print('Delimiters not found');

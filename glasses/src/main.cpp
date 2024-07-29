@@ -24,10 +24,6 @@ void record_audio(void *pvParameter) {
     glasses.record_audio();
 }
 
-void listen_ble(void *pvParameter){
-    glasses.listen_ble();
-}
-
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     vector<string> message_parts = glasses.split((char*)payload, "¬");
     switch(type) {
@@ -83,18 +79,18 @@ void setup() {
     Serial.begin(115200);
     Serial.println();
 
+    glasses.setup_ble();
+    
+    /*
     // play boot sound
 
     glasses.setup_tf();
     glasses.setup_microphone();
     glasses.setup_camera();
-    glasses.setup_ble();
 
     glasses.AUTH_KEY = glasses.read_string(0).c_str();
 
     Serial.println("Started");
-
-    xTaskCreate(&listen_ble, "listen_ble", 2048, NULL, 5, NULL);
 
     if(glasses.read_string(1) != NULL && glasses.read_string(2) != NULL)
         glasses.connect_wifi(glasses.read_string(1).c_str(), glasses.read_string(2).c_str());
@@ -102,8 +98,9 @@ void setup() {
     glasses.client.begin("172.20.10.3", 4040, "/ws");
     glasses.client.onEvent(webSocketEvent);
     glasses.client.setReconnectInterval(5000);
+    */
 }
 
 void loop() {
-    glasses.client.loop();
+    //glasses.client.loop();
 }

@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Device device = Device(auth: authentication_key, model: '0.1', status: "false");
+int connected_time = -1;
 
 class Device {
   String auth;
@@ -37,8 +38,6 @@ class DevicePage extends StatefulWidget {
 class _DevicePageState extends State<DevicePage> {
   bool isLoading = false;
   int _currentIndex = 0;
-
-  int connected_time = -1;
 
   @override
   void initState() {

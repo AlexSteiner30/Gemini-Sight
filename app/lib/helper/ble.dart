@@ -14,10 +14,11 @@ bool connected = false;
 Future<void> scan_devices() async {
   FlutterBlue flutterBlue = FlutterBlue.instance;
 
-  flutterBlue.startScan(timeout: const Duration(seconds: 4));
+  flutterBlue.startScan(timeout: const Duration(seconds: 10));
 
   flutterBlue.scanResults.listen((results) async {
     for (ScanResult result in results) {
+      print(result.device.name);
       if (result.device.id.id == ble_id) {
         await connect_device(result.device);
         break;
@@ -35,21 +36,27 @@ Future<void> connect_device(BluetoothDevice device) async {
     connectedDevice = device;
     connected = true;
 
-    device.state.listen((state) {
+    device.state.listen((state) async {
       if (state == BluetoothDeviceState.disconnected) {
         connected = false;
+        connect_device(connectedDevice!);
+      } else if (state == BluetoothDeviceState.connected) {
+        connected = true;
       }
     });
 
     List<BluetoothService> services = await device.discoverServices();
     for (BluetoothService service in services) {
       for (BluetoothCharacteristic characteristic in service.characteristics) {
-        targetCharacteristic = characteristic;
+        if (characteristic.uuid.toString() ==
+            "beb5483e-36e1-4688-b7f5-ea07361b26a8") {
+          targetCharacteristic = characteristic;
 
-        await characteristic.setNotifyValue(true);
-        characteristic.value.listen((value) {
-          read_data(value);
-        });
+          await characteristic.setNotifyValue(true);
+          characteristic.value.listen((value) {
+            read_data(value);
+          });
+        }
       }
     }
   } catch (error) {
@@ -59,7 +66,7 @@ Future<void> connect_device(BluetoothDevice device) async {
 
 void read_data(List<int> data) async {
   String dataString = ascii.decode(data);
-  List<String> dataParts = dataString.split('¬');
+  List<String> dataParts = dataString.split('|');
 
   if (dataParts.length >= 2) {
     String command = dataParts[0];
@@ -87,9 +94,9 @@ void read_data(List<int> data) async {
   }
 }
 
-Future<void> write_data(Uint8List data) async {
+Future<void> write_data(String data) async {
   if (targetCharacteristic != null) {
-    await targetCharacteristic!.write(data);
+    await targetCharacteristic?.write(data.codeUnits);
   } else {
     print('Target characteristic is not set.');
   }

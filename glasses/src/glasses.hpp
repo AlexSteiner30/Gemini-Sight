@@ -5,9 +5,9 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <algorithm>
 
 #include <EEPROM.h>
-
 #include <arduinoFFT.h>
 
 #include "helper/wake_word/model.h"
@@ -19,9 +19,10 @@
 
 #include <esp_heap_caps.h>
 
-#include <vector>
-#include <string>
-#include <iostream>
+
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEServer.h>
 
 using namespace std;
 
@@ -63,7 +64,7 @@ using namespace std;
 #define SAMPLE_SIZE 2
 #define CHANNEL_NUM 1
 
-class Glasses{
+class Glasses : public BLECharacteristicCallbacks {
   public:
     WebSocketsClient client;
 
@@ -117,4 +118,7 @@ class Glasses{
       void save_string(int addrOffset, const string &strToWrite);
       String read_string(int addrOffset);
       vector<string> split(string s, string delimiter);
+
+      void process_ble_data(std::string data);
+      void onWrite(BLECharacteristic *pCharacteristic);
 };
