@@ -9,12 +9,12 @@ Future<void> is_online() async {
   final prefs = await SharedPreferences.getInstance();
   final String? ipAddress = prefs.getString('ip');
 
-  /*if (ipAddress == null) {
+  if (ipAddress == null) {
     wifi = false;
     return;
-  }*/
+  }
 
-  final Uri url = Uri.parse('http://185.21.119.34');
+  final Uri url = Uri.parse('http://$ipAddress');
 
   try {
     final response = await http.get(url).timeout(const Duration(seconds: 5));
