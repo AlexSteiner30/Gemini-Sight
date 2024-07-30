@@ -132,7 +132,6 @@ dist
 .pnp.*
 .DS_Store
 .DS_Store
-*.wav
+ml/data/*/*.wav
+wss/audio/*/*.wav
 .DS_Store
-electronics/ml/data/speech_commands_v0.01.tar.gz
-ml/data/speech_commands_v0.01.tar.gz

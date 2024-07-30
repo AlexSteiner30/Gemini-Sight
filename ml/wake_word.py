@@ -53,14 +53,7 @@ def get_mel_spectrogram(audio):
     audio = audio / tf.reduce_max(tf.abs(audio))
     spectrogram = tf.signal.stft(audio, frame_length=255, frame_step=128)
     spectrogram = tf.abs(spectrogram)
-    mel_spectrogram = tf.tensordot(spectrogram, tf.signal.linear_to_mel_weight_matrix(
-        num_mel_bins=128,
-        num_spectrogram_bins=spectrogram.shape[-1],
-        sample_rate=16000,
-        lower_edge_hertz=80,
-        upper_edge_hertz=7600), 1)
-    log_mel_spectrogram = tf.math.log(mel_spectrogram + 1e-6)
-    return log_mel_spectrogram[..., tf.newaxis]
+    return spectrogram[..., tf.newaxis]
 
 def make_spec_ds(ds):
     return ds.map(

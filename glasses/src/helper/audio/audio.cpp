@@ -1,16 +1,13 @@
 #include "glasses.hpp"
 
-void setup_sound() {
-  
-}
+void Glasses::play_file(char* path){
+  SampleSource *sampleSource = new WAVFileReader('/' + path);
 
-void writeI2S(const uint8_t* data, size_t len) {
-    
+  I2SOutput *output = new I2SOutput();
+  output->start(I2S_NUM_1, i2sPins, sampleSource);
 }
 
 void Glasses::play_audio(uint8_t* buffer) {
-    setup_sound();
-
     const size_t chunkSize = 1024;
     size_t bufferSize = sizeof(bufferSize);
     for (size_t i = 0; i < bufferSize; i += chunkSize) {

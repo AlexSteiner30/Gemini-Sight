@@ -4,7 +4,7 @@
 void Glasses::setup_microphone(){
   I2S.setAllPins(-1, 42, 41, -1, -1);
   if (!I2S.begin(PDM_MONO_MODE, 16000, 16)) {
-    invoke_error("setup microphone");
+    invoke_error("Failed Initializing Microphone");
   }
 }
 

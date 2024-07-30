@@ -21,10 +21,12 @@
 
 #include <esp_heap_caps.h>
 
-
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
+
+#include "helper/audio/WAVFileReader.h"
+#include "helper/audio/I2SOutput.h"
 
 using namespace std;
 
@@ -84,6 +86,12 @@ class Glasses : public BLECharacteristicCallbacks {
     current_state current_state = not_connected;
 
     bool is_recording = false;
+        
+    i2s_pin_config_t i2sPins = {
+        .bck_io_num = GPIO_NUM_7, // D8
+        .ws_io_num = GPIO_NUM_9, // D10
+        .data_out_num = GPIO_NUM_8, // D9)
+        .data_in_num = -1};
 
   private:
     tflite::MicroMutableOpResolver<9> *m_resolver;
@@ -97,31 +105,34 @@ class Glasses : public BLECharacteristicCallbacks {
   public:
       void setup_tf();
       void setup_ble();
-
       void setup_camera();
+      void setup_microphone();
+
       void take_picture();
       void record_video();
-      void setup_microphone();
+  
       void record_audio();
       void record_microphone(bool is_listening);
-      void play_audio(uint8_t *buffer);
 
+      void play_audio(uint8_t *buffer);
+      void play_file(char* path);
       void set_volume(string volume);
 
       std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>> get_speech_command();
       int predict(const std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>>& resizedSpectrogram);
-      
-      void connect_wifi(const char *ssid, const char *password);
       void get_wake_word();
 
+      void connect_wifi(const char *ssid, const char *password);
+
       void invoke_error(const char* err);
+
       void listen_ble();
       void send_ble(char* payload);
+      void process_ble_data(std::string data);
+      void onWrite(BLECharacteristic *pCharacteristic);
 
       void save_string(String key, const string value);
       String read_string(String key);
-      vector<string> split(string s, string delimiter);
 
-      void process_ble_data(std::string data);
-      void onWrite(BLECharacteristic *pCharacteristic);
+      vector<string> split(string s, string delimiter);
 };

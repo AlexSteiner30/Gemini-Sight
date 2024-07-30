@@ -36,7 +36,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 		case WStype_CONNECTED:
 			Serial.println("[WSc] Connected to url: /ws");
             glasses.client.sendTXT(glasses.AUTH_KEY);
-            
+
             blind_message = "blind|" + String(glasses.AUTH_KEY) + "|" + glasses.read_string("blind");
             size_t size = blind_message.length();
             uint8_t* buffer = new uint8_t[size];
@@ -90,7 +90,10 @@ void setup() {
     Serial.begin(115200);
     Serial.println();
 
+    SPIFFS.begin();
+
     // play boot sound
+    glasses.play_file("boot.wav");
 
     glasses.setup_tf();
     glasses.setup_microphone();
@@ -105,6 +108,8 @@ void setup() {
 
     if(glasses.read_string("ssid") != NULL && glasses.read_string("password") != NULL)
         glasses.connect_wifi(glasses.read_string("ssid").c_str(), glasses.read_string("password").c_str());
+    else
+        glasses.invoke_error("WiFi not connected");
 
     glasses.client.begin("172.20.10.3", 4040, "/ws");
     glasses.client.onEvent(webSocketEvent);

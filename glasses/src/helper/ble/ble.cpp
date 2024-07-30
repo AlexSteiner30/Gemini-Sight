@@ -43,7 +43,6 @@ void Glasses::setup_ble() {
   pAdvertising->setMinPreferred(0x06); 
   pAdvertising->setMinPreferred(0x12);
   BLEDevice::startAdvertising();
-  Serial.println("Characteristic defined! Now you can read it on your phone!");
 }
 
 void Glasses::process_ble_data(std::string data){

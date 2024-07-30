@@ -1,12 +1,8 @@
 #include "esp_camera.h"
 #include "glasses.hpp"
 
-//#define CAMERA_MODEL_AI_THINKER // Has PSRAM
 #define CAMERA_MODEL_XIAO_ESP32S3 // Has PSRAM
 #include "camera_pins.h"
-
-void startCameraServer();
-void setupLedFlash(int pin);
 
 void Glasses::setup_camera() {
   Serial.begin(115200);
@@ -91,6 +87,7 @@ void Glasses::take_picture(){
 
   if(!fb){
     Serial.println("Camera capture failed");
+    invoke_error("Camera capture failed");
     esp_camera_fb_return(fb);
     return;
   }
@@ -122,6 +119,7 @@ void Glasses::record_video() {
     fb = esp_camera_fb_get();
     if (!fb) {
       Serial.println("Camera capture failed");
+      invoke_error("Camera capture failed");
       continue;
     }
         
