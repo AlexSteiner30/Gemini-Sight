@@ -235,9 +235,9 @@ class _DevicePageState extends State<DevicePage> {
                               Column(
                                 children: [
                                   ble
-                                      ? const Icon(Icons.wifi,
+                                      ? const Icon(Icons.bluetooth,
                                           color: Colors.white)
-                                      : const Icon(Icons.wifi_off,
+                                      : const Icon(Icons.bluetooth_disabled,
                                           color: Colors.red),
                                   SizedBox(height: 5),
                                 ],

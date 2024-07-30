@@ -12,11 +12,10 @@ bool ble = false;
 Future<void> scan_devices() async {
   FlutterBlue flutterBlue = FlutterBlue.instance;
 
-  flutterBlue.startScan(timeout: const Duration(seconds: 10));
+  flutterBlue.startScan(timeout: const Duration(seconds: 5));
 
   flutterBlue.scanResults.listen((results) async {
     for (ScanResult result in results) {
-      print(result.device.name);
       if (result.device.id.id == ble_id) {
         await connect_device(result.device);
         break;
