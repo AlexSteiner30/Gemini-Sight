@@ -202,22 +202,68 @@ class _DevicePageState extends State<DevicePage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Column(
+                              Column(
                                 children: [
-                                  Icon(Icons.battery_charging_full,
-                                      color: Colors.white),
-                                  SizedBox(height: 5),
-                                  Text('90%',
-                                      style: TextStyle(color: Colors.white)),
+                                  battery == 0
+                                      ? const Icon(Icons.battery_0_bar,
+                                          color: Colors.red)
+                                      : volume <= 10
+                                          ? const Icon(Icons.battery_1_bar,
+                                              color: Colors.red)
+                                          : volume <= 20
+                                              ? const Icon(Icons.battery_1_bar,
+                                                  color: Colors.orange)
+                                              : volume <= 35
+                                                  ? const Icon(
+                                                      Icons.battery_2_bar,
+                                                      color: Colors.yellow)
+                                                  : volume <= 45
+                                                      ? const Icon(
+                                                          Icons.battery_3_bar,
+                                                          color: Colors
+                                                              .lightGreenAccent)
+                                                      : volume <= 60
+                                                          ? const Icon(
+                                                              Icons
+                                                                  .battery_4_bar,
+                                                              color: Colors
+                                                                  .lightGreen)
+                                                          : volume <= 80
+                                                              ? const Icon(
+                                                                  Icons
+                                                                      .battery_5_bar,
+                                                                  color: Colors
+                                                                      .greenAccent)
+                                                              : volume == 100
+                                                                  ? const Icon(
+                                                                      Icons
+                                                                          .battery_6_bar,
+                                                                      color: Colors
+                                                                          .green)
+                                                                  : const Icon(
+                                                                      Icons.battery_6_bar,
+                                                                      color: Colors.green),
+                                  const SizedBox(height: 5),
+                                  Text('$battery%',
+                                      style:
+                                          const TextStyle(color: Colors.white)),
                                 ],
                               ),
                               const SizedBox(width: 40),
-                              const Column(
+                              Column(
                                 children: [
-                                  Icon(Icons.volume_up, color: Colors.white),
-                                  SizedBox(height: 5),
-                                  Text('50%',
-                                      style: TextStyle(color: Colors.white)),
+                                  volume == 0
+                                      ? const Icon(Icons.volume_off,
+                                          color: Colors.red)
+                                      : volume <= 33
+                                          ? const Icon(Icons.volume_down,
+                                              color: Colors.white)
+                                          : const Icon(Icons.volume_up,
+                                              color: Colors.white),
+                                  const SizedBox(height: 5),
+                                  Text('$volume%',
+                                      style:
+                                          const TextStyle(color: Colors.white)),
                                 ],
                               ),
                               const SizedBox(width: 40),
@@ -239,7 +285,7 @@ class _DevicePageState extends State<DevicePage> {
                                           color: Colors.white)
                                       : const Icon(Icons.bluetooth_disabled,
                                           color: Colors.red),
-                                  SizedBox(height: 5),
+                                  const SizedBox(height: 5),
                                 ],
                               ),
                             ],

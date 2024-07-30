@@ -79,7 +79,6 @@ num_labels = len(label_names)
 
 model = keras.Sequential([
     layers.Input(shape=input_shape),
-    layers.Resizing(64,64),
     layers.Conv2D(32, 3, activation='relu'),
     layers.BatchNormalization(),
     layers.Conv2D(64, 3, activation='relu'),

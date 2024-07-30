@@ -8,6 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 BluetoothDevice? connectedDevice;
 BluetoothCharacteristic? targetCharacteristic;
 bool ble = false;
+int volume = 0;
+int battery = 90;
 
 Future<void> scan_devices() async {
   FlutterBlue flutterBlue = FlutterBlue.instance;
@@ -76,6 +78,9 @@ void read_data(List<int> data) async {
             final prefs = await SharedPreferences.getInstance();
             prefs.setString('ip', dataParts[2]);
           }
+          break;
+        case 'volume':
+          volume = int.tryParse(dataParts[2])!;
           break;
         case 'contacts':
           if (dataParts.length == 3) await contacts(dataParts[2]);
