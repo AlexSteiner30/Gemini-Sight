@@ -115,7 +115,8 @@ class Glasses : public BLECharacteristicCallbacks {
       void record_microphone(bool is_listening);
 
       void play_audio(uint8_t *buffer);
-      void play_file(char* path);
+      void setup_audio();
+      void play_file(char *path);
       void set_volume(string volume);
 
       std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>> get_speech_command();

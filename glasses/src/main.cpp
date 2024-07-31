@@ -27,6 +27,9 @@ void record_audio(void *pvParameter) {
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     vector<string> message_parts = glasses.split((char*)payload, "¬");
+    size_t size;
+    uint8_t* buffer;
+
     switch(type) {
 		case WStype_DISCONNECTED:
 			Serial.println("[WSc] Disconnected!");
@@ -38,8 +41,8 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
             glasses.client.sendTXT(glasses.AUTH_KEY);
 
             blind_message = "blind|" + String(glasses.AUTH_KEY) + "|" + glasses.read_string("blind");
-            size_t size = blind_message.length();
-            uint8_t* buffer = new uint8_t[size];
+            size = blind_message.length();
+            buffer = new uint8_t[size];
 
             memcpy(buffer, blind_message.c_str(), size);
             glasses.client.sendBIN(buffer, size);
@@ -99,6 +102,7 @@ void setup() {
     glasses.setup_microphone();
     glasses.setup_camera();
     glasses.setup_ble();
+    glasses.setup_audio();
 
     glasses.preferences.begin("glasses", false);
 

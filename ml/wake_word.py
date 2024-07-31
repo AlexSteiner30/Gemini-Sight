@@ -49,8 +49,6 @@ def squeeze(audio, labels):
     return tf.squeeze(audio, axis=-1), labels
 
 def get_mel_spectrogram(audio):
-    audio = audio - tf.reduce_mean(audio)
-    audio = audio / tf.reduce_max(tf.abs(audio))
     spectrogram = tf.signal.stft(audio, frame_length=255, frame_step=128)
     spectrogram = tf.abs(spectrogram)
     return spectrogram[..., tf.newaxis]
@@ -79,21 +77,12 @@ num_labels = len(label_names)
 
 model = keras.Sequential([
     layers.Input(shape=input_shape),
-    layers.Conv2D(32, 3, activation='relu'),
-    layers.BatchNormalization(),
-    layers.Conv2D(64, 3, activation='relu'),
-    layers.BatchNormalization(),
-    layers.MaxPooling2D(),
-    layers.Conv2D(128, 3, activation='relu'),
-    layers.BatchNormalization(),
-    layers.Conv2D(256, 3, activation='relu'),
-    layers.BatchNormalization(),
-    layers.MaxPooling2D(),
-    layers.Dropout(0.5),
+    layers.Conv2D(32, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2,2)),
+    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2,2)),
     layers.Flatten(),
-    layers.Dense(256, activation='relu'),
-    layers.BatchNormalization(),
-    layers.Dropout(0.5),
+    layers.Dense(128, activation='relu'),
     layers.Dense(num_labels, activation='softmax'),
 ])
 
