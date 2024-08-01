@@ -13,23 +13,89 @@
             <h1 id="title">Order</h1>
         </header>
         <main>
-            <section id="bying-section">
-                <figure>
-                    <img id="img" alt="Glasses model" src="https://camo.githubusercontent.com/4e7828cccfd026e02b28ada34d7b18b649cc5c4bd52413ea7ed5e9e4cade54ea/68747470733a2f2f63646e2e63732e31776f726c6473796e632e636f6d2f66652f30642f66653064666366612d623736322d343363612d393531392d3333343234343961333366622e6a7067">
+            <section id="buying-section">
+                <div id="gallery-container">
+                    <button id="prev-button" onclick="scrollGallery(-1)">&#10094;</button>
+                    <div id="gallery">
+                        <img src="https://camo.githubusercontent.com/4e7828cccfd026e02b28ada34d7b18b649cc5c4bd52413ea7ed5e9e4cade54ea/68747470733a2f2f63646e2e63732e31776f726c6473796e632e636f6d2f66652f30642f66653064666366612d623736322d343363612d393531392d3333343234343961333366622e6a7067" alt="Gallery image 1">
+                        <img src="https://camo.githubusercontent.com/4e7828cccfd026e02b28ada34d7b18b649cc5c4bd52413ea7ed5e9e4cade54ea/68747470733a2f2f63646e2e63732e31776f726c6473796e632e636f6d2f66652f30642f66653064666366612d623736322d343363612d393531392d3333343234343961333366622e6a7067" alt="Gallery image 2">
+                        <img src="https://camo.githubusercontent.com/4e7828cccfd026e02b28ada34d7b18b649cc5c4bd52413ea7ed5e9e4cade54ea/68747470733a2f2f63646e2e63732e31776f726c6473796e632e636f6d2f66652f30642f66653064666366612d623736322d343363612d393531392d3333343234343961333366622e6a7067" alt="Gallery image 3">
+                    </div>
+                    <button id="next-button" onclick="scrollGallery(1)">&#10095;</button>
+                </div>
+                <div id="details">
                     <figcaption>Gemini Sight Glasses at <strong>€200.00</strong></figcaption>
-                </figure>
-                <input type="text" placeholder="Full address..." id="address">
-                <div id="container"> </div>
+                    <div class="inline-inputs">
+                        <input type="text" placeholder="First name" id="first-name">
+                        <input type="text" placeholder="Surname" id="surname">
+                    </div>
+                    <div class="inline-inputs">
+                        <input type="text" placeholder="Postal code" id="postal-code" pattern="\d*" maxlength="10">
+                        <select id="nation" onchange="updateProvinces()">
+                            <option value="US">United States</option>
+                            <option value="Germany">Germany</option>
+                            <option value="France">France</option>
+                            <option value="Spain">Spain</option>
+                            <option value="Italy">Italy</option>
+                            <option value="Greece">Greece</option>
+                        </select>
+                    </div>
+                    <div class="inline-inputs">
+                        <select id="province"></select>
+                        <input type="text" placeholder="Address" id="address">
+                    </div>
+                    <button id="buy-button">Buy Now</button>
+                </div>
             </section>
         </main>
     </div>
     <input type="hidden" id="logged-in" value="<%= isLoggedIn %>">
     <input type="hidden" id="chats" value="<%= chats %>">
-    <script type="text/javascript" src="../js/order2.js"></script>
-    <script type="text/javascript" src="../js/script.js"> </script>
+    <script type="text/javascript" src="../js/script.js"></script>
     <% if (isLoggedIn) { %>
         <script type="text/javascript" src="../js/order.js"></script>
         <script async src="https://pay.google.com/gp/p/js/pay.js" onload="onGooglePayLoaded()"></script>
+    <% } else  { %>        
+         <!--<script>window.location = "/admin"</script>-->     
     <% } %>
+    <script>
+        let currentImageIndex = 0;
+
+        function scrollGallery(direction) {
+            const gallery = document.getElementById('gallery');
+            const images = gallery.getElementsByTagName('img');
+            currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
+            gallery.scrollTo({
+                left: currentImageIndex * gallery.clientWidth,
+                behavior: 'smooth'
+            });
+        }
+
+        const provincesByNation = {
+            "Germany": ["Bavaria", "Berlin", "Hamburg", "Saxony"],
+            "France": ["Île-de-France", "Provence-Alpes-Côte d'Azur", "Occitanie", "Nouvelle-Aquitaine"],
+            "Spain": ["Andalusia", "Catalonia", "Madrid", "Valencia"],
+            "Italy": ["Lombardy", "Lazio", "Sicily", "Veneto"],
+            "Greece": ["Attica", "Central Macedonia", "Crete", "Thessaly"],
+            "US": ["California", "Florida", "New York", "Texas"]
+        };
+
+        function updateProvinces() {
+            const nation = document.getElementById('nation').value;
+            const provinceSelect = document.getElementById('province');
+            provinceSelect.innerHTML = '';
+
+            provincesByNation[nation].forEach(province => {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                provinceSelect.appendChild(option);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateProvinces();
+        });
+    </script>
 </body>
 </html>

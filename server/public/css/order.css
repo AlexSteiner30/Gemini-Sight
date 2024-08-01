@@ -1,6 +1,4 @@
 figcaption {
-    font-size: 19.2px;
-    font-size: 19.2px;
     font-size: 1.2rem;
     margin-top: -10px;
 }
@@ -10,35 +8,119 @@ figcaption, h2 {
 }
 
 #title {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-#bying-section {
-    padding: 0 !important;
+#buying-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    gap: 20px;
 }
 
-#img {
-    width: 20vw;
+#gallery-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30vw;
+    overflow: hidden;
+}
+
+#gallery {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+}
+
+#gallery img {
+    width: 100%;
     border-radius: 10px;
+    flex-shrink: 0;
 }
 
-#address {
+#prev-button, #next-button {
+    background-color: transparent;
+    border: none;
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+}
+
+#details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 30vw;
+    gap: 10px;
+    padding-left: 30px;
+}
+
+.inline-inputs {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.inline-inputs input[type="text"], .inline-inputs select {
+    width: 100%;
+}
+
+input[type="text"], select {
     background-color: rgb(48, 48, 65);
     border-bottom: solid 1px lightblue;
-    border-right: none;
-    border-left: none;
-    border-top: none;
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;
     padding: 8px;
-    font-size: 16px;
-    font-size: 16px;
     font-size: 1rem;
     color: white;
+    margin-top: 10px;
+}
+
+#address {
+    width: 200%;
+}
+
+#buy-button {
+    background-color: lightblue;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
 @media screen and (max-width: 600px) {
-    #img {
+    #gallery-container {
+        width: 100%;
+    }
+
+    #gallery {
         width: 60vw;
+    }
+
+    #details {
+        width: auto;
+    }
+
+    .inline-inputs {
+        flex-direction: column;
+    }
+
+    .inline-inputs input[type="text"], .inline-inputs select {
+        width: 100%;
+    }
+
+    input[type="text"], select {
+        width: auto;
+    }
+
+    #address {
+        width: 100%;
     }
 }

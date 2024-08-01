@@ -14,10 +14,35 @@ html, body {
     line-height: 48px;
     line-height: 48px;
     line-height: 3rem;
+
+    font-family: "Google Sans", "Helvetica Neue", sans-serif;
+
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+p, li {
+    font-weight: 500;
 }
 
 body {
-    background: radial-gradient(rgb(16, 16, 53) 10%, transparent 90%);
+    background-color: rgb(19, 19, 20);
+    color: rgb(0, 0, 0);
+    counter-reset: mmlEqnNo 0 katexEqnNo 0;
+    display: flex;
+    flex-direction: column;
+    height: 839px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    width: 970px;
+    -webkit-box-direction: normal;
+    -webkit-box-orient: vertical;
+    -webkit-font-smoothing: antialiased;
 }
 
 header, section {
@@ -44,7 +69,6 @@ hr {
     width: 90vw;
     position: relative;
     left: 5vw;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
     opacity: 0.5;
     border: 0;
     border-top: 1px ridge blue;
@@ -52,13 +76,71 @@ hr {
 }
 
 footer {
-    height: calc(100vh - var(--size--));
-    background: black;
-    text-align: center;
+    align-items: center;
+    background-color: rgb(32, 33, 36);
+    color: rgb(227, 227, 227);
+    column-gap: 24px;
+    display: flex;
+    height: 40px;
+    justify-content: flex-start;
+    padding-bottom: 32px;
+    padding-left: 32px;
+    padding-right: 32px;
+    padding-top: 32px;
+    row-gap: 24px;
+    min-width: 100vw;
+    -webkit-box-align: center;
+    -webkit-box-direction: normal;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+footer img {
+    color: rgb(85, 26, 139);
+    cursor: auto;
+    display: inline;
+    height: 24px;
+    opacity: 0.63;
+    width: 74px;
+    -webkit-box-direction: normal;
+    -webkit-font-smoothing: antialiased;
+}
+
+footer a{
+    color: rgb(196, 199, 197);
+    cursor: auto;
+    display: block;
+    font-family: "Google Sans", "Helvetica Neue", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    height: 20px;
+    letter-spacing: normal;
+    line-height: 20px;
+    text-decoration: none;
+    width: 105.40625px;
+    -webkit-box-direction: normal;
+    -webkit-font-smoothing: antialiased;
+}
+
+footer span{
+    color: rgb(196, 199, 197);
+    cursor: auto;
+    display: inline;
+    font-family: "Google Sans", "Helvetica Neue", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    height: auto;
+    letter-spacing: normal;
+    line-height: 20px;
+    width: auto;
+    -webkit-box-direction: normal;
+    -webkit-font-smoothing: antialiased;
 }
 
 nav img {
-    width: 40%;
+    width: 30%;
 }
 
 nav {
@@ -67,15 +149,9 @@ nav {
     display: grid;
     align-items: center;
     grid-template-columns: 12fr 4fr 4fr 4fr 4fr 7fr 4fr 1fr;
-    background-color: black;
+    background-color: rgb(19, 19, 20);
     width: 100%;
     transition: all ease-in-out 300ms;
-}
-
-nav:hover {
-    background-color: rgb(0, 0, 10);
-    border-bottom: rgb(3, 3, 4) ridge 2px;
-    border-radius: 6px;
 }
 
 nav a {
@@ -142,8 +218,28 @@ button:hover {
 }
 
 #title {
-    font-size: 300%;
     margin-top: 30px;
+    background-attachment: scroll;
+    background-clip: text;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: linear-gradient(74deg, rgb(66, 133, 244) 0px, rgb(155, 114, 203) 9%, rgb(217, 101, 112) 20%, rgb(217, 101, 112) 24%, rgb(155, 114, 203) 35%, rgb(66, 133, 244) 44%, rgb(155, 114, 203) 50%, rgb(217, 101, 112) 56%, rgb(19, 19, 20) 75%, rgb(19, 19, 20) 100%);
+    background-origin: padding-box;
+    background-position-x: 0%;
+    background-position-y: 0%;
+    background-repeat: repeat;
+    background-size: 400% 100%;
+    color: rgba(0, 0, 0, 0);
+    display: inline-block;
+    font-size: 70px;
+    font-weight: 500;
+    height: 80px;
+    letter-spacing: -1.68px;
+    line-height: 80px;
+    position: relative;
+    -webkit-background-clip: text;
+    -webkit-box-direction: normal;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-fill-color: rgba(0, 0, 0, 0);
 }
 
 #chat-btn {

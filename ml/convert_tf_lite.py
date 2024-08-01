@@ -1,8 +1,11 @@
 import tensorflow as tf
 import numpy as np
 
-model=tf.keras.models.load_model('model.keras')
-tflite_converter = tf.lite.TFLiteConverter.from_keras_model(model)
+model = tf.keras.models.load_model('model.keras')
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
 
-tflite_model = tflite_converter.convert()
-open("converted_model_tflite.tflite", "wb").write(tflite_model)
+converter.optimizations = [tf.lite.Optimize.DEFAULT]
+dynamic_range_model = converter.convert()
+
+with open("model.tflite", "wb") as f:
+    f.write(dynamic_range_model)

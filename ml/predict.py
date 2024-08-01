@@ -1,32 +1,47 @@
 import tensorflow as tf
 import numpy as np
-import matplotlib.pyplot as plt
+import os
+import librosa
+from sklearn.preprocessing import LabelEncoder
 
-model_path = 'model.keras'
-model = tf.keras.models.load_model(model_path)
+train_dir = 'data'
+labels = os.listdir(train_dir)
+all_label = []
 
-def get_spectrogram(audio):
-    audio = audio - tf.reduce_mean(audio)
-    audio = audio / tf.reduce_max(tf.abs(audio))
-    spectrogram = tf.signal.stft(audio, frame_length=255, frame_step=128)
-    spectrogram = tf.abs(spectrogram)
-    return spectrogram[..., tf.newaxis]
+for label in labels:
+    print(label)
+    waves = [f for f in os.listdir(os.path.join(train_dir, label)) if f.endswith('.wav')]
+    for wav in waves:
+        samples, sample_rate = librosa.load(os.path.join(train_dir, label, wav), sr=16000)
+        samples = librosa.resample(samples, orig_sr=sample_rate, target_sr=16000)
+        if len(samples) == 16000:
+            all_label.append(label)
 
-def predict_audio(file_path):
-    x = tf.io.read_file(file_path)
-    x, _ = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000)
-    x = tf.squeeze(x, axis=-1)
-    waveform = x
-    x = get_spectrogram(x)
-    x = x[tf.newaxis, ...]
-    prediction = model(x)
-    return waveform, prediction
+le = LabelEncoder()
+y = le.fit_transform(all_label)
+classes = list(le.classes_)
+print(classes)
 
-waveform, prediction = predict_audio('test3.wav')
+tflite_model_path = 'model.tflite'
 
-x_labels = ['other','sheila']
-plt.bar(x_labels, prediction[0])
-plt.title('Prediction')
-plt.show()
+interpreter = tf.lite.Interpreter(model_path=tflite_model_path)
+interpreter.allocate_tensors()
 
-model.save('model.keras')
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+
+def predict(audio):
+    interpreter.set_tensor(input_details[0]['index'], audio.reshape(1, 16000, 1).astype(np.float32))
+    interpreter.invoke()
+    prob = interpreter.get_tensor(output_details[0]['index'])
+    index = np.argmax(prob[0])
+    print(index)
+    print(prob)
+    return classes[index], prob[0][index]
+
+test, sample_rate = librosa.load('test.wav', sr=16000)
+test = librosa.resample(test, orig_sr=sample_rate, target_sr=16000)
+print(test.shape)
+test = np.array(test).reshape(-1, 16000, 1)
+
+print(predict(test))

@@ -54,9 +54,17 @@ function createNavAndFooter() {
         </nav>
     ` + document.getElementsByTagName("body")[0].innerHTML + `
         <footer>
-            <p>Copyright (c) 2024 Alex Steiner</p>
+            <a href="https://www.google.com" class="google-logo">
+                <img title="Google" alt="Google" src="https://www.gstatic.com/images/branding/googlelogo/svg/googlelogo_light_clr_148x48px.svg">
+            </a>
+            <a href="https://policies.google.com">
+                <span>Privacy & Terms</span>
+            </a>
+            <a>
+                <span>© Gemini Sight</span>
+            </a>
         </footer>
-    `;
+        `;
 }
 
 createNavAndFooter();

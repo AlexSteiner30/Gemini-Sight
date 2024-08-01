@@ -1,125 +1,76 @@
 import pathlib
+import librosa
 import numpy as np
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
-import matplotlib.pyplot as plt
-import random
-import os
-import shutil
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from keras.layers import Dense, Dropout, Flatten, Conv1D, Input, MaxPooling1D
+from keras.models import Model
+from keras.callbacks import EarlyStopping
+from keras import backend as K
 
-SEED = 42
-DATASET_ORIGIN = "http://download.tensorflow.org/data/speech_commands_v0.01.tar.gz"
-DATASET_PATH = 'data'
-EPOCHS = 20
-BATCH_SIZE = 32
-VALIDATION_SPLIT = 0.2
-AUDIO_LENGTH = 16000
+TRAIN_DIR = pathlib.Path('data')
+SAMPLE_RATE = 16000
 
-tf.random.set_seed(SEED)
-np.random.seed(SEED)
-random.seed(SEED)
+def load_audio_files(train_dir):
+    all_wave = []
+    all_label = []
+    labels = [label for label in train_dir.iterdir() if label.is_dir()]
+    
+    for label in labels:
+        waves = list(label.glob('*.wav'))
+        for wav in waves:
+            samples, sample_rate = librosa.load(wav, sr=SAMPLE_RATE)
+            if len(samples) == SAMPLE_RATE:
+                all_wave.append(samples)
+                all_label.append(label.name)
+    
+    return np.array(all_wave).reshape(-1, SAMPLE_RATE, 1), all_label
 
-data_dir = pathlib.Path(DATASET_PATH)
-if not data_dir.exists():
-    keras.utils.get_file(
-        'speech_commands_v0.01.tar.gz',
-        origin=DATASET_ORIGIN,
-        extract=True,
-        cache_dir='.',
-        cache_subdir='data'
-    )
+def prepare_labels(all_label):
+    le = LabelEncoder()
+    y = le.fit_transform(all_label)
+    y_categorical = tf.keras.utils.to_categorical(y, num_classes=len(le.classes_))
+    return y_categorical, le.classes_
 
-commands = np.array(tf.io.gfile.listdir(str(data_dir)))
-commands = commands[~np.isin(commands, ['README.md', '.DS_Store'])]
-print('Commands:', commands)
+def build_model(input_shape, num_classes):
+    K.clear_session()
+    inputs = Input(shape=input_shape)
+    conv = Conv1D(4, 13, padding='valid', activation='relu', strides=1)(inputs)
+    conv = MaxPooling1D(3)(conv)
+    conv = Dropout(0.3)(conv)
+    conv = Conv1D(8, 11, padding='valid', activation='relu', strides=1)(conv)
+    conv = MaxPooling1D(3)(conv)
+    conv = Dropout(0.3)(conv)
+    conv = Flatten()(conv)
+    outputs = Dense(num_classes, activation='softmax')(conv)
 
-train_ds, val_ds = keras.utils.audio_dataset_from_directory(
-    directory=DATASET_PATH,
-    batch_size=BATCH_SIZE,
-    validation_split=VALIDATION_SPLIT,
-    seed=SEED,
-    output_sequence_length=AUDIO_LENGTH,
-    subset='both'
-)
+    model = Model(inputs, outputs)
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
 
-label_names = np.array(train_ds.class_names)
+def train_model(model, x_tr, y_tr, x_val, y_val):
+    es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20, min_delta=0.0001)
+    history = model.fit(x_tr, y_tr, epochs=200, callbacks=[], batch_size=32, validation_data=(x_val, y_val))
+    return history
 
-def squeeze(audio, labels):
-    return tf.squeeze(audio, axis=-1), labels
+def predict(model, audio, classes):
+    prob = model.predict(audio.reshape(1, SAMPLE_RATE, 1))
+    index = np.argmax(prob[0])
+    return classes[index], prob[0][index]
 
-def get_mel_spectrogram(audio):
-    spectrogram = tf.signal.stft(audio, frame_length=255, frame_step=128)
-    spectrogram = tf.abs(spectrogram)
-    return spectrogram[..., tf.newaxis]
+all_wave, all_label = load_audio_files(TRAIN_DIR)
+y_categorical, classes = prepare_labels(all_label)
 
-def make_spec_ds(ds):
-    return ds.map(
-        lambda audio, label: (get_mel_spectrogram(audio), label),
-        num_parallel_calls=tf.data.AUTOTUNE
-    )
+x_tr, x_val, y_tr, y_val = train_test_split(all_wave, y_categorical, stratify=all_label, test_size=0.2, random_state=777, shuffle=True)
 
-train_ds = train_ds.map(squeeze, tf.data.AUTOTUNE)
-val_ds = val_ds.map(squeeze, tf.data.AUTOTUNE)
-test_ds, val_ds = val_ds.shard(num_shards=2, index=0), val_ds.shard(num_shards=2, index=1)
-
-train_spectrogram_ds = make_spec_ds(train_ds).cache().shuffle(10000).prefetch(tf.data.AUTOTUNE)
-val_spectrogram_ds = make_spec_ds(val_ds).cache().prefetch(tf.data.AUTOTUNE)
-test_spectrogram_ds = make_spec_ds(test_ds).cache().prefetch(tf.data.AUTOTUNE)
-
-for example_spectrograms, _ in train_spectrogram_ds.take(1):
-    input_shape = example_spectrograms.shape[1:]
-    break
-
-print('Input shape:', input_shape)
-
-num_labels = len(label_names)
-
-model = keras.Sequential([
-    layers.Input(shape=input_shape),
-    layers.Conv2D(32, (3, 3), activation='relu'),
-    layers.MaxPooling2D((2,2)),
-    layers.Conv2D(64, (3, 3), activation='relu'),
-    layers.MaxPooling2D((2,2)),
-    layers.Flatten(),
-    layers.Dense(128, activation='relu'),
-    layers.Dense(num_labels, activation='softmax'),
-])
-
+model = build_model((SAMPLE_RATE, 1), len(classes))
 model.summary()
 
-model.compile(
-    optimizer=keras.optimizers.Adam(),
-    loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-    metrics=['accuracy'],
-)
+history = train_model(model, x_tr, y_tr, x_val, y_val)
 
-callbacks = [
-    keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3),
-    keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
-]
-
-history = model.fit(
-    train_spectrogram_ds,
-    validation_data=val_spectrogram_ds,
-    epochs=EPOCHS,
-    callbacks=callbacks
-)
-
-def predict_audio(file_path):
-    x = tf.io.read_file(file_path)
-    x, _ = tf.audio.decode_wav(x, desired_channels=1, desired_samples=AUDIO_LENGTH)
-    x = tf.squeeze(x, axis=-1)
-    waveform = x
-    x = get_mel_spectrogram(x)
-    x = x[tf.newaxis, ...]
-    prediction = model(x)
-    return waveform, prediction
-
-waveform, prediction = predict_audio('test.wav')
-
-plt.bar(label_names, prediction[0])
-plt.title('Prediction')
-plt.show()
+test, _ = librosa.load('test.wav', sr=SAMPLE_RATE)
+test = np.array(test).reshape(-1, SAMPLE_RATE, 1)
 
 model.save('model.keras')
+print(predict(model, test, classes))
