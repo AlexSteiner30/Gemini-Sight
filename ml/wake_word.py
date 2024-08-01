@@ -51,7 +51,7 @@ def build_model(input_shape, num_classes):
 
 def train_model(model, x_tr, y_tr, x_val, y_val):
     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20, min_delta=0.0001)
-    history = model.fit(x_tr, y_tr, epochs=200, callbacks=[], batch_size=32, validation_data=(x_val, y_val))
+    history = model.fit(x_tr, y_tr, epochs=100, callbacks=[], batch_size=32, validation_data=(x_val, y_val))
     return history
 
 def predict(model, audio, classes):

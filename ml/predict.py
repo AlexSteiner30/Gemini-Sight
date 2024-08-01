@@ -39,7 +39,7 @@ def predict(audio):
     print(prob)
     return classes[index], prob[0][index]
 
-test, sample_rate = librosa.load('test.wav', sr=16000)
+test, sample_rate = librosa.load('backward/d21fd169_nohash_3.wav', sr=16000)
 test = librosa.resample(test, orig_sr=sample_rate, target_sr=16000)
 print(test.shape)
 test = np.array(test).reshape(-1, 16000, 1)
