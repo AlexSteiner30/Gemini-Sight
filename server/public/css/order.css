@@ -18,6 +18,7 @@ figcaption, h2 {
     justify-content: center;
     padding: 20px;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 #gallery-container {
@@ -25,6 +26,7 @@ figcaption, h2 {
     align-items: center;
     justify-content: center;
     width: 30vw;
+    max-width: 500px;
     overflow: hidden;
 }
 
@@ -55,25 +57,28 @@ figcaption, h2 {
     justify-content: center;
     align-items: center;
     width: 30vw;
+    max-width: 500px;
     gap: 10px;
     padding-left: 30px;
+    box-sizing: border-box;
 }
 
 .inline-inputs {
     display: flex;
     gap: 10px;
     width: 100%;
+    flex-wrap: wrap;
 }
 
 .inline-inputs input[type="text"], .inline-inputs select {
-    width: 100%;
+    flex: 1;
+    min-width: 150px;
 }
 
 input[type="text"], select {
     background-color: rgb(48, 48, 65);
     border-bottom: solid 1px lightblue;
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
+    border-radius: 4px;
     padding: 8px;
     font-size: 1rem;
     color: white;
@@ -81,7 +86,7 @@ input[type="text"], select {
 }
 
 #address {
-    width: 200%;
+    width: 100%;
 }
 
 #buy-button {
@@ -101,11 +106,12 @@ input[type="text"], select {
     }
 
     #gallery {
-        width: 60vw;
+        width: 100%;
     }
 
     #details {
-        width: auto;
+        width: 100%;
+        padding-left: 0;
     }
 
     .inline-inputs {
@@ -114,10 +120,6 @@ input[type="text"], select {
 
     .inline-inputs input[type="text"], .inline-inputs select {
         width: 100%;
-    }
-
-    input[type="text"], select {
-        width: auto;
     }
 
     #address {
