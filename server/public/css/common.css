@@ -141,10 +141,14 @@ nav a:hover {
 }
 
 nav a[href=admin], nav a[href=logout] {
-    background: linear-gradient(35deg, rgb(41, 43, 57), black);
     border: 2px solid rgb(34, 40, 53);
-    border-radius: 10px;
+    border-radius: 20px;
     transition: all 300ms ease-in-out;
+    background-color: lightblue;
+    color: black;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
 }
 
 nav a[href=admin]:hover, nav a[href=logout]:hover {
@@ -153,13 +157,14 @@ nav a[href=admin]:hover, nav a[href=logout]:hover {
 }
 
 button {
-    padding: 20px 30px;
-    border: 1px ridge grey;
-    border-radius: 10px;
-    background-color: rgb(2, 14, 21);
-    color: white;
-    box-shadow: 0 0 5px 5px rgba(0, 0, 255, 0.12);
-    transition: all 300ms ease-in-out;
+    background-color: lightblue;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
 button:hover {

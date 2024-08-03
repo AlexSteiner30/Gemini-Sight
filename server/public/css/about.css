@@ -5,15 +5,15 @@
 }
 
 #names a {
-    color: white;
+    color: black;
     text-align: center;
-    background: linear-gradient(45deg, black, rgb(40, 40, 44));
     border: 2px solid rgb(106, 108, 114);
     border-radius: 10px;
     width: 25vw;
     padding: 5px;
     text-decoration: none;
     transition: all 300ms ease-in-out;
+    background-color: #8ab4f8;
 }
 
 #names a:hover {
