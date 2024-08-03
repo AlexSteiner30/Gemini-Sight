@@ -254,13 +254,15 @@ app.post('/order', bodyparser.urlencoded(), async (req, res) => {
         order.model = 0.1;
         order.query = "";
         order.refresh_key = "";
-        order.save().then(_ => {
-            res.send("Done");
-        });
+        order.ble_id = Array(4).fill(0).map(() => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('') + '-' +
+        Array(4).fill(0).map(() => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('') + '-' + Array(4).fill(0).map(() =>
+         Math.floor(Math.random()*16).toString(16).toUpperCase()).join('') + '-' + Array(4).fill(0).map(() => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('') + '-' + Array(12).fill(0).map(() => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('');
+    
+        await order.save();
+        res.send(`Your Glasses will be shipped to ${order.address} as soon as possible`);
     }
     catch(err) {
-        console.error("Ordering error: ", err);
-        res.send("There was a problem");
+        res.send("Ordering error: ", err);
     }
 });
 

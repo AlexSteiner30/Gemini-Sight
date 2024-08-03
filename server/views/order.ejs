@@ -6,8 +6,9 @@
     <title>Gemini Sight | Order</title>
     <link rel="stylesheet" href="css/common.css" type="text/css">
     <link rel="stylesheet" href="css/order.css" type="text/css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBE8n70XnBigOGU34Lhd1YvrBAjs3TAI70&libraries=places"></script>
 </head>
-<body>
+<body onload="initAutocomplete()">
     <div id="main">
         <header>
             <h1 id="title">Order</h1>
@@ -26,25 +27,9 @@
                 <div id="details">
                     <figcaption>Gemini Sight Glasses at <strong>€200.00</strong></figcaption>
                     <div class="inline-inputs">
-                        <input type="text" placeholder="First name" id="first-name">
-                        <input type="text" placeholder="Surname" id="surname">
+                        <input type="text" placeholder="Address" id="address" name="address" required>
                     </div>
-                    <div class="inline-inputs">
-                        <input type="text" placeholder="Postal code" id="postal-code" pattern="\d*" maxlength="10">
-                        <select id="nation" onchange="updateProvinces()">
-                            <option value="US">United States</option>
-                            <option value="Germany">Germany</option>
-                            <option value="France">France</option>
-                            <option value="Spain">Spain</option>
-                            <option value="Italy">Italy</option>
-                            <option value="Greece">Greece</option>
-                        </select>
-                    </div>
-                    <div class="inline-inputs">
-                        <select id="province"></select>
-                        <input type="text" placeholder="Address" id="address">
-                    </div>
-                    <button id="buy-button">Buy Now</button>
+                    <button id="buy-button" onclick="onGooglePayButtonClicked()">Buy Now</button>
                 </div>
             </section>
         </main>
@@ -56,46 +41,7 @@
         <script type="text/javascript" src="../js/order.js"></script>
         <script async src="https://pay.google.com/gp/p/js/pay.js" onload="onGooglePayLoaded()"></script>
     <% } else  { %>        
-         <!--<script>window.location = "/admin"</script>-->     
+         <script>window.location = "/admin"</script>   
     <% } %>
-    <script>
-        let currentImageIndex = 0;
-
-        function scrollGallery(direction) {
-            const gallery = document.getElementById('gallery');
-            const images = gallery.getElementsByTagName('img');
-            currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
-            gallery.scrollTo({
-                left: currentImageIndex * gallery.clientWidth,
-                behavior: 'smooth'
-            });
-        }
-
-        const provincesByNation = {
-            "Germany": ["Bavaria", "Berlin", "Hamburg", "Saxony"],
-            "France": ["Île-de-France", "Provence-Alpes-Côte d'Azur", "Occitanie", "Nouvelle-Aquitaine"],
-            "Spain": ["Andalusia", "Catalonia", "Madrid", "Valencia"],
-            "Italy": ["Lombardy", "Lazio", "Sicily", "Veneto"],
-            "Greece": ["Attica", "Central Macedonia", "Crete", "Thessaly"],
-            "US": ["California", "Florida", "New York", "Texas"]
-        };
-
-        function updateProvinces() {
-            const nation = document.getElementById('nation').value;
-            const provinceSelect = document.getElementById('province');
-            provinceSelect.innerHTML = '';
-
-            provincesByNation[nation].forEach(province => {
-                const option = document.createElement('option');
-                option.value = province;
-                option.textContent = province;
-                provinceSelect.appendChild(option);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            updateProvinces();
-        });
-    </script>
 </body>
 </html>

@@ -43,7 +43,7 @@ function createNavAndFooter() {
     
     document.getElementsByTagName("body")[0].innerHTML = `
         <nav>    
-        <a href="index" id='ignore'><img alt='Logo of Gemin-eye' src='../media/logo.png'></a>
+        <a href="index" id='ignore'><img alt='Logo of Gemini Sight' src='../media/logo.png'></a>
         <a href="index">Home</a>
         <a href="about?name=about_us">About Us</a>
         <a href="product">Product</a>
@@ -53,6 +53,7 @@ function createNavAndFooter() {
         <div></div>
         </nav>
     ` + document.getElementsByTagName("body")[0].innerHTML + `
+        <br>
         <footer>
             <a href="https://www.google.com" class="google-logo">
                 <img title="Google" alt="Google" src="https://www.gstatic.com/images/branding/googlelogo/svg/googlelogo_light_clr_148x48px.svg">

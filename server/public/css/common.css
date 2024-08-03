@@ -11,37 +11,20 @@ html, body {
     min-height: 100vh;
     min-width: 100vw;
     background-color: var(--main-color);
-    line-height: 48px;
-    line-height: 48px;
     line-height: 3rem;
-
     font-family: "Google Sans", "Helvetica Neue", sans-serif;
-
     height: 100%;
-    margin: 0;
-    padding: 0;
     display: flex;
     flex-direction: column;
-}
-
-p, li {
-    font-weight: 500;
+    display: table;
 }
 
 body {
     background-color: rgb(19, 19, 20);
-    color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
     counter-reset: mmlEqnNo 0 katexEqnNo 0;
-    display: flex;
     flex-direction: column;
-    height: 839px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-top: 0px;
-    width: 970px;
-    -webkit-box-direction: normal;
-    -webkit-box-orient: vertical;
+    min-height: 100vh;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -49,11 +32,13 @@ header, section {
     text-align: center;
     padding: 0 5vw;
     padding-top: calc(12vh + 20px);
+    flex: 1;
 }
 
 section {
     padding-top: 5vh;
     padding-bottom: 5vh;
+    flex: 1;
 }
 
 p, h1, h3, label, ul {
@@ -81,21 +66,16 @@ footer {
     color: rgb(227, 227, 227);
     column-gap: 24px;
     display: flex;
-    height: 40px;
     justify-content: flex-start;
-    padding-bottom: 32px;
-    padding-left: 32px;
-    padding-right: 32px;
-    padding-top: 32px;
+    padding: 32px;
     row-gap: 24px;
-    min-width: 100vw;
+    width: 100vw;
     -webkit-box-align: center;
     -webkit-box-direction: normal;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    margin-top: auto;
+    position: absolute;
 }
+
 
 footer img {
     color: rgb(85, 26, 139);
@@ -104,11 +84,10 @@ footer img {
     height: 24px;
     opacity: 0.63;
     width: 74px;
-    -webkit-box-direction: normal;
     -webkit-font-smoothing: antialiased;
 }
 
-footer a{
+footer a {
     color: rgb(196, 199, 197);
     cursor: auto;
     display: block;
@@ -116,26 +95,20 @@ footer a{
     font-size: 14px;
     font-weight: 400;
     height: 20px;
-    letter-spacing: normal;
     line-height: 20px;
     text-decoration: none;
     width: 105.40625px;
-    -webkit-box-direction: normal;
     -webkit-font-smoothing: antialiased;
 }
 
-footer span{
+footer span {
     color: rgb(196, 199, 197);
     cursor: auto;
     display: inline;
     font-family: "Google Sans", "Helvetica Neue", sans-serif;
     font-size: 14px;
     font-weight: 400;
-    height: auto;
-    letter-spacing: normal;
     line-height: 20px;
-    width: auto;
-    -webkit-box-direction: normal;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -214,6 +187,7 @@ button:hover {
 #main {
     margin: 0;
     padding: 0;
+    flex: 1;
     min-height: var(--size--);
 }
 
@@ -235,15 +209,13 @@ button:hover {
     height: 80px;
     letter-spacing: -1.68px;
     line-height: 80px;
-    position: relative;
     -webkit-background-clip: text;
-    -webkit-box-direction: normal;
     -webkit-font-smoothing: antialiased;
     -webkit-text-fill-color: rgba(0, 0, 0, 0);
 }
 
 #chat-btn {
-    background-color: white;
+    background-color: rgb(196, 199, 197);
     text-align: center;
     position: fixed;
     display: flex;
@@ -252,16 +224,14 @@ button:hover {
     padding: 1vw;
     bottom: 2vh;
     right: 2vw;
-    height: max(5vw, 5vh);
-    width: max(5vw, 5vh);
+    height: max(4vw, 4vh);
+    width: max(4vw, 4vh);
     border-radius: 100%;
     border: none;
-    box-shadow: 0 0 5px 1px rgb(210, 210, 255);
     z-index: 2;
 }
 
 #chat-btn:hover {
-    box-shadow: 0 0 15px 1px rgb(210, 210, 255);
     transform: scale(1.1);
 }
 
@@ -282,7 +252,6 @@ button:hover {
     width: 100%;
     height: 50vh;
     padding: 8px;
-    background-color: #040455;
     background-color: rgba(4, 4, 85, 0);
     overflow-y: scroll;
     overflow-x: auto;
@@ -295,8 +264,6 @@ button:hover {
 }
 
 #chat-prev label {
-    font-size: 12.8px;
-    font-size: 12.8px;
     font-size: 0.8rem;
     margin: 0;
     padding: 20px;
@@ -324,27 +291,23 @@ button:hover {
     border-radius: 0.4vw;
     background-color: rgb(1, 9, 22);
     color: white;
-    height: 5vh+10px !important;
+    height: calc(5vh + 10px) !important;
 }
 
 @keyframes hide {
     from {
-        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
         opacity: 1;
     }
     to {
-        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
         opacity: 0;
     }
 }
 
 @keyframes show {
     from {
-        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
         opacity: 0;
     }
     to {
-        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
         opacity: 1;
     }
 }

@@ -23,27 +23,16 @@ const googlePayConfiguration = {
 let googlePayClient;
 
 function onGooglePayLoaded() {
-    if (document.getElementById("logged-in").value == '') {
-        disablePayment("You need to be <a href='/admin'>logged in</a> to order the glasses");
-        return;
-    }
     googlePayClient = new google.payments.api.PaymentsClient({
         environment: "TEST"
     });
 
     googlePayClient.isReadyToPay(googlePayConfiguration).then(res => {
-        if (res.result) {
-            createAndAddButton();
-        }
-        else {
-            disablePayment("Unable to enable payment");
-        }
     }).catch(err => {
         console.error("isReadyToPay error: ", err);
         alert("There was an error");
     });
 }
-
 
 function createAndAddButton() {
     const googlePayButton = googlePayClient.createButton({
@@ -54,14 +43,12 @@ function createAndAddButton() {
 
 function onGooglePayButtonClicked() {
     if (document.getElementById("address").value == "") {
-        alert("Make sure to type in your address before continuing to the payment")
-        document.getElementById("address").focus();
         return;
     }
     const paymentDataRequest = {...googlePayConfiguration};
     paymentDataRequest.merchantInfo = {
         merchantId: "BCR2DN4TWWS7TNBP",
-        merchantName: "Gemin-Eye"
+        merchantName: "Gemini Sight"
     };
     paymentDataRequest.transactionInfo = {
         totalPriceStatus: "FINAL",
@@ -85,7 +72,7 @@ function processPaymentData(paymentData) {
         xhr.onload = _ => console.log('Ordering');
         xhr.onreadystatechange = function() {
             if (this.readyState === 4) {
-                if (this.status === 200) disablePayment("Successfully Ordered");
+                if (this.status === 200) alert(this.responseText);
                 else changeScreen("notFound");
             }
         }
@@ -95,3 +82,14 @@ function processPaymentData(paymentData) {
         alert("There was an error");
     }
 }
+
+function initAutocomplete() {
+    const autocomplete = new google.maps.places.Autocomplete(
+      document.getElementById('address'),
+      { types: ['geocode'] }
+    );
+
+    autocomplete.addListener('place_changed', function () {
+      const place = autocomplete.getPlace();
+    });
+  }
