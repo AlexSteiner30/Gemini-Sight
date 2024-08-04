@@ -4,10 +4,8 @@
 }
 
 html, body {
-    margin: 0;
-    padding: 0;
     --size--: 85vh;
-    --main-color: black;
+    --main-color: rgb(19, 19, 20);
     min-height: 100vh;
     min-width: 100vw;
     background-color: var(--main-color);
@@ -20,10 +18,7 @@ html, body {
 }
 
 body {
-    background-color: rgb(19, 19, 20);
-    color: rgb(255, 255, 255);
     counter-reset: mmlEqnNo 0 katexEqnNo 0;
-    flex-direction: column;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
 }
