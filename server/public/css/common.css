@@ -69,11 +69,10 @@ footer {
     justify-content: flex-start;
     padding: 32px;
     row-gap: 24px;
-    width: 100vw;
+    max-width: 100%;
     -webkit-box-align: center;
     -webkit-box-direction: normal;
     margin-top: auto;
-    position: absolute;
 }
 
 

@@ -47,40 +47,40 @@
         let count = 0;
         let currentImageIndex = 0;
 
-    function scrollGallery(direction) {
-        const gallery = document.getElementById('gallery');
-        const images = gallery.getElementsByTagName('img');
-        const nextButton = document.getElementById('next-button');
-        const prevButton = document.getElementById('prev-button');
-        
-        if (direction === 1 && count >= 2) {
-            nextButton.disabled = true;
-            nextButton.style.color = 'gray'; 
-            return;  
-        } else if (direction === -1 && count <= 0) {
-            prevButton.disabled = true;
-            prevButton.style.color = 'gray';
-            return;  
+        function scrollGallery(direction) {
+            const gallery = document.getElementById('gallery');
+            const images = gallery.getElementsByTagName('img');
+            const nextButton = document.getElementById('next-button');
+            const prevButton = document.getElementById('prev-button');
+            
+            if (direction === 1 && count >= 2) {
+                nextButton.disabled = true;
+                nextButton.style.color = 'gray'; 
+                return;  
+            } else if (direction === -1 && count <= 0) {
+                prevButton.disabled = true;
+                prevButton.style.color = 'gray';
+                return;  
+            }
+
+            count += direction;
+
+            nextButton.disabled = count >= 2;
+            prevButton.disabled = count <= 0;
+            nextButton.style.color = nextButton.disabled ? 'gray' : 'white'; 
+            prevButton.style.color = prevButton.disabled ? 'gray' : 'white'; 
+
+            currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
+            gallery.scrollTo({
+                left: currentImageIndex * gallery.clientWidth,
+                behavior: 'smooth'
+            });
         }
 
-        count += direction;
-
-        nextButton.disabled = count >= 2;
-        prevButton.disabled = count <= 0;
-        nextButton.style.color = nextButton.disabled ? 'gray' : 'white'; 
-        prevButton.style.color = prevButton.disabled ? 'gray' : 'white'; 
-
-        currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
-        gallery.scrollTo({
-            left: currentImageIndex * gallery.clientWidth,
-            behavior: 'smooth'
-        });
-    }
-
-    document.getElementById('prev-button').disabled = count <= 0;
-    document.getElementById('next-button').disabled = count >= 2;
-    document.getElementById('prev-button').style.color = 'gray';
-    document.getElementById('next-button').style.color = 'white';
+        document.getElementById('prev-button').disabled = count <= 0;
+        document.getElementById('next-button').disabled = count >= 2;
+        document.getElementById('prev-button').style.color = 'gray';
+        document.getElementById('next-button').style.color = 'white';
 
     </script>
 </body>
