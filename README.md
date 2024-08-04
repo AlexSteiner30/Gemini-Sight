@@ -22,11 +22,11 @@
 
 ## Competition
 
-This repository is the submission for the Gemini API Developer Competition by [Alex Steiner](https://github.com/AlexSteiner30), [Fotios Vaitsopoulos](https://github.com/Epic-legend128), and [Lorenzo Dominijani](https://www.instagram.com/lorenzo.dominijanni/). We are a group of students attending H-Farm International School of Treviso, challenging ourselves to enhance our skills and create a project we can be proud of by participating in the Gemini Developer Competition. This global competition, hosted by Google, showcases the real-world applications of the new Gemini model, with a cash prize for the winner.
+This repository is the submission for the Gemini API Developer Competition by [Alex Steiner](https://github.com/AlexSteiner30), [Fotios Vaitsopoulos](https://github.com/Epic-legend128). We are a two of students attending H-Farm International School of Treviso, challenging ourselves to enhance our skills and create a project we can be proud of by participating in the Gemini Developer Competition. This global competition, hosted by Google, showcases the real-world applications of the new Gemini model, with a cash prize for the winner.
 
 Although we joined the competition one month late due to internal exams, we began our project in early to mid-June. Our idea was to create smart glasses entirely powered by Gemini and fully integrated with Google services such as Google Docs, Google Drive, Gmail, YouTube Music, Google Maps, Google Calendar, and Google Events. These glasses are designed to automate tasks through a single voice command. Additionally, equipped with a camera, they allow the user to ask for information about their surroundings, with the model responding in real time.
 
-Alex Steiner developed the Flutter application, the glasses' circuit and code, and two WebSockets. Fotios Vaitsopoulos developed the entire website, while Lorenzo Dominijani created the video presentation and the 3D model for the glasses. The logo was designed by [Lilian Piovesana](https://www.linkedin.com/in/lilian-piovesana-333b572b1/).
+Alex Steiner developed the Flutter application, the glasses' circuit and code, the two WebSockets and designed the 3D glasses. Fotios Vaitsopoulos designeda and developed the whole website.
 
 ## Submission
 
@@ -46,13 +46,11 @@ Download the glasses printable STL file from the `models/` folder, after printin
  <img src="resources/backend.png?raw=true" style="height: 80%; width:80%; align:center">
 </h1>
 
-Down below you can find the table with the components used to build the glasses. The total price for the components is around `79.09€`.
+Down below you can find the table with the components used to build the glasses. The total price for the components is around `67.36€`.
 
    | **Name of Sensor**                            | **Amount** | **Price** | **Purchase Link**               |
    |-----------------------------------------------|------------|-----------|---------------------------------|
    | XIAO ESP32S3 Sense                            | 1          | €28.02    | [Buy Here](https://t.ly/RBrHw)  |
-   | INMP441 Microphone                            | 1          | €7.74     | [Buy Here](https://t.ly/oiMWj)  |
-   | HM-10 Bluetooth Module                        | 1          | €4.00     | [Buy Here](https://t.ly/S-Ilr)  |
    | 2 8Ω Speakers                                 | 1          | €15.13    | [Buy Here](https://t.ly/W3Qws)  |
    | MAX98357A Breakout Module                     | 1          | €7.96     | [Buy Here](http://amoz.onl/2Q3) |
    | 3.7v Lithium Battery                          | 1          | €9.33     | [Buy Here](https://t.ly/6TUde)  |
@@ -238,6 +236,7 @@ This software uses the following open-source packages and tools:
 - [EJS](https://ejs.co/)
 - [Google Pay](https://pay.google.com/about/)
 
+A special thanks also to my dad, Marco Baroni, (https://www.facebook.com/marcodirimini/) who helped me through the entire process by supporting me finaccialy, moraly, helping me with the planning and designing the glasses.
+
 > [alexsteiner.dev](https://www.alexsteiner.dev) &nbsp;&middot;&nbsp;
 > [epic-legend128](https://github.com/Epic-legend128) &nbsp;&middot;&nbsp;
-> [lorenzo.dominijani](https://www.instagram.com/lorenzo.dominijanni/)

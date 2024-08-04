@@ -53,8 +53,8 @@ function onGooglePayButtonClicked() {
     paymentDataRequest.transactionInfo = {
         totalPriceStatus: "FINAL",
         totalPrice: "200.00",
-        currencyCode: 'EUR',
-        countryCode: 'IT'
+        currencyCode: 'USD',
+        countryCode: 'US'
     };
     googlePayClient.loadPaymentData(paymentDataRequest).then(paymentData => processPaymentData(paymentData)).catch(err => {
         if (err.statusCode != 'CANCELED') {

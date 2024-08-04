@@ -16,16 +16,16 @@
         <main>
             <section id="buying-section">
                 <div id="gallery-container">
-                    <button id="prev-button" onclick="scrollGallery(-1)">&#10094;</button>
+                    <button id="prev-button" onclick="scrollGallery(-1)" style="border-color: black;">&#10094;</button>
                     <div id="gallery">
                         <img src="https://camo.githubusercontent.com/4e7828cccfd026e02b28ada34d7b18b649cc5c4bd52413ea7ed5e9e4cade54ea/68747470733a2f2f63646e2e63732e31776f726c6473796e632e636f6d2f66652f30642f66653064666366612d623736322d343363612d393531392d3333343234343961333366622e6a7067" alt="Gallery image 1">
                         <img src="https://camo.githubusercontent.com/4e7828cccfd026e02b28ada34d7b18b649cc5c4bd52413ea7ed5e9e4cade54ea/68747470733a2f2f63646e2e63732e31776f726c6473796e632e636f6d2f66652f30642f66653064666366612d623736322d343363612d393531392d3333343234343961333366622e6a7067" alt="Gallery image 2">
                         <img src="https://camo.githubusercontent.com/4e7828cccfd026e02b28ada34d7b18b649cc5c4bd52413ea7ed5e9e4cade54ea/68747470733a2f2f63646e2e63732e31776f726c6473796e632e636f6d2f66652f30642f66653064666366612d623736322d343363612d393531392d3333343234343961333366622e6a7067" alt="Gallery image 3">
                     </div>
-                    <button id="next-button" onclick="scrollGallery(1)">&#10095;</button>
+                    <button id="next-button" onclick="scrollGallery(1)" style="border-color: black;">&#10095;</button>
                 </div>
                 <div id="details">
-                    <figcaption>Gemini Sight Glasses at <strong>€200.00</strong></figcaption>
+                    <figcaption>Gemini Sight Glasses at <strong>$ 200.00</strong></figcaption>
                     <div class="inline-inputs">
                         <input type="text" placeholder="Address" id="address" name="address" required>
                     </div>
@@ -43,5 +43,45 @@
     <% } else  { %>        
          <script>window.location = "/admin"</script>   
     <% } %>
+    <script>
+        let count = 0;
+        let currentImageIndex = 0;
+
+    function scrollGallery(direction) {
+        const gallery = document.getElementById('gallery');
+        const images = gallery.getElementsByTagName('img');
+        const nextButton = document.getElementById('next-button');
+        const prevButton = document.getElementById('prev-button');
+        
+        if (direction === 1 && count >= 2) {
+            nextButton.disabled = true;
+            nextButton.style.color = 'gray'; 
+            return;  
+        } else if (direction === -1 && count <= 0) {
+            prevButton.disabled = true;
+            prevButton.style.color = 'gray';
+            return;  
+        }
+
+        count += direction;
+
+        nextButton.disabled = count >= 2;
+        prevButton.disabled = count <= 0;
+        nextButton.style.color = nextButton.disabled ? 'gray' : 'white'; 
+        prevButton.style.color = prevButton.disabled ? 'gray' : 'white'; 
+
+        currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
+        gallery.scrollTo({
+            left: currentImageIndex * gallery.clientWidth,
+            behavior: 'smooth'
+        });
+    }
+
+    document.getElementById('prev-button').disabled = count <= 0;
+    document.getElementById('next-button').disabled = count >= 2;
+    document.getElementById('prev-button').style.color = 'gray';
+    document.getElementById('next-button').style.color = 'white';
+
+    </script>
 </body>
 </html>
