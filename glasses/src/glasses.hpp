@@ -119,8 +119,8 @@ class Glasses : public BLECharacteristicCallbacks {
       void play_file(char *path);
       void set_volume(string volume);
 
-      std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>> get_speech_command();
-      int predict(const std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>>& resizedSpectrogram);
+      int16_t* get_speech_command();
+      int predict(const int16_t*& input_buffer);
       void get_wake_word();
 
       void connect_wifi(const char *ssid, const char *password);

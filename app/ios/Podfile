@@ -49,7 +49,6 @@ post_install do |installer|
          'PERMISSION_LOCATION=1',
          'PERMISSION_CONTACTS=1',
          'PERMISSIO_PHONE=1',
-         'PERMISSION_CAMERA=1',
          'PERMISSION_BLUETHOOTH=1'
       ]
     end

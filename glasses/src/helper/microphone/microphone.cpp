@@ -75,46 +75,17 @@ void Glasses::record_microphone(bool is_listening)
     get_wake_word();
 }
 
-std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>> Glasses::get_speech_command() {
-    const uint16_t samplesPerChunk = 1024;
-    const uint16_t numChunks = SAMPLE_RATE / samplesPerChunk;
-
-    ArduinoFFT<double> FFT = ArduinoFFT<double>();
-    
-    std::vector<double, PSRAMAllocator<double>> vReal(samplesPerChunk);
-    std::vector<double, PSRAMAllocator<double>> vImag(samplesPerChunk);
-
-    std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>> fullSpectrogram;
-    fullSpectrogram.reserve(numChunks);
-
-    int16_t* buffer = (int16_t*)heap_caps_malloc(samplesPerChunk * SAMPLE_SIZE, MALLOC_CAP_SPIRAM);
-
-    for (int chunk = 0; chunk < numChunks; chunk++) {
-        size_t bytesRead = 0;
+int16_t* Glasses::get_speech_command() {
+  int16_t* buffer = (int16_t*)malloc(SAMPLE_RATE * SAMPLE_SIZE);
+  size_t bytesRead = 0;
 
 
-        while (bytesRead < samplesPerChunk * SAMPLE_SIZE) {
-          int sample = I2S.read();
-          buffer[bytesRead] = (sample && sample != -1 && sample != 1) ? sample : 0;
+  while (bytesRead < SAMPLE_RATE * SAMPLE_SIZE) {
+    int sample = I2S.read();
+    buffer[bytesRead] = (sample && sample != -1 && sample != 1) ? sample : 0;
 
-          bytesRead++;
-        }
-        
-        for (uint16_t i = 0; i < samplesPerChunk; i++) {
-            vReal[i] = (double)buffer[i];
-            vImag[i] = 0.0;
-        }
-        
-        FFT.windowing(vReal.data(), samplesPerChunk, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-        FFT.compute(vReal.data(), vImag.data(), samplesPerChunk, FFT_FORWARD);
-        FFT.complexToMagnitude(vReal.data(), vImag.data(), samplesPerChunk);
-        
-        fullSpectrogram.push_back(vReal);
-        
-        yield();
-    }
+    bytesRead++;
+  }
 
-    heap_caps_free(buffer);
-
-    return fullSpectrogram;
+  return buffer;
 }

@@ -54,7 +54,6 @@ void Glasses::setup_tf()
     output = m_interpreter->output(0);
 }
 
-/*
 Glasses::~Glasses()
 {
     delete m_interpreter;
@@ -62,21 +61,16 @@ Glasses::~Glasses()
     free(m_tensor_arena);
     delete m_error_reporter;
 }
-*/
 
-int Glasses::predict(const std::vector<std::vector<double, PSRAMAllocator<double>>, PSRAMAllocator<std::vector<double, PSRAMAllocator<double>>>>& spectrogram) {
+int Glasses::predict(const int16_t*& input_buffer) {
     TfLiteTensor* input_tensor = m_interpreter->input(0);
 
     int input_size = input_tensor->bytes / sizeof(float);
     std::vector<float> input_data(input_size, 0.0f);
 
-    int index = 0;
-    for (const auto& row : spectrogram) {
-        for (double value : row) {
-            input_data[index++] = static_cast<float>(value);
-            if (index >= input_size) break;
-        }
-        if (index >= input_size) break;
+
+    for(int i = 0; i < sizeof(input_buffer); i++){
+        input_data[i] = static_cast<float>(input_buffer[i]);
     }
 
     memcpy(input_tensor->data.f, input_data.data(), input_size * sizeof(float));
