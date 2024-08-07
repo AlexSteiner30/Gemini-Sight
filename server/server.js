@@ -1,15 +1,14 @@
 require("dotenv").config();
-require("./models/db");
 const express = require('express');
 const path = require("path");
-const mongoose = require("mongoose");
-const User = mongoose.model("User");
-const Order = mongoose.model("Order");
 const bodyparser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const { jwtDecode } = require("jwt-decode");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const crypto = require("crypto");
+const { initializeApp } = require("firebase/app");
+const firestore = require("firebase/firestore");
+
 const aboutUsText = {
     about_us: `
         <p>Our team created <a target="_blank" href="https://github.com/AlexSteiner30/Gemini-Sight/">this GitHub repository</a> which is our submission for the Gemini API Developer Competition by <a target="_blank" href="https://github.com/AlexSteiner30">Alex Steiner</a>, <a target="_blank" href="https://github.com/Epic-legend128">Fotios Vaitsopoulos</a>. We are a two students attending H-Farm International School of Treviso, challenging ourselves to enhance our skills and create a project we can be proud of by participating in the Gemini Developer Competition. This global competition, hosted by Google, showcases the real-world applications of the new Gemini model, with a cash prize for the winner.</p>
@@ -209,6 +208,18 @@ A special thanks also to my dad, Marco Baroni, (https://www.facebook.com/marcodi
 let previousChats = [];
 let userData = {};
 
+const firebaseConfig = {
+    apiKey: process.env.API_KEY,
+    authDomain: process.env.AUTH_DOMAIN,
+    projectId: process.env.PROJECT_ID,
+    storageBucket: process.env.STORAGE_BUCKET,
+    messagingSenderId: process.env.MESSAGING_SENDER_ID,
+    appId: process.env.APP_ID,
+    measurementId: process.env.MEASUREMENT_ID
+};
+const appF = initializeApp(firebaseConfig);
+const db = firestore.getFirestore(appF);
+
 const app = express();
 const PORT = 8080;
 const allowedPages = ['index', 'admin', 'product', 'about', 'order', 'notFound'];
@@ -218,6 +229,8 @@ app.use(express.static(path.join(__dirname, 'public/')));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(cookieParser());
+
+const randomHex = n => Array(n).fill(0).map(() => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('');
 
 app.get('/', (req, res) => {
     res.redirect('index');
@@ -245,24 +258,21 @@ app.post('/signin', bodyparser.urlencoded(), async (req, res) => {
     const decoded = jwtDecode(token);
     let email = decoded.email;
     res.cookie("cookie-token", token);
-    let found = false;
-    User.find({}).then(users => {
-        users.forEach(user => {
-            if (email == user.email) found = true;
-        });
-        userData.name = decoded.name;
-        userData.email = email;
-        if (!found) {
-            let user = new User();
-            user.email = email;
-            user.save().then(_ => {
-                res.send("Done");
-            });
-        }
-        else {
+    
+    let docRef = await firestore.doc(db, "users", email);
+    userData.name = decoded.name;
+    userData.email = email;
+    let document = await firestore.getDoc(docRef);
+    if (!document.exists()) {
+        firestore.setDoc(docRef, {
+            active: true
+        }).then(_ => {
             res.send("Done");
-        }
-    });
+        });
+    }
+    else {
+        res.send("Done");
+    }
 });
 
 app.post('/chat', bodyparser.urlencoded(), async (req, res) => {
@@ -288,21 +298,19 @@ app.post('/chat', bodyparser.urlencoded(), async (req, res) => {
 
 app.post('/order', bodyparser.urlencoded(), async (req, res) => {
     try {
-        let order = new Order();
-        order.email = userData.email;
-        order.name = userData.name;
-        order.address = req.body.address;
-        order.first_time = true;
-        order.access_key = crypto.randomBytes(128).toString('hex');
-        order.model = 0.1;
-        order.query = "";
-        order.refresh_key = "";
-        order.ble_id = Array(4).fill(0).map(() => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('') + '-' +
-        Array(4).fill(0).map(() => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('') + '-' + Array(4).fill(0).map(() =>
-         Math.floor(Math.random()*16).toString(16).toUpperCase()).join('') + '-' + Array(4).fill(0).map(() => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('') + '-' + Array(12).fill(0).map(() => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('');
-    
-        await order.save();
-        res.send(`Your Glasses will be shipped to ${order.address} as soon as possible`);
+        firestore.addDoc(firestore.collection(db, "orders"), {
+            email: userData.email,
+            name: userData.name,
+            address: req.body.address,
+            first_time: true,
+            access_key: crypto.randomBytes(128).toString('hex'),
+            model: 0.1,
+            query: "",
+            refresh_key: "",
+            ble_id: randomHex(4) + '-' + randomHex(4) + '-' + randomHex(4) + '-' + randomHex(4) + '-' + randomHex(12)
+        }).then(_ => {
+            res.send(`Your Glasses will be shipped to ${req.body.address} as soon as possible`)
+        });
     }
     catch(err) {
         res.send("Ordering error: ", err);
