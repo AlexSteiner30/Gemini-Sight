@@ -24,9 +24,9 @@
 
 This repository is the submission for the Gemini API Developer Competition by [Alex Steiner](https://github.com/AlexSteiner30), [Fotios Vaitsopoulos](https://github.com/Epic-legend128). We are two students attending H-Farm International School of Treviso, challenging ourselves to enhance our skills and create a project we can be proud of by participating in the Gemini Developer Competition. This global competition, hosted by Google, showcases the real-world applications of the new Gemini model, with a cash prize for the winner.
 
-Although we joined the competition one month late due to internal exams, we began our project in early to mid-June. Our idea was to create smart glasses entirely powered by Gemini and fully integrated with Google services such as Google Docs, Google Sheets, Google Drive, Gmail, YouTube Music, Google Maps, Google Calendar, and Google Meet, Google Messages and Calls. These glasses are designed to automate tasks through a single voice command. Additionally, equipped with a camera, they allow the user to ask for information about their surroundings, with the model responding in real time.
+Although we joined the competition one month late due to internal exams, we began our project in early to mid-June. Our idea was to create smart glasses entirely powered by Gemini and fully integrated with Google services such as Google Docs, Google Sheets, Google Drive, Gmail, YouTube Music, Google Maps, Google Calendar, Google Meet, Google Messages and Calls. These glasses are designed to automate tasks through a single voice command. Additionally, equipped with a camera, they allow the user to ask for information about their surroundings, with the model responding in real time.
 
-Alex Steiner developed the Flutter application, the glasses' circuit and code, the two WebSockets and designed the 3D glasses. Fotios Vaitsopoulos designeda and developed the whole website.
+Alex Steiner developed the Flutter application, the glasses' circuit and code, the two WebSockets and designed the 3D glasses. Fotios Vaitsopoulos designed and developed the whole website.
 
 ## Submission
 
@@ -103,11 +103,17 @@ In total the website offers 5 pages. The first one is the "Home" and the second 
 You can also run the website locally on your computer by installing the required packages and setting up the right environment variables.<br>
 For the environment variables you need to have the following:
 ```js
-MONGODB_URI = ""
 GEMINI_API = ""
 CLIENT_ID = ""
+API_KEY=""
+AUTH_DOMAIN=""
+PROJECT_ID=""
+STORAGE_BUCKET=""
+MESSAGING_SENDER_ID=""
+APP_ID=""
+MEASUREMENT_ID=""
 ```
-The `MONGODB_URI` is just the connection URI for MongoDB which you can copy once you have created a new project [here](https://cloud.mongodb.com). Then, the `GEMINI_API` is just the Gemini API key which you can just create by going [here](https://aistudio.google.com/app/apikey). Finally, the `CLIENT_ID` is the client ID for the Google authentication which you can access by going to the Google developer console as shown in the [backend section](#backend).<br>
+The `GEMINI_API` is just the Gemini API key which you can just create by going [here](https://aistudio.google.com/app/apikey). Then, the `CLIENT_ID` is the client ID for the Google authentication which you can access by going to the Google developer console as shown in the [backend section](#backend). The rest are just all of the values needed for the Firebase configuration.<br>
 Then you will need to head to the server directory, install some packages and run the site like so:
 ```bash
 # head to the right directory
@@ -232,11 +238,11 @@ This software uses the following open-source packages and tools:
 - [ESP32](https://www.espressif.com/)
 - [ArduinoWebsockets](https://www.arduino.cc/reference/en/libraries/arduinowebsockets/)
 - [Google Cloud Platform](https://cloud.google.com/)
-- [MongoDB](https://www.mongodb.com/)
 - [EJS](https://ejs.co/)
 - [Google Pay](https://pay.google.com/about/)
+- [Firebase](https://firebase.google.com)
 
-A special thanks also to my dad, Marco Baroni, (https://www.facebook.com/marcodirimini/) who helped me through the entire process by supporting me finaccialy, moraly, helping me with the planning and designing the glasses.
+A special thanks also to my dad, Marco Baroni, (https://www.facebook.com/marcodirimini/) who helped me through the entire process by supporting me financially, morally, helping me with the planning and designing the glasses.
 
 > [alexsteiner.dev](https://www.alexsteiner.dev) &nbsp;&middot;&nbsp;
 > [epic-legend128](https://github.com/Epic-legend128) &nbsp;&middot;&nbsp;
