@@ -120,7 +120,7 @@ class Glasses : public BLECharacteristicCallbacks {
       void set_volume(string volume);
 
       int16_t* get_speech_command();
-      int predict(const int16_t*& input_buffer);
+      int predict(int16_t* input_buffer);
       void get_wake_word();
 
       void connect_wifi(const char *ssid, const char *password);

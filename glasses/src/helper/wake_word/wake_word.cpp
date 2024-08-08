@@ -62,12 +62,11 @@ Glasses::~Glasses()
     delete m_error_reporter;
 }
 
-int Glasses::predict(const int16_t*& input_buffer) {
+int Glasses::predict(int16_t* input_buffer) {
     TfLiteTensor* input_tensor = m_interpreter->input(0);
 
     int input_size = input_tensor->bytes / sizeof(float);
     std::vector<float> input_data(input_size, 0.0f);
-
 
     for(int i = 0; i < sizeof(input_buffer); i++){
         input_data[i] = static_cast<float>(input_buffer[i]);

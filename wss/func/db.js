@@ -1,56 +1,41 @@
-const mongoose = require('mongoose');
+const { initializeApp } = require("firebase/app");
+const { getFirestore, collection, query, where, getDocs, limit } = require("firebase/firestore");
+
 require('dotenv').config({ path: './database/.env' });
 
-const mongoURI = process.env.MONGODB_URI;
+const firebaseConfig = {
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID,
+  measurementId: process.env.MEASUREMENT_ID
+};
 
+const appF = initializeApp(firebaseConfig);
+const db = getFirestore(appF);
 
 class Database {
   constructor() {
     this.data = [];
+    this.db = db;
 
-    mongoose.connect(mongoURI, {
-    }).then(() => {
-      console.log('Successfully connected to DB!');
-    }).catch((err) => {
-      console.error('Error connecting to DB:', err);
-    });
-
-    const orderSchema = {
-      email: {
-          type: String,
-          required: "This field is required"
-      },
-      name: {
-          type: String,
-          required: "This field is required"
-      },
-      address: {
-          type: String,
-          required: "This field is required"
-      },
-      access_key: {
-          type: String
-      },
-      refresh_key: String,
-      model: {
-          type: Number,
-          required: "This field is required"
-      },
-      query: String,
-      first_time: {
-          type: Boolean,
-          required: "This field is required"
-      },
-      ble_id: String
-    };
-
-    this.Order = mongoose.model('Order', orderSchema);
+    console.log('Firebase Database connected!');
   }
 
   async find(filter, value) {
     try {
-      const result = await this.Order.findOne({ [filter]: value });
-      return result;
+      const collectionRef = collection(this.db, 'orders');
+      const q = query(collectionRef, where(filter, '==', value), limit(1));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const result = querySnapshot.docs[0].data();
+        return result;
+      } else {
+        return null;
+      }
     } catch (err) {
       console.error('Error finding Order:', err);
       return null;
