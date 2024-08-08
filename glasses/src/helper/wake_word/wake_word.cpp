@@ -54,6 +54,7 @@ void Glasses::setup_tf()
     output = m_interpreter->output(0);
 }
 
+/*
 Glasses::~Glasses()
 {
     delete m_interpreter;
@@ -61,6 +62,7 @@ Glasses::~Glasses()
     free(m_tensor_arena);
     delete m_error_reporter;
 }
+*/
 
 int Glasses::predict(int16_t* input_buffer) {
     TfLiteTensor* input_tensor = m_interpreter->input(0);

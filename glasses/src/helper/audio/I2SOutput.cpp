@@ -7,6 +7,7 @@
 
 #include "SampleSource.h"
 #include "I2SOutput.h"
+#include <I2S.h>
 
 // number of frames to try and send at once (a frame is a left and right sample)
 #define NUM_FRAMES_TO_SEND 512
@@ -41,8 +42,13 @@ void i2sWriterTask(void *param)
                     if (availableBytes > 0)
                     {
                         // write data to the i2s peripheral
+                        /*
                         i2s_write(output->m_i2sPort, buffer_position + (uint8_t *)frames,
                                   availableBytes, &bytesWritten, portMAX_DELAY);
+                        */
+
+                        I2S.write(buffer_position + (uint8_t *)frames, availableBytes);
+                        
                         availableBytes -= bytesWritten;
                         buffer_position += bytesWritten;
                     }
@@ -55,6 +61,7 @@ void i2sWriterTask(void *param)
 void I2SOutput::start(i2s_port_t i2sPort, i2s_pin_config_t &i2sPins, SampleSource *sample_generator)
 {
     m_sample_generator = sample_generator;
+    /*
     // i2s config for writing both channels of I2S
     i2s_config_t i2sConfig = {
         .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
@@ -73,6 +80,7 @@ void I2SOutput::start(i2s_port_t i2sPort, i2s_pin_config_t &i2sPins, SampleSourc
     i2s_set_pin(m_i2sPort, &i2sPins);
     // clear the DMA buffers
     i2s_zero_dma_buffer(m_i2sPort);
+    */
     // start a task to write samples to the i2s peripheral
     TaskHandle_t writerTaskHandle;
     xTaskCreate(i2sWriterTask, "i2s Writer Task", 4096, this, 1, &writerTaskHandle);

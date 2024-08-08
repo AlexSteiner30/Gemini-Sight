@@ -103,15 +103,15 @@ In total the website offers 5 pages. The first one is the "Home" and the second 
 You can also run the website locally on your computer by installing the required packages and setting up the right environment variables.<br>
 For the environment variables you need to have the following:
 ```js
-GEMINI_API = ""
-CLIENT_ID = ""
-API_KEY=""
-AUTH_DOMAIN=""
-PROJECT_ID=""
-STORAGE_BUCKET=""
-MESSAGING_SENDER_ID=""
-APP_ID=""
-MEASUREMENT_ID=""
+GEMINI_API = "YOUR GEMINI API"
+CLIENT_ID = "YOUR CLIENT ID"
+API_KEY="YOUR API KEY"
+AUTH_DOMAIN="YOUR AUTH DOMAIN"
+PROJECT_ID="YOUR PROJECT ID"
+STORAGE_BUCKET="YOUR STORAGE BUCKET"
+MESSAGING_SENDER_ID="YOUR MESSAGING SENDER ID"
+APP_ID="YOUR APP ID"
+MEASUREMENT_ID="YOUR MEASUREMENT ID"
 ```
 The `GEMINI_API` is just the Gemini API key which you can just create by going [here](https://aistudio.google.com/app/apikey). Then, the `CLIENT_ID` is the client ID for the Google authentication which you can access by going to the Google developer console as shown in the [backend section](#backend). The rest are just all of the values needed for the Firebase configuration.<br>
 Then you will need to head to the server directory, install some packages and run the site like so:
@@ -170,12 +170,12 @@ CLIENT_ID = "YOUR CLIENT ID"
 CLIENT_SECRET = "YOUR CLIENT SECRET"
 GEMINI_API = "YOUR GEMINI API KEY"
 API_KEY = "YOUR API KEY"
-AUTH_DOMAIN=""
-PROJECT_ID=""
-STORAGE_BUCKET=""
-MESSAGING_SENDER_ID=""
-APP_ID=""
-MEASUREMENT_ID=""
+AUTH_DOMAIN="YOUR AUTH DOMAIN"
+PROJECT_ID="YOUR PROJECT ID"
+STORAGE_BUCKET="YOUR STORAGE BUCKET"
+MESSAGING_SENDER_ID="YOUR MESSAGING SENDER ID"
+APP_ID="YOUR APP ID"
+MEASUREMENT_ID="YOUR MEASUREMENT ID"
 ```
 
 Additionally, copy and paste the payload from this [Google Doc](https://docs.google.com/document/d/1vSDI1G

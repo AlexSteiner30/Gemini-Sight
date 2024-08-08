@@ -12,7 +12,7 @@ void Glasses::get_wake_word(){
         Serial.println(prediction);
     }
 
-    Serial.println("Gemma");
+    Serial.println("Hey Gemini");
 
     glasses.record_microphone(false);
 }
@@ -95,7 +95,6 @@ void setup() {
 
     SPIFFS.begin();
 
-    // play boot sound
     glasses.play_file("boot.wav");
 
     glasses.setup_tf();
@@ -108,9 +107,14 @@ void setup() {
 
     glasses.AUTH_KEY = glasses.read_string("auth_key").c_str();
 
-    Serial.println("Started");
+    if(glasses.AUTH_KEY == "error"){
+        Serial.println("Device not initialized!");
+        return;
+    }
 
-    if(glasses.read_string("ssid") != NULL && glasses.read_string("password") != NULL)
+    Serial.println("Device Started!");
+
+    if(glasses.read_string("ssid") != "error" && glasses.read_string("password") != "error")
         glasses.connect_wifi(glasses.read_string("ssid").c_str(), glasses.read_string("password").c_str());
     else
         glasses.invoke_error("WiFi not connected");

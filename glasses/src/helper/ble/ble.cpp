@@ -26,12 +26,7 @@ void Glasses::setup_ble() {
 
   BLEService *pService = pServer->createService(SERVICE_UUID);
   
-  pCharacteristic = pService->createCharacteristic(
-                                         CHARACTERISTIC_UUID,
-                                         BLECharacteristic::PROPERTY_READ |
-                                         BLECharacteristic::PROPERTY_WRITE |
-                                         BLECharacteristic::PROPERTY_NOTIFY
-                                       );
+  pCharacteristic = pService->createCharacteristic(CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE | BLECharacteristic::PROPERTY_NOTIFY);
 
   pCharacteristic->setValue("Hello World");
   pCharacteristic->setCallbacks(this); 
@@ -48,10 +43,9 @@ void Glasses::setup_ble() {
 void Glasses::process_ble_data(std::string data){
     vector<string> message_parts = split(data.c_str(), "|");
     Serial.println(data.c_str());
-    Serial.println(message_parts[0].c_str());
 
     if (message_parts[0] == "authentication_key" && message_parts.size() == 2) {
-      const char* AUTH_KEY = message_parts[1].c_str();
+      AUTH_KEY = message_parts[1].c_str();
       save_string("auth_key", message_parts[1]);
     } else if (message_parts[0] == "wifi" && message_parts[1] == AUTH_KEY && message_parts.size() == 4) {
       save_string("ssid", message_parts[2]);
@@ -61,12 +55,9 @@ void Glasses::process_ble_data(std::string data){
 
       String ble_data = "ip|" + String(AUTH_KEY) + "|" + WiFi.localIP().toString();
       send_ble((char*)ble_data.c_str());
-
+    } else if(message_parts[0] == "blind" && message_parts[1] == AUTH_KEY && message_parts.size() == 3){
+      save_string("blind", message_parts[2]);
     } else {
-      if(message_parts[0] == "blind" && message_parts[1] == AUTH_KEY && message_parts.size() == 3){
-        save_string("blind", message_parts[2]);
-      }
-
       size_t size = data.length();
       uint8_t* buffer = new uint8_t[size];
 
