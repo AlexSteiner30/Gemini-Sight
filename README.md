@@ -93,7 +93,7 @@ Navigate to API and Services and add `Gmail, Calendar, Docs, Sheet, Drive, Tasks
  </div>
 </h1>
 
-Next, go to MongoDB, create a new project [here](https://cloud.mongodb.com) and copy the connection URI.
+Next, go to Firebase, create a new project [here](https://console.firebase.google.com/) and copy the connection variablesI.
 
 ## Website
 The website was created to expand upon our product's publicity, enable its distribution and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to Gemini Sight. The website can be accessed online [here]().<br>
@@ -168,9 +168,14 @@ Create a new environment file under `./database/.env` and save the following env
 ```js
 CLIENT_ID = "YOUR CLIENT ID"
 CLIENT_SECRET = "YOUR CLIENT SECRET"
-MONGODB_URI = "YOUR MONGO DB URI"
 GEMINI_API = "YOUR GEMINI API KEY"
 API_KEY = "YOUR API KEY"
+AUTH_DOMAIN=""
+PROJECT_ID=""
+STORAGE_BUCKET=""
+MESSAGING_SENDER_ID=""
+APP_ID=""
+MEASUREMENT_ID=""
 ```
 
 Additionally, copy and paste the payload from this [Google Doc](https://docs.google.com/document/d/1vSDI1G
