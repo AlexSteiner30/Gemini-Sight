@@ -371,9 +371,9 @@ button:hover {
     }
 
     #chat-btn {
-        padding: max(1.8vw, 1.8vh);
-        width: max(8vw, 8vh);
-        height: max(8vw, 8vh);
-        bottom: 8vh;
+        padding: max(1.3vw, 1.3vh);
+        width: max(6vw, 6vh);
+        height: max(6vw, 6vh);
+        bottom: 4vh;
     }
 }
