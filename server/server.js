@@ -212,8 +212,21 @@ Firebase
 I2S WAV File
 Heroku
 
-Contact Us
+Contact Us:
 You can contact us at alex.steiner@student.h-is.com and fotios.vaitsopoulos@gmail.com.
+
+About the Team:
+Fotios Vaitsopoulos: 
+I am a young developer who got interested in programming and coding at an early age through a mentor which I used to have. Ever since then, I have been constantly studying different fields of programming, from web and game development, by creating simple games and feature-heavy websites, to algorithms, data structures and graphs, which I have used to participate in multiple competitions and to improve my problem-solving skills. Now with the rise of AI, I have also begun to show some interest in this field which is why the moment I learnt of this competition I was immediately eager to join.
+I envision that with this project I will be able to greatly increase my knowledge of the Gemini API as well as some aspects of app and web development. I am also hoping to make some sort of impact on society if this product manages to gain some traction.
+Alex Steiner:
+"Alex, get off the computer!" That's probably the sentence I heard the most in my entire life. At only 16 years old, my mum would always shout from the kitchen for me to stop being on the computer and do something else. It’s not as if I was on my computer all day long—I was also really into sports, especially basketball. However, whenever I had the opportunity or spare time, I would spend it on my computer, learning something new every day. This is more or less how I ended up here, competing in a Google competition. I guess those hours spent on the computer weren’t that bad, right mum?
+But let’s take a step back. My journey dates back to 2015 when I was 9 years old. I received one of those all-in-one, crappy ACER computers. For no reason at all, I went on YouTube and searched "How To Make A Video Game." From there, my adventure began. Coding is fun for me but sometimes it turns out it’s actually my biggest nightmare and the amount of pain it creates makes me wonder what went wrong in that 9-year-old head. I created a very wonky top-down racing game and messed around with Scratch, before moving on to Python, Node.js, C#, and the Unity Engine. I focused on developing video games and backend applications over the next few years. I even created a copy of the Among Us game (by reverse-engineering the assets from the game) but spiced it up by developing it for the best video game console ever created: the Nintendo 3DS.
+In 2021, I left the beautiful country of San Marino to attend H-Farm International School. I think this was the turning point in my "career," if you can call it that. With the many opportunities the campus offered, I started developing project after project. I also picked up machine learning using TensorFlow and PyTorch. The school, being focused on business and technology, has these competitions that every first-year high school student attends. We are randomly divided into groups and have to create a startup. My group developed a 3D GAN that was able to create 3D models from a given text, although it was limited by the very small dataset I had access to. Long story short, my group won the competition.
+I also learned about electronics and how painful it is. One of my most notable projects is a vertical farm system that automatically handles water, light, and air systems, and can be controlled remotely with an integrated camera. Furthermore, multiple farms can be added.
+And yeah, this is how I got here, competing in a Google competition. I appreciate everyone for checking out Gemini Sight!
+P.S. Please don’t judge my code. I am more than aware it's bad.
+
 
 A special thanks also to my dad, Marco Baroni, (https://www.facebook.com/marcodirimini/) who helped me through the entire process by supporting me financially, morally, helping me with the planning and designing the glasses.
 `});
