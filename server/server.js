@@ -212,6 +212,9 @@ Firebase
 I2S WAV File
 Heroku
 
+Contact Us
+You can contact us at alex.steiner@student.h-is.com and fotios.vaitsopoulos@gmail.com.
+
 A special thanks also to my dad, Marco Baroni, (https://www.facebook.com/marcodirimini/) who helped me through the entire process by supporting me financially, morally, helping me with the planning and designing the glasses.
 `});
 let previousChats = {};
