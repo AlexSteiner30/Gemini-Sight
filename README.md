@@ -17,7 +17,7 @@
 </p>
 
 <h1 align="center">
-  <img src="https://cdn.cs.1worldsync.com/fe/0d/fe0dfcfa-b762-43ca-9519-3342449a33fb.jpg" style="height: 80%; width:80%; align:center">
+  <img src="resources/main.png?raw=true" style="height: 80%; width:80%; align:center">
 </h1>
 
 ## Competition
