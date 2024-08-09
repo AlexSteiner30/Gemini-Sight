@@ -221,7 +221,7 @@ const appF = initializeApp(firebaseConfig);
 const db = firestore.getFirestore(appF);
 
 const app = express();
-const PORT = 3000 || process.env.PORT;
+const PORT = process.env.PORT || 3000;
 const allowedPages = ['index', 'admin', 'product', 'about', 'order', 'notFound'];
 
 app.use(express.static(path.join(__dirname, 'public/')));
@@ -253,7 +253,7 @@ app.get('/:id', (req, res) => {
     else res.redirect("notFound");
 });
 
-app.post('/signin', bodyparser.urlencoded(), async (req, res) => {
+app.post('/signin', bodyparser.urlencoded({ extended: true }), async (req, res) => {
     let token = req.body.token;
     const decoded = jwtDecode(token);
     let email = decoded.email;
@@ -275,7 +275,7 @@ app.post('/signin', bodyparser.urlencoded(), async (req, res) => {
     }
 });
 
-app.post('/chat', bodyparser.urlencoded(), async (req, res) => {
+app.post('/chat', bodyparser.urlencoded({ extended: true }), async (req, res) => {
     try {
         let prompt = req.body.prompt;
         const chat = model.startChat({
@@ -296,7 +296,7 @@ app.post('/chat', bodyparser.urlencoded(), async (req, res) => {
     res.redirect("/");
 });
 
-app.post('/order', bodyparser.urlencoded(), async (req, res) => {
+app.post('/order', bodyparser.urlencoded({ extended: true }), async (req, res) => {
     try {
         firestore.addDoc(firestore.collection(db, "orders"), {
             email: userData.email,
