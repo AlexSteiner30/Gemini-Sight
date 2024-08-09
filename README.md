@@ -176,15 +176,40 @@ STORAGE_BUCKET="YOUR STORAGE BUCKET"
 MESSAGING_SENDER_ID="YOUR MESSAGING SENDER ID"
 APP_ID="YOUR APP ID"
 MEASUREMENT_ID="YOUR MEASUREMENT ID"
+PAYLOAD="YOUR PAYLOAD"
 ```
 
-Additionally, copy and paste the payload from this [Google Doc](https://docs.google.com/document/d/1vSDI1GnhkzvIxU8-Ivmz65zpxOH9fXzmfSPuA8jI8OY/edit?usp=sharing) into the `./commands.js` file.
+Copy and paste the payload from this [Google Doc](https://docs.google.com/document/d/1vSDI1GnhkzvIxU8-Ivmz65zpxOH9fXzmfSPuA8jI8OY/edit?usp=sharing).
 
 To start the websocket server, run the following:
 
 ```bash
 # Run the local server
 $ npm start
+```
+
+Continue by Navigating to `/Gemini-Sight/dart_wss/wss` and set up your application as follows:
+```bash
+# Export API Key
+$ export API_KEY="YOUR API KEY"
+
+# Get device IP address
+$ ifconfig en0
+
+# Update the IP address in the websocket configuration
+$ open helper.dart
+
+# On line 4, change to
+Uri.parse('ws://<your IP address>:443'),
+
+# Update the IP address in the websocket configuration
+$ open user/socket.dart
+
+# On line 50, change to
+Uri.parse('ws://<your IP address>:443'),
+
+# Run web socket
+$ dart run wss.dart
 ```
 
 Navigate to the `/Gemini-Sight/app` directory and set up your application as follows:
@@ -244,6 +269,7 @@ This software uses the following open-source packages and tools:
 - [EJS](https://ejs.co/)
 - [Google Pay](https://pay.google.com/about/)
 - [Firebase](https://firebase.google.com)
+- [I2S WAV File](https://github.com/atomic14/esp32_audio/tree/master/i2s_output)
 
 A special thanks also to my dad, Marco Baroni, (https://www.facebook.com/marcodirimini/) who helped me through the entire process by supporting me financially, morally, helping me with the planning and designing the glasses.
 
