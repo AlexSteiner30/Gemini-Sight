@@ -6,7 +6,6 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from keras.layers import Dense, Dropout, Flatten, Conv1D, Input, MaxPooling1D
 from keras.models import Model
-from keras.callbacks import EarlyStopping
 from keras import backend as K
 
 TRAIN_DIR = pathlib.Path('data')
@@ -20,7 +19,7 @@ def load_audio_files(train_dir):
     for label in labels:
         waves = list(label.glob('*.wav'))
         for wav in waves:
-            samples, sample_rate = librosa.load(wav, sr=SAMPLE_RATE)
+            samples, _ = librosa.load(wav, sr=SAMPLE_RATE)
             if len(samples) == SAMPLE_RATE:
                 all_wave.append(samples)
                 all_label.append(label.name)
@@ -50,7 +49,7 @@ def build_model(input_shape, num_classes):
     return model
 
 def train_model(model, x_tr, y_tr, x_val, y_val):
-    history = model.fit(x_tr, y_tr, epochs=25, batch_size=32, validation_data=(x_val, y_val))
+    history = model.fit(x_tr, y_tr, epochs=50, batch_size=32, validation_data=(x_val, y_val))
     return history
 
 def predict(model, audio, classes):

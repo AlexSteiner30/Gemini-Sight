@@ -95,13 +95,13 @@ void setup() {
 
     SPIFFS.begin();
 
-    glasses.play_file("boot.wav");
-
     glasses.setup_tf();
     glasses.setup_microphone();
     glasses.setup_camera();
     glasses.setup_ble();
     glasses.setup_audio();
+
+    glasses.play_file("boot.wav");
 
     glasses.preferences.begin("glasses", false);
 
