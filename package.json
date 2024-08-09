@@ -19,9 +19,7 @@
     "express": "^4.19.2",
     "firebase": "^10.12.5",
     "jwt-decode": "^4.0.0",
-    "path": "^0.12.7"
-  },
-  "devDependencies": {
+    "path": "^0.12.7",
     "concurrently": "^8.2.2"
   }
 }
