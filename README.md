@@ -17,7 +17,7 @@
 </p>
 
 <h1 align="center">
-  <img src="resources/main.png?raw=true" style="height: 80%; width:80%; align:center">
+  <img src="resources/main.png?raw=true" style="height: 50%; width:50%; align:center">
 </h1>
 
 ## Competition
