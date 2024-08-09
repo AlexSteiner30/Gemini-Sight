@@ -14,6 +14,7 @@ function createNavAndFooter() {
         let chats = JSON.parse(document.getElementById("chats").value);
         let addition = "";
         if (chats.length > 0 && chats != []) {
+            chats.splice(0, 1);
             chats.forEach(x => {
                 if (x.role == "user") addition += "<div></div>";
                 addition += "<label>"+processOutput(x.parts[0].text)+"</label>";

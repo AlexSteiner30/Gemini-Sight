@@ -257,21 +257,27 @@ app.post('/signin', bodyparser.urlencoded({ extended: true }), async (req, res) 
     let token = req.body.token;
     const decoded = jwtDecode(token);
     let email = decoded.email;
-    res.cookie("cookie-token", token);
-    
-    let docRef = await firestore.doc(db, "users", email);
-    userData.name = decoded.name;
-    userData.email = email;
-    let document = await firestore.getDoc(docRef);
-    if (!document.exists()) {
-        firestore.setDoc(docRef, {
-            active: true
-        }).then(_ => {
+    try {
+        let docRef = await firestore.doc(db, "users", email);
+        userData.name = decoded.name;
+        userData.email = email;
+        let document = await firestore.getDoc(docRef);
+        previousChats.push({role: 'user', parts: [{text: "Who are you?"}]});
+        previousChats.push({role: 'model', parts: [{text: "I'm an AI chatbot powered by Google's Gemini API, specifically designed to help you learn more about Gemini Sight. I can answer your questions about the product, its features, its creators, the development process, or anything else related to Gemini Sight. What would you like to know? 😊"}]});
+        res.cookie("cookie-token", token);
+        if (!document.exists()) {
+            firestore.setDoc(docRef, {
+                active: true
+            }).then(_ => {
+                res.send("Done");
+            });
+        }
+        else {
             res.send("Done");
-        });
-    }
-    else {
-        res.send("Done");
+        }
+    } catch(err) {
+        console.error("Sign in error: ", err);
+        res.redirect("notFound");
     }
 });
 
@@ -290,7 +296,7 @@ app.post('/chat', bodyparser.urlencoded({ extended: true }), async (req, res) =>
         previousChats.push({role: 'model', parts: [{text: result.response.text()}]});
     }
     catch (err) {
-        console.error("API problem: ", err);
+        console.error("Gemini API error: ", err);
         res.redirect("notFound");
     }
     res.redirect("/");
