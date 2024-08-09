@@ -15,7 +15,7 @@ void Glasses::play_file(char* path){
   SampleSource *sampleSource = new WAVFileReader('/' + path);
 
   I2SOutput *output = new I2SOutput();
-  output->start(I2S_NUM_1, i2sPins, sampleSource);
+  output->start(sampleSource);
 }
 
 void Glasses::play_audio(uint8_t* buffer) {

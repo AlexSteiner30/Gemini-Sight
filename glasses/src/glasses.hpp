@@ -83,16 +83,8 @@ class Glasses : public BLECharacteristicCallbacks {
     };
 
     current_state current_state = not_connected;
-
     bool is_recording = false;
-        
-    i2s_pin_config_t i2sPins = {
-        .bck_io_num = 3, // D1
-        .ws_io_num = GPIO_NUM_9, // D10
-        .data_out_num = GPIO_NUM_8, // D9)
-        .data_in_num = -1
-    };
-
+    
   private:
     tflite::MicroMutableOpResolver<9> *m_resolver;
     tflite::ErrorReporter *m_error_reporter;

@@ -119,7 +119,7 @@ void setup() {
     else
         glasses.invoke_error("WiFi not connected");
 
-    glasses.client.begin("172.20.10.3", 4040, "/ws");
+    glasses.client.begin("192.168.88.31", 4040, "/ws");
     glasses.client.onEvent(webSocketEvent);
     glasses.client.setReconnectInterval(5000);
 }
