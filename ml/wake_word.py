@@ -49,7 +49,7 @@ def build_model(input_shape, num_classes):
     return model
 
 def train_model(model, x_tr, y_tr, x_val, y_val):
-    history = model.fit(x_tr, y_tr, epochs=50, batch_size=32, validation_data=(x_val, y_val))
+    history = model.fit(x_tr, y_tr, epochs=200, batch_size=32, validation_data=(x_val, y_val))
     return history
 
 def predict(model, audio, classes):
