@@ -243,14 +243,15 @@ button:hover {
     bottom: 5vh;
     border-radius: 0.4vw;
     border: 1px solid rgb(30, 37, 60);
-    background: linear-gradient(45deg, black, rgb(20, 20, 150));
+    background: var(--main-color);
     width: 25vw;
+    box-shadow: 3px 3px 20px rgba(200, 200, 200, 0.1);
 }
 
 #chat-prev {
     margin: 0;
     width: 100%;
-    height: 50vh;
+    height: 60vh;
     padding: 8px;
     background-color: rgba(4, 4, 85, 0);
     overflow-y: scroll;
@@ -264,19 +265,22 @@ button:hover {
 }
 
 #chat-prev label {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     margin: 0;
     padding: 20px;
-    line-height: 14px;
-}
-
-#chat-prev label:nth-of-type(odd) {
-    background-color: rgb(4, 4, 81);
-    border-radius: 10px;
+    line-height: 18px;
+    color: black;
 }
 
 #chat-prev label:nth-of-type(even) {
-    background-color: rgb(19, 21, 54);
+    background-color: rgb(240, 240, 240);
+    color: black;
+    border-radius: 10px;
+}
+
+#chat-prev label:nth-of-type(odd) {
+    background-color: rgb(10, 10, 10);
+    color: white;
     border-radius: 10px;
 }
 
