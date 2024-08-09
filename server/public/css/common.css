@@ -324,7 +324,10 @@ button:hover {
     }
 
     #chat-btn {
-        padding: max(1vw, 1vh);
+        padding: max(1.2vw, 1.2vh);
+        width: max(5vw, 5vh);
+        height: max(5vw, 5vh);
+        bottom: 3vh;
     }
 
     #chat-area {
@@ -368,5 +371,9 @@ button:hover {
     button:hover {
         transform: scale(1.05);
         cursor: grab;
+    }
+
+    footer img, a, span {
+        transform: scale(0.9);
     }
 }
