@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently \"cd server && node server.js\" \"cd wss && node wss.js\""
+    "start": "cd server && node server.js"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +16,6 @@
     "axios": "^1.7.3",
     "body-parser": "^1.20.2",
     "cluster": "^0.7.7",
-    "concurrently": "^8.2.2",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
