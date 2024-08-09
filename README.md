@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://gemini.google.com"><img src="resources/logo.png?raw=true#gh-light-mode-only" alt="Gemini Sight" width="400"></a>
+  <a href="https://gemini.google.com"><img src="resources/logo.png?raw=true#gh-light-mode-only" alt="Gemini Sight" width="800"></a>
 </h1>
 
 <h4 align="center">AI-powered smart glasses connected to your Google interface, entry for the <a href="https://ai.google.dev/competition" target="_blank">Gemini API Competition</a>.</h4>
@@ -272,4 +272,4 @@ This software uses the following open-source packages and tools:
 A special thanks also to my dad, Marco Baroni, (https://www.facebook.com/marcodirimini/) who helped me through the entire process by supporting me financially, morally, helping me with the planning and designing the glasses.
 
 > [alexsteiner.dev](https://www.alexsteiner.dev) &nbsp;&middot;&nbsp;
-> [epic-legend128](https://github.com/Epic-legend128) &nbsp;&middot;&nbsp;
+> [epic-legend128](https://github.com/Epic-legend128) 
