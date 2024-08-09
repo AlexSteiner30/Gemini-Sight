@@ -20,9 +20,16 @@ void Glasses::play_file(char* path){
 
 void Glasses::play_audio(uint8_t* buffer) {
     const size_t chunkSize = 512;
-    size_t bufferSize = sizeof(bufferSize);
+    size_t bufferSize = sizeof(buffer) / sizeof(buffer[0]);
     for (size_t i = 0; i < bufferSize; i += chunkSize) {
         size_t chunk = (bufferSize - i < chunkSize) ? (bufferSize - i) : chunkSize;
+
+        for (size_t j = 0; j < chunk; j++) {
+            int16_t sample = buffer[i + j];  
+            sample = static_cast<int16_t>(sample * (volume / 100));
+            buffer[i + j] = static_cast<uint8_t>(sample);
+        }
+
         I2S.write(&buffer[i], chunk);
     }
 }
