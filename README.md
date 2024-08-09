@@ -178,9 +178,7 @@ APP_ID="YOUR APP ID"
 MEASUREMENT_ID="YOUR MEASUREMENT ID"
 ```
 
-Additionally, copy and paste the payload from this [Google Doc](https://docs.google.com/document/d/1vSDI1G
-
-zzfh56hjHgQJbXwpLhVpo1Ue2w/edit?usp=sharing&ouid=110446241726368691642&rtpof=true&sd=true) into the `./commands.js` file.
+Additionally, copy and paste the payload from this [Google Doc](https://docs.google.com/document/d/1vSDI1GnhkzvIxU8-Ivmz65zpxOH9fXzmfSPuA8jI8OY/edit?usp=sharing) into the `./commands.js` file.
 
 To start the websocket server, run the following:
 
