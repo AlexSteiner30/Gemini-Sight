@@ -205,7 +205,7 @@ Google Pay
 
 A special thanks also to my dad, Marco Baroni, (https://www.facebook.com/marcodirimini/) who helped me through the entire process by supporting me finaccialy, moraly, helping me with the planning and designing the glasses.
 `});
-let previousChats = [];
+let previousChats = {};
 let userData = {};
 
 const firebaseConfig = {
@@ -239,14 +239,14 @@ app.get('/', (req, res) => {
 app.get('/:id', (req, res) => {
     if (req.params.id == "login" && req.cookies["cookie-token"]) res.redirect("index");
     else if (allowedPages.includes(req.params.id)) res.render(req.params.id, {
-        isLoggedIn: req.cookies["cookie-token"],
-        chats: JSON.stringify(previousChats),
+        isLoggedIn: req.cookies.hasOwnProperty("cookie-token") && req.cookies["cookie-token"] != "",
+        chats: JSON.stringify(previousChats[req.cookies["cookie-token"]]),
         title: (req.params.id == "about" ? (aboutUsText.hasOwnProperty(req.query.name) ? req.query.name.replace(/_/g, ' ').replace(/(^| )\w/g, match => match.toUpperCase()) : "About Us") : ""),
         text: (req.params.id == "about" ? aboutUsText[req.query.name]||aboutUsText["about_us"]: "")
     });
     else if (req.params.id == "logout") {
-        previousChats = [];
-        userData = {};
+        previousChats[req.cookies["cookie-token"]] = [];
+        userData[req.cookies["cookie-token"]] = {};
         res.clearCookie('cookie-token');
         res.redirect("index");
     }
@@ -259,11 +259,16 @@ app.post('/signin', bodyparser.urlencoded({ extended: true }), async (req, res) 
     let email = decoded.email;
     try {
         let docRef = await firestore.doc(db, "users", email);
-        userData.name = decoded.name;
-        userData.email = email;
+        let token = email;
+        userData[token] = {};
+        userData[token].name = decoded.name;
+        userData[token].email = email;
         let document = await firestore.getDoc(docRef);
-        previousChats.push({role: 'user', parts: [{text: "Who are you?"}]});
-        previousChats.push({role: 'model', parts: [{text: "I'm an AI chatbot powered by Google's Gemini API, specifically designed to help you learn more about Gemini Sight. I can answer your questions about the product, its features, its creators, the development process, or anything else related to Gemini Sight. What would you like to know? 😊"}]});
+        if (!previousChats.hasOwnProperty(token) || previousChats[token].length == 0) {
+            previousChats[token] = [];
+            previousChats[token].push({role: 'user', parts: [{text: "Who are you?"}]});
+            previousChats[token].push({role: 'model', parts: [{text: "I'm an AI chatbot powered by Google's Gemini API, specifically designed to help you learn more about Gemini Sight. I can answer your questions about the product, its features, its creators, the development process, or anything else related to Gemini Sight. What would you like to know? 😊"}]});
+        }
         res.cookie("cookie-token", token);
         if (!document.exists()) {
             firestore.setDoc(docRef, {
@@ -283,17 +288,18 @@ app.post('/signin', bodyparser.urlencoded({ extended: true }), async (req, res) 
 
 app.post('/chat', bodyparser.urlencoded({ extended: true }), async (req, res) => {
     try {
+        let token = req.cookies['cookie-token'];
         let prompt = req.body.prompt;
         const chat = model.startChat({
-            history: previousChats,
+            history: previousChats[token],
             generationConfig: {
             maxOutputTokens: 100,
             }
         });
 
         const result = await model.generateContent(prompt);
-        previousChats.push({role: 'user', parts: [{text: prompt}]});
-        previousChats.push({role: 'model', parts: [{text: result.response.text()}]});
+        previousChats[token].push({role: 'user', parts: [{text: prompt}]});
+        previousChats[token].push({role: 'model', parts: [{text: result.response.text()}]});
     }
     catch (err) {
         console.error("Gemini API error: ", err);
@@ -305,8 +311,8 @@ app.post('/chat', bodyparser.urlencoded({ extended: true }), async (req, res) =>
 app.post('/order', bodyparser.urlencoded({ extended: true }), async (req, res) => {
     try {
         firestore.addDoc(firestore.collection(db, "orders"), {
-            email: userData.email,
-            name: userData.name,
+            email: userData[req.cookies["cookie-token"]].email,
+            name: userData[req.cookies["cookie-token"]].name,
             address: req.body.address,
             first_time: true,
             access_key: crypto.randomBytes(128).toString('hex'),

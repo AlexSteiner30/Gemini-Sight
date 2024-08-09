@@ -10,7 +10,8 @@ const processOutput = (text, counter=0) => (text.replace(/(\*\*)/g, _ => ((++cou
 
 function createNavAndFooter() {
     let sign;
-    if (document.getElementById("logged-in").value) {
+    console.log(JSON.parse(document.getElementById("logged-in").value));
+    if (JSON.parse(document.getElementById("logged-in").value)) {
         let chats = JSON.parse(document.getElementById("chats").value);
         let addition = "";
         if (chats.length > 0 && chats != []) {
@@ -71,7 +72,7 @@ function createNavAndFooter() {
 
 createNavAndFooter();
 
-if (document.getElementById("logged-in").value) {
+if (JSON.parse(document.getElementById("logged-in").value)) {
     let open = document.getElementsByClassName("chat-img")[0];
     let close = document.getElementsByClassName("chat-img")[1];
     let area = document.getElementById("chat-area");

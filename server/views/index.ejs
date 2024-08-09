@@ -27,13 +27,15 @@
             <div class="cards">
                 <h1>Sign In</h1>
                 <p>Sign in to use our chatbot system, built with Gemini, to help answer any of your questions.</p>
-                <a href="admin"><button class="more-btn">Sign In</button></a>
+                <a href="login"><button class="more-btn">Sign In</button></a>
             </div>
             <% } %>
         </main>
     </div>
     <input type="hidden" id="logged-in" value=<%= isLoggedIn %>>
-    <input type="hidden" id="chats" value="<%= chats %>">
+    <% if (isLoggedIn) { %>
+        <input type="hidden" id="chats" value="<%= chats %>">
+    <% } %>
     <script type="text/javascript" src="../js/script.js"> </script>
 </body>
 </html>

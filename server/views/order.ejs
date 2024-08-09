@@ -42,7 +42,9 @@
         </main>
     </div>
     <input type="hidden" id="logged-in" value="<%= isLoggedIn %>">
-    <input type="hidden" id="chats" value="<%= chats %>">
+    <% if (isLoggedIn) { %>
+        <input type="hidden" id="chats" value="<%= chats %>">
+    <% } %>
     <script type="text/javascript" src="../js/script.js"></script>
     <script>
         let count = 0;
