@@ -18,7 +18,7 @@ const auth = new Authentication();
 let sessions = new Map();
 
 const wss = new WebSocketServer({
-  port: process.env.PORT || 4000
+  port: 4000
 });
 console.log('Websocket running!');
 
