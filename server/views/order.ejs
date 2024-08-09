@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="css/order.css" type="text/css">
     <link rel="icon" href="media/icon.png"/>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBE8n70XnBigOGU34Lhd1YvrBAjs3TAI70&libraries=places"></script>
+    <% if (isLoggedIn) { %>
+        <script type="text/javascript" src="../js/order.js"></script>
+        <script async src="https://pay.google.com/gp/p/js/pay.js" onload="onGooglePayLoaded()"></script>
+    <% } else  { %>        
+         <script>window.location = "/login"</script>   
+    <% } %>
 </head>
 <body onload="initAutocomplete()">
     <div id="main">
@@ -38,12 +44,6 @@
     <input type="hidden" id="logged-in" value="<%= isLoggedIn %>">
     <input type="hidden" id="chats" value="<%= chats %>">
     <script type="text/javascript" src="../js/script.js"></script>
-    <% if (isLoggedIn) { %>
-        <script type="text/javascript" src="../js/order.js"></script>
-        <script async src="https://pay.google.com/gp/p/js/pay.js" onload="onGooglePayLoaded()"></script>
-    <% } else  { %>        
-         <script>window.location = "/login"</script>   
-    <% } %>
     <script>
         let count = 0;
         let currentImageIndex = 0;
@@ -82,7 +82,6 @@
         document.getElementById('next-button').disabled = count >= 2;
         document.getElementById('prev-button').style.color = 'gray';
         document.getElementById('next-button').style.color = 'white';
-
     </script>
 </body>
 </html>
