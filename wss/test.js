@@ -15,7 +15,7 @@ async function getDirections(origin, destination) {
         const params = {
             origin: origin,
             destination: destination,
-            key: 'AIzaSyBE8n70XnBigOGU34Lhd1YvrBAjs3TAI70',
+            key: '',
         };
 
         const response = await client.directions({

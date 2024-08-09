@@ -1,1 +1,0 @@
-npm i ws firebase express axios path fs @google/generative-ai crypto wav dotenv google-auth-library @googlemaps/google-maps-services-js querystring
