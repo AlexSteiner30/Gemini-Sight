@@ -1,11 +1,11 @@
 {
   "name": "gemini-sight",
   "version": "1.0.0",
-  "description": "<h1 align=\"center\">   <a href=\"https://gemini.google.com\"><img src=\"resources/logo.png?raw=true#gh-light-mode-only\" alt=\"Gemini Sight\" width=\"400\"></a> </h1>",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cd server && node server.js"
+    "start": "concurrently \"cd server && node server.js\" \"cd wss && node wss.js\""
   },
   "keywords": [],
   "author": "",
@@ -20,5 +20,8 @@
     "firebase": "^10.12.5",
     "jwt-decode": "^4.0.0",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }
