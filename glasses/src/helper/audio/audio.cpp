@@ -27,9 +27,9 @@ void Glasses::play_audio(uint8_t* buffer) {
     }
 }
 
-void Glasses::set_volume(string volume){
-    int volume_temp = stoi(volume);
+void Glasses::set_volume(string volume_input){
+    int volume_temp = stoi(volume_input);
     volume = (volume_temp > 100) ? volume_temp : (volume_temp < 0) ? 0 : volume_temp;
 
-    send_ble((char*)("volume|" + String(AUTH_KEY) + "|" + std::stoi(volume)).c_str());
+    send_ble((char*)("volume|" + std::string(AUTH_KEY) + "|" + std::to_string(volume)).c_str());
 }

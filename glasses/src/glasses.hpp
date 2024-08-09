@@ -84,6 +84,7 @@ class Glasses : public BLECharacteristicCallbacks {
 
     current_state current_state = not_connected;
     bool is_recording = false;
+
     
   private:
     tflite::MicroMutableOpResolver<9> *m_resolver;
@@ -94,11 +95,16 @@ class Glasses : public BLECharacteristicCallbacks {
     TfLiteTensor *output;
     uint8_t *m_tensor_arena;
 
+    const float maxBatteryVoltage = 4.2; 
+    const float minBatteryVoltage = 3.0;
+
   public:
       void setup_tf();
       void setup_ble();
       void setup_camera();
       void setup_microphone();
+
+      void check_battery();
 
       void take_picture();
       void record_video();

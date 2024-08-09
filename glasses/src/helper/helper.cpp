@@ -20,3 +20,15 @@ vector<string> Glasses::split(string s, string delimiter){
     list.push_back(s);
     return list;
 }
+
+void Glasses::check_battery(){
+  uint32_t Vbatt = 0;
+
+  for (int i = 0; i < 16; i++) {
+    Vbatt += analogReadMilliVolts(A0);  
+  }
+
+  int battery_percentage = constrain(((2 * Vbatt / 16000.0 - minBatteryVoltage) / (maxBatteryVoltage - minBatteryVoltage)) * 100, 0, 100);
+
+  send_ble((char*)("battery|" + std::string(AUTH_KEY) + "|" + std::to_string(battery_percentage)).c_str());
+}

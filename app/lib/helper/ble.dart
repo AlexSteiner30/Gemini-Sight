@@ -9,7 +9,7 @@ BluetoothDevice? connectedDevice;
 BluetoothCharacteristic? targetCharacteristic;
 bool ble = false;
 int volume = 0;
-int battery = 90;
+int battery = 0;
 
 Future<void> scan_devices() async {
   FlutterBlue flutterBlue = FlutterBlue.instance;
@@ -81,6 +81,9 @@ void read_data(List<int> data) async {
           break;
         case 'volume':
           volume = int.tryParse(dataParts[2])!;
+          break;
+        case 'battery':
+          battery = int.tryParse(dataParts[2])!;
           break;
         case 'contacts':
           if (dataParts.length == 3) await contacts(dataParts[2]);
