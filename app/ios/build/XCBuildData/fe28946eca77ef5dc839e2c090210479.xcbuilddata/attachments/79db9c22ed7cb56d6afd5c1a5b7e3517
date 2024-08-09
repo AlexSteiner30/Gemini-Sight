@@ -1,0 +1,23 @@
+{
+  'version': 0,
+  'use-external-names': 'false',
+  'case-sensitive': 'false',
+  'roots': [{
+    'type': 'directory',
+    'name': "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Release-iphoneos/GTMAppAuth/GTMAppAuth.framework/Modules"
+    'contents': [{
+      'type': 'file',
+      'name': "module.modulemap",
+      'external-contents': "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/unextended-module.modulemap",
+    }]
+    },
+    {
+    'type': 'directory',
+    'name': "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Release-iphoneos/GTMAppAuth/GTMAppAuth.framework/Headers"
+    'contents': [{
+      'type': 'file',
+      'name': "GTMAppAuth-Swift.h",
+      'external-contents': "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/unextended-interface-header.h",
+    }]
+    }]
+}

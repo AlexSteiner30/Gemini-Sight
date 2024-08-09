@@ -1,0 +1,5 @@
+ extern const unsigned char flutter_smsVersionString[];
+ extern const double flutter_smsVersionNumber;
+
+ const unsigned char flutter_smsVersionString[] __attribute__ ((used)) = "@(#)PROGRAM:flutter_sms  PROJECT:Pods-1" "\n";
+ const double flutter_smsVersionNumber __attribute__ ((used)) = (double)1.;

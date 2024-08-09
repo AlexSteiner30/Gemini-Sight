@@ -1,0 +1,15 @@
+{
+  "" : {
+    "const-values" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/contacts_service.build/Objects-normal/arm64/contacts_service-master.swiftconstvalues",
+    "dependencies" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/contacts_service.build/Objects-normal/arm64/contacts_service-master.d",
+    "diagnostics" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/contacts_service.build/Objects-normal/arm64/contacts_service-master.dia",
+    "emit-module-dependencies" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/contacts_service.build/Objects-normal/arm64/contacts_service-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/contacts_service.build/Objects-normal/arm64/contacts_service-master-emit-module.dia",
+    "swift-dependencies" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/contacts_service.build/Objects-normal/arm64/contacts_service-master.swiftdeps"
+  },
+  "/Users/alex.steiner/.pub-cache/hosted/pub.dev/contacts_service-0.6.3/ios/Classes/SwiftContactsServicePlugin.swift" : {
+    "index-unit-output-path" : "/Pods.build/Release-iphoneos/contacts_service.build/Objects-normal/arm64/SwiftContactsServicePlugin.o",
+    "llvm-bc" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/contacts_service.build/Objects-normal/arm64/SwiftContactsServicePlugin.bc",
+    "object" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/contacts_service.build/Objects-normal/arm64/SwiftContactsServicePlugin.o"
+  }
+}

@@ -1,0 +1,5 @@
+ extern const unsigned char contacts_serviceVersionString[];
+ extern const double contacts_serviceVersionNumber;
+
+ const unsigned char contacts_serviceVersionString[] __attribute__ ((used)) = "@(#)PROGRAM:contacts_service  PROJECT:Pods-1" "\n";
+ const double contacts_serviceVersionNumber __attribute__ ((used)) = (double)1.;

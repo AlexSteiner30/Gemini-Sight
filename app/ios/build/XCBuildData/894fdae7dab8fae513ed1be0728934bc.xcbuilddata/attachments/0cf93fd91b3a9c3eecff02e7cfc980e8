@@ -1,0 +1,11 @@
+framework module flutter_sms {
+  umbrella header "flutter_sms-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module flutter_sms.Swift {
+  header "flutter_sms-Swift.h"
+  requires objc
+}

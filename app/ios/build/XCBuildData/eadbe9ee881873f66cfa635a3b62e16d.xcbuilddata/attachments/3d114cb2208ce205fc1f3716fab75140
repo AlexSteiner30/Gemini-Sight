@@ -1,0 +1,45 @@
+{
+  "" : {
+    "const-values" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/GTMAppAuth-master.swiftconstvalues",
+    "dependencies" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/GTMAppAuth-master.d",
+    "diagnostics" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/GTMAppAuth-master.dia",
+    "emit-module-dependencies" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/GTMAppAuth-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/GTMAppAuth-master-emit-module.dia",
+    "swift-dependencies" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/GTMAppAuth-master.swiftdeps"
+  },
+  "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/Pods/GTMAppAuth/GTMAppAuth/Sources/AuthSession.swift" : {
+    "index-unit-output-path" : "/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/AuthSession.o",
+    "llvm-bc" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/AuthSession.bc",
+    "object" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/AuthSession.o"
+  },
+  "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/Pods/GTMAppAuth/GTMAppAuth/Sources/AuthSessionDelegate.swift" : {
+    "index-unit-output-path" : "/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/AuthSessionDelegate.o",
+    "llvm-bc" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/AuthSessionDelegate.bc",
+    "object" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/AuthSessionDelegate.o"
+  },
+  "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/Pods/GTMAppAuth/GTMAppAuth/Sources/AuthSessionStore.swift" : {
+    "index-unit-output-path" : "/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/AuthSessionStore.o",
+    "llvm-bc" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/AuthSessionStore.bc",
+    "object" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/AuthSessionStore.o"
+  },
+  "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/Pods/GTMAppAuth/GTMAppAuth/Sources/KeychainStore/GTMOAuth2Compatibility.swift" : {
+    "index-unit-output-path" : "/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/GTMOAuth2Compatibility.o",
+    "llvm-bc" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/GTMOAuth2Compatibility.bc",
+    "object" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/GTMOAuth2Compatibility.o"
+  },
+  "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/Pods/GTMAppAuth/GTMAppAuth/Sources/KeychainStore/KeychainAttribute.swift" : {
+    "index-unit-output-path" : "/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/KeychainAttribute.o",
+    "llvm-bc" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/KeychainAttribute.bc",
+    "object" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/KeychainAttribute.o"
+  },
+  "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/Pods/GTMAppAuth/GTMAppAuth/Sources/KeychainStore/KeychainHelper.swift" : {
+    "index-unit-output-path" : "/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/KeychainHelper.o",
+    "llvm-bc" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/KeychainHelper.bc",
+    "object" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/KeychainHelper.o"
+  },
+  "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/Pods/GTMAppAuth/GTMAppAuth/Sources/KeychainStore/KeychainStore.swift" : {
+    "index-unit-output-path" : "/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/KeychainStore.o",
+    "llvm-bc" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/KeychainStore.bc",
+    "object" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/GTMAppAuth.build/Objects-normal/arm64/KeychainStore.o"
+  }
+}

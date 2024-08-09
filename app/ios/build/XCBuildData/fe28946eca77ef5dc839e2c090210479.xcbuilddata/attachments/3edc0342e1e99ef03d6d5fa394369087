@@ -1,0 +1,15 @@
+{
+  "" : {
+    "const-values" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/flutter_sms.build/Objects-normal/arm64/flutter_sms-master.swiftconstvalues",
+    "dependencies" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/flutter_sms.build/Objects-normal/arm64/flutter_sms-master.d",
+    "diagnostics" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/flutter_sms.build/Objects-normal/arm64/flutter_sms-master.dia",
+    "emit-module-dependencies" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/flutter_sms.build/Objects-normal/arm64/flutter_sms-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/flutter_sms.build/Objects-normal/arm64/flutter_sms-master-emit-module.dia",
+    "swift-dependencies" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/flutter_sms.build/Objects-normal/arm64/flutter_sms-master.swiftdeps"
+  },
+  "/Users/alex.steiner/.pub-cache/hosted/pub.dev/flutter_sms-2.3.3/ios/Classes/SwiftFlutterSmsPlugin.swift" : {
+    "index-unit-output-path" : "/Pods.build/Release-iphoneos/flutter_sms.build/Objects-normal/arm64/SwiftFlutterSmsPlugin.o",
+    "llvm-bc" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/flutter_sms.build/Objects-normal/arm64/SwiftFlutterSmsPlugin.bc",
+    "object" : "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/flutter_sms.build/Objects-normal/arm64/SwiftFlutterSmsPlugin.o"
+  }
+}

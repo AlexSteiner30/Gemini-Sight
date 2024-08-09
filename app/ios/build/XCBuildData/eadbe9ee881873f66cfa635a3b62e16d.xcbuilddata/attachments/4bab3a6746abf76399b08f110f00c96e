@@ -1,0 +1,23 @@
+{
+  'version': 0,
+  'use-external-names': 'false',
+  'case-sensitive': 'false',
+  'roots': [{
+    'type': 'directory',
+    'name': "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Release-iphoneos/contacts_service/contacts_service.framework/Modules"
+    'contents': [{
+      'type': 'file',
+      'name': "module.modulemap",
+      'external-contents': "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/contacts_service.build/unextended-module.modulemap",
+    }]
+    },
+    {
+    'type': 'directory',
+    'name': "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Release-iphoneos/contacts_service/contacts_service.framework/Headers"
+    'contents': [{
+      'type': 'file',
+      'name': "contacts_service-Swift.h",
+      'external-contents': "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/contacts_service.build/unextended-interface-header.h",
+    }]
+    }]
+}

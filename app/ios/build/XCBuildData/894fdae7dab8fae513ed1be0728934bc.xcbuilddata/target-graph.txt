@@ -1,0 +1,87 @@
+Target dependency graph (33 targets)
+Target 'Pods-RunnerTests' in project 'Pods'
+➜ Explicit dependency on target 'Pods-Runner' in project 'Pods'
+Target 'Pods-Runner' in project 'Pods'
+➜ Explicit dependency on target 'AppAuth' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+➜ Explicit dependency on target 'GTMAppAuth' in project 'Pods'
+➜ Explicit dependency on target 'GTMSessionFetcher' in project 'Pods'
+➜ Explicit dependency on target 'GoogleSignIn' in project 'Pods'
+➜ Explicit dependency on target 'Protobuf' in project 'Pods'
+➜ Explicit dependency on target 'background_fetch' in project 'Pods'
+➜ Explicit dependency on target 'contacts_service' in project 'Pods'
+➜ Explicit dependency on target 'flutter_blue' in project 'Pods'
+➜ Explicit dependency on target 'flutter_local_notifications' in project 'Pods'
+➜ Explicit dependency on target 'flutter_sms' in project 'Pods'
+➜ Explicit dependency on target 'geocoding_ios' in project 'Pods'
+➜ Explicit dependency on target 'geolocator_apple' in project 'Pods'
+➜ Explicit dependency on target 'google_sign_in_ios' in project 'Pods'
+➜ Explicit dependency on target 'path_provider_foundation' in project 'Pods'
+➜ Explicit dependency on target 'permission_handler_apple' in project 'Pods'
+➜ Explicit dependency on target 'shared_preferences_foundation' in project 'Pods'
+➜ Explicit dependency on target 'url_launcher_ios' in project 'Pods'
+Target 'url_launcher_ios' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+➜ Explicit dependency on target 'url_launcher_ios-url_launcher_ios_privacy' in project 'Pods'
+Target 'url_launcher_ios-url_launcher_ios_privacy' in project 'Pods' (no dependencies)
+Target 'shared_preferences_foundation' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+➜ Explicit dependency on target 'shared_preferences_foundation-shared_preferences_foundation_privacy' in project 'Pods'
+Target 'shared_preferences_foundation-shared_preferences_foundation_privacy' in project 'Pods' (no dependencies)
+Target 'permission_handler_apple' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+➜ Explicit dependency on target 'permission_handler_apple-permission_handler_apple_privacy' in project 'Pods'
+Target 'permission_handler_apple-permission_handler_apple_privacy' in project 'Pods' (no dependencies)
+Target 'path_provider_foundation' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+➜ Explicit dependency on target 'path_provider_foundation-path_provider_foundation_privacy' in project 'Pods'
+Target 'path_provider_foundation-path_provider_foundation_privacy' in project 'Pods' (no dependencies)
+Target 'google_sign_in_ios' in project 'Pods'
+➜ Explicit dependency on target 'AppAuth' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+➜ Explicit dependency on target 'GTMSessionFetcher' in project 'Pods'
+➜ Explicit dependency on target 'GoogleSignIn' in project 'Pods'
+➜ Explicit dependency on target 'google_sign_in_ios-google_sign_in_ios_privacy' in project 'Pods'
+Target 'google_sign_in_ios-google_sign_in_ios_privacy' in project 'Pods' (no dependencies)
+Target 'geolocator_apple' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+➜ Explicit dependency on target 'geolocator_apple-geolocator_apple_privacy' in project 'Pods'
+Target 'geolocator_apple-geolocator_apple_privacy' in project 'Pods' (no dependencies)
+Target 'geocoding_ios' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+➜ Explicit dependency on target 'geocoding_ios-geocoding_ios_privacy' in project 'Pods'
+Target 'geocoding_ios-geocoding_ios_privacy' in project 'Pods' (no dependencies)
+Target 'flutter_sms' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+Target 'flutter_local_notifications' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+Target 'flutter_blue' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+➜ Explicit dependency on target 'Protobuf' in project 'Pods'
+Target 'contacts_service' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+Target 'background_fetch' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+➜ Explicit dependency on target 'background_fetch-TSBackgroundFetch' in project 'Pods'
+Target 'background_fetch-TSBackgroundFetch' in project 'Pods' (no dependencies)
+Target 'Protobuf' in project 'Pods' (no dependencies)
+Target 'GoogleSignIn' in project 'Pods'
+➜ Explicit dependency on target 'AppAuth' in project 'Pods'
+➜ Explicit dependency on target 'GTMAppAuth' in project 'Pods'
+➜ Explicit dependency on target 'GTMSessionFetcher' in project 'Pods'
+➜ Explicit dependency on target 'GoogleSignIn-GoogleSignIn' in project 'Pods'
+Target 'GoogleSignIn-GoogleSignIn' in project 'Pods' (no dependencies)
+Target 'GTMAppAuth' in project 'Pods'
+➜ Explicit dependency on target 'AppAuth' in project 'Pods'
+➜ Explicit dependency on target 'GTMAppAuth-GTMAppAuth_Privacy' in project 'Pods'
+➜ Explicit dependency on target 'GTMSessionFetcher' in project 'Pods'
+Target 'GTMSessionFetcher' in project 'Pods'
+➜ Explicit dependency on target 'GTMSessionFetcher-GTMSessionFetcher_Core_Privacy' in project 'Pods'
+➜ Explicit dependency on target 'GTMSessionFetcher-GTMSessionFetcher_Full_Privacy' in project 'Pods'
+Target 'GTMSessionFetcher-GTMSessionFetcher_Full_Privacy' in project 'Pods' (no dependencies)
+Target 'GTMSessionFetcher-GTMSessionFetcher_Core_Privacy' in project 'Pods' (no dependencies)
+Target 'GTMAppAuth-GTMAppAuth_Privacy' in project 'Pods' (no dependencies)
+Target 'Flutter' in project 'Pods' (no dependencies)
+Target 'AppAuth' in project 'Pods'
+➜ Explicit dependency on target 'AppAuth-AppAuthCore_Privacy' in project 'Pods'
+Target 'AppAuth-AppAuthCore_Privacy' in project 'Pods' (no dependencies)

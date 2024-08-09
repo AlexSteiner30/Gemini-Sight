@@ -1,0 +1,23 @@
+{
+  'version': 0,
+  'use-external-names': 'false',
+  'case-sensitive': 'false',
+  'roots': [{
+    'type': 'directory',
+    'name': "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Release-iphoneos/flutter_sms/flutter_sms.framework/Modules"
+    'contents': [{
+      'type': 'file',
+      'name': "module.modulemap",
+      'external-contents': "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/flutter_sms.build/unextended-module.modulemap",
+    }]
+    },
+    {
+    'type': 'directory',
+    'name': "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Release-iphoneos/flutter_sms/flutter_sms.framework/Headers"
+    'contents': [{
+      'type': 'file',
+      'name': "flutter_sms-Swift.h",
+      'external-contents': "/Users/alex.steiner/Documents/GitHub/Gemini-Sight/app/ios/build/Pods.build/Release-iphoneos/flutter_sms.build/unextended-interface-header.h",
+    }]
+    }]
+}

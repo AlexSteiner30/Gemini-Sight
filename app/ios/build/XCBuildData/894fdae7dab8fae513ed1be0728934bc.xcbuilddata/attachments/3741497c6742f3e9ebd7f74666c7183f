@@ -1,0 +1,10 @@
+framework module flutter_sms {
+  umbrella header "flutter_sms-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module flutter_sms.__Swift {
+  exclude header "flutter_sms-Swift.h"
+}
