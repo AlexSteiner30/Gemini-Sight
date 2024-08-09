@@ -281,16 +281,17 @@ button:hover {
 
 #chat-input {
     position: relative;
-    bottom: -1.5vh;
+    bottom: -1vh;
     left: -1vw;
     margin: 0;
-    width: calc(24vw - 20px);
+    width: calc(27vw - 22px);
     padding: 10px;
     border: 1px solid black;
     border-radius: 0.4vw;
     background-color: rgb(1, 9, 22);
     color: white;
     height: calc(5vh + 10px) !important;
+    font-size: 1rem;
 }
 
 @keyframes hide {
