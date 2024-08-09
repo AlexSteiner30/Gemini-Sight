@@ -134,7 +134,8 @@ nav a:hover {
     border-bottom-right-radius: 3px;
 }
 
-nav a[href=admin], nav a[href=logout] {
+nav a[href=login], nav a[href=logout] {
+    font-weight: bold;
     border: 2px solid rgb(34, 40, 53);
     border-radius: 20px;
     transition: all 300ms ease-in-out;
@@ -145,9 +146,8 @@ nav a[href=admin], nav a[href=logout] {
     cursor: pointer;
 }
 
-nav a[href=admin]:hover, nav a[href=logout]:hover {
+nav a[href=login]:hover, nav a[href=logout]:hover {
     transform: scale(1.05);
-    font-weight: bold !important;
 }
 
 button {
@@ -323,13 +323,6 @@ button:hover {
         margin-top: 0px;
     }
 
-    #chat-btn {
-        padding: max(1.2vw, 1.2vh);
-        width: max(5vw, 5vh);
-        height: max(5vw, 5vh);
-        bottom: 3vh;
-    }
-
     #chat-area {
         width: 70vw !important;
     }
@@ -348,7 +341,7 @@ button:hover {
         grid-template-columns: 7fr 6fr 6fr 6fr 6fr 1fr 7fr 1fr;
     }
 
-    nav a {
+    nav a, nav a[href=login], nav a[href=logout] {
         font-size: 0.7rem;
     }
 
@@ -373,7 +366,14 @@ button:hover {
         cursor: grab;
     }
 
-    footer img, a, span {
-        transform: scale(0.9);
+    footer img, footer a, footer span {
+        transform: scale(0.9) !important;
+    }
+
+    #chat-btn {
+        padding: max(1.8vw, 1.8vh);
+        width: max(8vw, 8vh);
+        height: max(8vw, 8vh);
+        bottom: 8vh;
     }
 }
