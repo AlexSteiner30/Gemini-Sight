@@ -10,7 +10,6 @@ const processOutput = (text, counter=0) => (text.replace(/(\*\*)/g, _ => ((++cou
 
 function createNavAndFooter() {
     let sign;
-    console.log(JSON.parse(document.getElementById("logged-in").value));
     if (JSON.parse(document.getElementById("logged-in").value)) {
         let chats = JSON.parse(document.getElementById("chats").value);
         let addition = "";
@@ -77,7 +76,6 @@ if (JSON.parse(document.getElementById("logged-in").value)) {
     let close = document.getElementsByClassName("chat-img")[1];
     let area = document.getElementById("chat-area");
     document.getElementById("chat-btn").addEventListener("click", function(e) {
-        console.log(window.localStorage[isChatOpen]);
         if (window.localStorage[isChatOpen] == "false") {
             window.localStorage[isChatOpen] = 'true';
             area.style.zIndex = "1";
