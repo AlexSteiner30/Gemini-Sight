@@ -11,6 +11,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.5"
+    "@google/generative-ai": "^0.16.0",
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase": "^10.12.5",
+    "jwt-decode": "^4.0.0",
+    "path": "^0.12.7"
   }
 }
