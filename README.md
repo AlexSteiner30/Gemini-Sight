@@ -12,7 +12,7 @@
   <a href="#website">Website</a> •
   <a href="#flutter-app">Flutter App</a> •
   <a href="#how-to-use">How To Use</a> •
-  <a href="#future">Future</a> •
+  <a href="#future-implementation">Future Implementation</a> •
   <a href="#credits">Credits</a> 
 </p>
 
@@ -250,7 +250,7 @@ After setting up the circuit for the glasses, install and set up PlatformIO from
 
 **You have successfully set up the project! Use the app to connect your glasses and test Gemini Sight.**
 
-## Future
+## Future Implementation
 Unfortunately, the GPS module didn't arrive in time meaning that the functionalities such as Google Maps directions or recording the speed are not functioning however from a coding point of view they are already developed and functioning only the actual data from the GPS that needs to be passed is missing. We plan to implement it and many other features if the project keeps getting maintained. One major problem furthermore is the Google Sheets API as the Gemini model performs poorly with creating 2D arrays from a given input, this however can be improved by feeding the model with more training data.
 
 ## Credits
