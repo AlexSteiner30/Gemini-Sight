@@ -24,8 +24,8 @@ if (cluster.isMaster) {
     
   let sessions = new Map();
 
-  const wss = new WebSocketServer({ port: 443 });
-  console.log('Websocket running on port 443');
+  const wss = new WebSocketServer({ port: process.env.PORT || 4000 });
+  console.log('Websocket running!');
 
   wss.on('connection', function connection(ws) {  
     ws.on('message', async function message(data) {
