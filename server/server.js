@@ -221,7 +221,7 @@ const appF = initializeApp(firebaseConfig);
 const db = firestore.getFirestore(appF);
 
 const app = express();
-const PORT = 8080;
+const PORT = 3000 || process.env.PORT;
 const allowedPages = ['index', 'admin', 'product', 'about', 'order', 'notFound'];
 
 app.use(express.static(path.join(__dirname, 'public/')));
