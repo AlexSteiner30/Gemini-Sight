@@ -11,7 +11,13 @@ const processOutput = (text, counter=0) => (text.replace(/(\*\*)/g, _ => ((++cou
 function createNavAndFooter() {
     let sign;
     if (JSON.parse(document.getElementById("logged-in").value)) {
-        let chats = JSON.parse(document.getElementById("chats").value);
+        let chats;
+        try {
+            chats = JSON.parse(document.getElementById("chats").value);
+        } catch(err) {
+            console.error(err);
+            changeScreen("logout");
+        }
         let addition = "";
         if (chats.length > 0 && chats != []) {
             chats.splice(0, 1);

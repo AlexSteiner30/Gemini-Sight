@@ -96,7 +96,8 @@ Navigate to API and Services and add `Gmail, Calendar, Docs, Sheet, Drive, Tasks
 Next, go to Firebase, create a new project [here](https://console.firebase.google.com/) and copy the connection variablesI.
 
 ## Website
-The website was created to expand upon our product's publicity, enable its distribution and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to Gemini Sight. The website can be accessed online [here]().<br>
+The website was created to expand upon our product's publicity, enable its distribution and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to Gemini Sight. The website can be accessed online [here](https://geminisight-58e89465e495.herokuapp.com) which was uploaded through the use of [Heroku](https://www.heroku.com).<br>
+
 In total the website offers 5 pages. The first one is the "Home" and the second one is the "About Us" section where you are provided with some information about our team. Then there is the "Product" page which describes how the glasses work although the Gtihub repository does a better job at it. Then the "Order" section is where you can order the glasses for a price of $200 and finally a "Sign In" part of the site which is required for you to order the glasses and access the chatbot feature.<br>
 
 
@@ -125,7 +126,7 @@ $ npm install
 # run the site
 $ node server.js
 ```
-After that just head to [localhost:8080](http://localhost:8080) where your site will be running.<br>
+After that just head to [localhost:3000](http://localhost:3000) where your site will be running.<br>
 
 <h1 align="center">
  <img alt="Homepage" src="resources/homepage.png?raw=true" style="height: 80%; width:80%; align:center">
@@ -270,6 +271,7 @@ This software uses the following open-source packages and tools:
 - [Google Pay](https://pay.google.com/about/)
 - [Firebase](https://firebase.google.com)
 - [I2S WAV File](https://github.com/atomic14/esp32_audio/tree/master/i2s_output)
+- [Heroku](https://www.heroku.com)
 
 A special thanks also to my dad, Marco Baroni, (https://www.facebook.com/marcodirimini/) who helped me through the entire process by supporting me financially, morally, helping me with the planning and designing the glasses.
 

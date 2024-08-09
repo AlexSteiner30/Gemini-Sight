@@ -52,17 +52,15 @@ Glasses
 
 Download the glasses printable STL file from the models/ folder, after printing the 3D model use this circuit diagram to create the wiring. It is not necessary to solder the pieces together however it is highly recommended for space optimation.
 
-
-
 Down below you can find the table with the components used to build the glasses. The total price for the components is around 67.36€.
 
 Name of Sensor	Amount	Price	Purchase Link
-XIAO ESP32S3 Sense	1	€28.02	Buy Here
-2 8Ω Speakers	1	€15.13	Buy Here
-MAX98357A Breakout Module	1	€7.96	Buy Here
-3.7v Lithium Battery	1	€9.33	Buy Here
-Wire Cables	1	€6.91	Buy Here
-The glasses can connect in two different ways, through Bluetooth and WiFi. Bluetooth is used to share data between the app and the glasses (location, access key, contacts or sending commands), on the other hand, the glasses connect to the WiFi by scanning a QR Code which is created in the app in order to connect to the websockets.
+XIAO ESP32S3 Sense	1	€28.02	Buy  on https://t.ly/RBrHw
+2 8Ω Speakers	1	€15.13	Buy on https://t.ly/W3Qws
+MAX98357A Breakout Module	1	€7.96	Buy on http://amoz.onl/2Q3
+3.7v Lithium Battery	1	€9.33	Buy on https://t.ly/6TUde
+Wire Cables	1	€6.91	Buy on http://amoz.onl/2Q4
+The glasses can connect in two different ways, through Bluetooth and WiFi. Bluetooth is used to share data between the app and the glasses (location, access key, contacts or sending commands), on the other hand, the glasses connect to the WiFi by scanning a QR Code which is created in the app in order to connect to the websockets. However the cost for the final distributed-product is $200.
 
 Backend
 
@@ -87,20 +85,26 @@ Navigate to API and Services and add Gmail, Calendar, Docs, Sheet, Drive, Tasks,
 
   
 
-Next, go to MongoDB, create a new project here and copy the connection URI.
+Next, go to Firebase, create a new project on https://console.firebase.google.com/ and copy the connection variablesI.
 
 Website
 
-The website was created to expand upon our product's publicity, enable its distribution and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to Gemini Sight. The website can be accessed online here.
-In total the website offers 5 pages. The first one is the "Home" and the second one is the "About Us" section where you are provided with some information about our team. Then there is the "Product" page which describes how the glasses work although the Gtihub repository does a better job at it. Then the "Order" section is where you can order the glasses and finally a "Sign In" part of the site which is required for you to order the glasses and access the chatbot feature.
+The website was created to expand upon our product's publicity, enable its distribution and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to Gemini Sight. The website can be accessed online https://geminisight-58e89465e495.herokuapp.com which was uploaded through the use of Heroku.
+In total the website offers 5 pages. The first one is the "Home" and the second one is the "About Us" section where you are provided with some information about our team. Then there is the "Product" page which describes how the glasses work although the Gtihub repository does a better job at it. Then the "Order" section is where you can order the glasses for a price of $200 and finally a "Sign In" part of the site which is required for you to order the glasses and access the chatbot feature.
 
 You can also run the website locally on your computer by installing the required packages and setting up the right environment variables.
 For the environment variables you need to have the following:
 
-MONGODB_URI = ""
-GEMINI_API = ""
-CLIENT_ID = ""
-The MONGODB_URI is just the connection URI for MongoDB which you can copy once you have created a new project here. Then, the GEMINI_API is just the Gemini API key which you can just create by going here. Finally, the CLIENT_ID is the client ID for the Google authentication which you can access by going to the Google developer console as shown in the backend section.
+GEMINI_API = "YOUR GEMINI API"
+CLIENT_ID = "YOUR CLIENT ID"
+API_KEY="YOUR API KEY"
+AUTH_DOMAIN="YOUR AUTH DOMAIN"
+PROJECT_ID="YOUR PROJECT ID"
+STORAGE_BUCKET="YOUR STORAGE BUCKET"
+MESSAGING_SENDER_ID="YOUR MESSAGING SENDER ID"
+APP_ID="YOUR APP ID"
+MEASUREMENT_ID="YOUR MEASUREMENT ID"
+The GEMINI_API is just the Gemini API key which you can just create by going to https://aistudio.google.com/app/apikey. Finally, the CLIENT_ID is the client ID for the Google authentication which you can access by going to the Google developer console as shown in the backend section. The rest are just all of the values needed for the Firebase configuration.
 Then you will need to head to the server directory, install some packages and run the site like so:
 
 # head to the right directory
@@ -111,7 +115,7 @@ $ npm install
 
 # run the site
 $ node server.js
-After that just head to localhost:8080 where your site will be running.
+After that just head to localhost:3000 where your site will be running.
 
 Homepage
 
@@ -142,12 +146,16 @@ Create a new environment file under ./database/.env and save the following envir
 
 CLIENT_ID = "YOUR CLIENT ID"
 CLIENT_SECRET = "YOUR CLIENT SECRET"
-MONGODB_URI = "YOUR MONGO DB URI"
 GEMINI_API = "YOUR GEMINI API KEY"
 API_KEY = "YOUR API KEY"
-Additionally, copy and paste the payload from this [Google Doc](https://docs.google.com/document/d/1vSDI1G
-
-zzfh56hjHgQJbXwpLhVpo1Ue2w/edit?usp=sharing&ouid=110446241726368691642&rtpof=true&sd=true) into the ./commands.js file.
+AUTH_DOMAIN="YOUR AUTH DOMAIN"
+PROJECT_ID="YOUR PROJECT ID"
+STORAGE_BUCKET="YOUR STORAGE BUCKET"
+MESSAGING_SENDER_ID="YOUR MESSAGING SENDER ID"
+APP_ID="YOUR APP ID"
+MEASUREMENT_ID="YOUR MEASUREMENT ID"
+PAYLOAD="YOUR PAYLOAD"
+Additionally, copy and paste the payload from the google doc with a link of https://docs.google.com/document/d/1vSDI1GnhkzvIxU8-Ivmz65zpxOH9fXzmfSPuA8jI8OY/edit?usp=sharing into the ./commands.js file.
 
 To start the websocket server, run the following:
 
@@ -177,7 +185,7 @@ Ensure that you can deploy the application to a physical or virtual device by fo
 flutter run --web-port 8080 --observatory-port 8080
 Note: Currently, the Flutter app was developed and tested only on iOS systems, but it should still be able to run on the most recent Android devices.
 
-After setting up the circuit for the glasses, install and set up PlatformIO from here. Build your project and then upload it to the ESP32 XIAO Board.
+After setting up the circuit for the glasses, install and set up PlatformIO from https://docs.platformio.org/en/latest/integration/ide/vscode.html#installation. Build your project and then upload it to the ESP32 XIAO Board.
 
 You have successfully set up the project! Use the app to connect your glasses and test Gemini Sight.
 
@@ -192,18 +200,19 @@ Unfortunately, the GPS module didn't arrive in time meaning that the functionali
 Credits
 
 This software uses the following open-source packages and tools:
-
 Flutter
 Node.js
 PlatformIO
 ESP32
 ArduinoWebsockets
 Google Cloud Platform
-MongoDB
 EJS
 Google Pay
+Firebase
+I2S WAV File
+Heroku
 
-A special thanks also to my dad, Marco Baroni, (https://www.facebook.com/marcodirimini/) who helped me through the entire process by supporting me finaccialy, moraly, helping me with the planning and designing the glasses.
+A special thanks also to my dad, Marco Baroni, (https://www.facebook.com/marcodirimini/) who helped me through the entire process by supporting me financially, morally, helping me with the planning and designing the glasses.
 `});
 let previousChats = {};
 let userData = {};
@@ -239,7 +248,7 @@ app.get('/', (req, res) => {
 app.get('/:id', (req, res) => {
     if (req.params.id == "login" && req.cookies["cookie-token"]) res.redirect("index");
     else if (allowedPages.includes(req.params.id)) res.render(req.params.id, {
-        isLoggedIn: req.cookies.hasOwnProperty("cookie-token") && req.cookies["cookie-token"] != "",
+        isLoggedIn: req.hasOwnProperty("cookies") && req.cookies.hasOwnProperty("cookie-token") && req.cookies["cookie-token"] != "",
         chats: JSON.stringify(previousChats[req.cookies["cookie-token"]]),
         title: (req.params.id == "about" ? (aboutUsText.hasOwnProperty(req.query.name) ? req.query.name.replace(/_/g, ' ').replace(/(^| )\w/g, match => match.toUpperCase()) : "About Us") : ""),
         text: (req.params.id == "about" ? aboutUsText[req.query.name]||aboutUsText["about_us"]: "")
@@ -264,7 +273,7 @@ app.post('/signin', bodyparser.urlencoded({ extended: true }), async (req, res) 
         userData[token].name = decoded.name;
         userData[token].email = email;
         let document = await firestore.getDoc(docRef);
-        if (!previousChats.hasOwnProperty(token) || previousChats[token].length == 0) {
+        if (!previousChats.hasOwnProperty(token) || previousChats[token].length == 0 || previousChats[token] == undefined) {
             previousChats[token] = [];
             previousChats[token].push({role: 'user', parts: [{text: "Who are you?"}]});
             previousChats[token].push({role: 'model', parts: [{text: "I'm an AI chatbot powered by Google's Gemini API, specifically designed to help you learn more about Gemini Sight. I can answer your questions about the product, its features, its creators, the development process, or anything else related to Gemini Sight. What would you like to know? 😊"}]});
