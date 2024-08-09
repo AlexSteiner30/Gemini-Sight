@@ -47,7 +47,7 @@ class User {
   ];
 
   final socket = WebSocket(
-    Uri.parse('ws://localhost:443'),
+    Uri.parse('ws://192.168.88.31:443'),
   );
 
   List<int> picture_data = [];

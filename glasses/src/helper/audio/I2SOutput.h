@@ -22,7 +22,7 @@ private:
     SampleSource *m_sample_generator;
 
 public:
-    void start(i2s_port_t i2sPort, i2s_pin_config_t &i2sPins, SampleSource *sample_generator);
+    void start(SampleSource *sample_generator);
 
     friend void i2sWriterTask(void *param);
 };
