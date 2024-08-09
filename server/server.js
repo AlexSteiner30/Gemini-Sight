@@ -52,15 +52,7 @@ Glasses
 
 Download the glasses printable STL file from the models/ folder, after printing the 3D model use this circuit diagram to create the wiring. It is not necessary to solder the pieces together however it is highly recommended for space optimation.
 
-Down below you can find the table with the components used to build the glasses. The total price for the components is around 67.36€.
-
-Name of Sensor	Amount	Price	Purchase Link
-XIAO ESP32S3 Sense	1	€28.02	Buy  on https://t.ly/RBrHw
-2 8Ω Speakers	1	€15.13	Buy on https://t.ly/W3Qws
-MAX98357A Breakout Module	1	€7.96	Buy on http://amoz.onl/2Q3
-3.7v Lithium Battery	1	€9.33	Buy on https://t.ly/6TUde
-Wire Cables	1	€6.91	Buy on http://amoz.onl/2Q4
-The glasses can connect in two different ways, through Bluetooth and WiFi. Bluetooth is used to share data between the app and the glasses (location, access key, contacts or sending commands), on the other hand, the glasses connect to the WiFi by scanning a QR Code which is created in the app in order to connect to the websockets. However the cost for the final distributed-product is $200.
+The glasses can connect in two different ways, through Bluetooth and WiFi. Bluetooth is used to share data between the app and the glasses (location, access key, contacts or sending commands), on the other hand, the glasses connect to the WiFi by scanning a QR Code which is created in the app in order to connect to the websockets. The cost for the final distributed-product is $200.
 
 Backend
 
