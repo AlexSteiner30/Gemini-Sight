@@ -97,7 +97,7 @@ Next, go to Firebase, create a new project [here](https://console.firebase.googl
 
 ## Website
 The website was created to expand upon our product's publicity, enable its distribution and provide further insight into its creation and abilities through the AI chatbot which has been set up to answer questions related to Gemini Sight. The website can be accessed online [here]().<br>
-In total the website offers 5 pages. The first one is the "Home" and the second one is the "About Us" section where you are provided with some information about our team. Then there is the "Product" page which describes how the glasses work although the Gtihub repository does a better job at it. Then the "Order" section is where you can order the glasses and finally a "Sign In" part of the site which is required for you to order the glasses and access the chatbot feature.<br>
+In total the website offers 5 pages. The first one is the "Home" and the second one is the "About Us" section where you are provided with some information about our team. Then there is the "Product" page which describes how the glasses work although the Gtihub repository does a better job at it. Then the "Order" section is where you can order the glasses for a price of $200 and finally a "Sign In" part of the site which is required for you to order the glasses and access the chatbot feature.<br>
 
 
 You can also run the website locally on your computer by installing the required packages and setting up the right environment variables.<br>
