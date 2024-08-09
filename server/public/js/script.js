@@ -39,7 +39,7 @@ function createNavAndFooter() {
 
         sign = '<a href="logout">Sign Out</a>';
     }
-    else sign = '<a href="admin">Sign In</a>';
+    else sign = '<a href="login">Sign In</a>';
     
     document.getElementsByTagName("body")[0].innerHTML = `
         <nav>    

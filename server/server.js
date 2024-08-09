@@ -222,7 +222,7 @@ const db = firestore.getFirestore(appF);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const allowedPages = ['index', 'admin', 'product', 'about', 'order', 'notFound'];
+const allowedPages = ['index', 'login', 'product', 'about', 'order', 'notFound'];
 
 app.use(express.static(path.join(__dirname, 'public/')));
 
@@ -237,7 +237,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/:id', (req, res) => {
-    if (req.params.id == "admin" && req.cookies["cookie-token"]) res.redirect("index");
+    if (req.params.id == "login" && req.cookies["cookie-token"]) res.redirect("index");
     else if (allowedPages.includes(req.params.id)) res.render(req.params.id, {
         isLoggedIn: req.cookies["cookie-token"],
         chats: JSON.stringify(previousChats),
