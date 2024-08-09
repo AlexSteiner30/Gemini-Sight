@@ -4,9 +4,11 @@ This model is still under early development, this model in a near future should 
 
 ## How it Works
 
+```bash
 prompt text -> action|url
 model process action -> taks1|task2|task3
 
 for task in tasks:
     open url -> screenshot|task
     model process task -> selenium|processed_task
+```
