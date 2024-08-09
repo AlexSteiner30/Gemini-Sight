@@ -159,6 +159,7 @@ button {
     font-size: 1rem;
     cursor: pointer;
     margin-top: 10px;
+    transition: 300ms ease-in-out;
 }
 
 button:hover {
@@ -242,7 +243,7 @@ button:hover {
     bottom: 5vh;
     border-radius: 0.4vw;
     border: 1px solid rgb(30, 37, 60);
-    background: linear-gradient(45deg, transparent, rgb(77, 77, 255));
+    background: linear-gradient(45deg, black, rgb(20, 20, 150));
     width: 25vw;
 }
 
