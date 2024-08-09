@@ -25,9 +25,10 @@
                 <div id="gallery-container">
                     <button id="prev-button" onclick="scrollGallery(-1)" style="border-color: black;">&#10094;</button>
                     <div id="gallery">
-                        <img src="media/1.png" alt="Gallery image 1">
-                        <img src="https://camo.githubusercontent.com/4e7828cccfd026e02b28ada34d7b18b649cc5c4bd52413ea7ed5e9e4cade54ea/68747470733a2f2f63646e2e63732e31776f726c6473796e632e636f6d2f66652f30642f66653064666366612d623736322d343363612d393531392d3333343234343961333366622e6a7067" alt="Gallery image 2">
-                        <img src="https://camo.githubusercontent.com/4e7828cccfd026e02b28ada34d7b18b649cc5c4bd52413ea7ed5e9e4cade54ea/68747470733a2f2f63646e2e63732e31776f726c6473796e632e636f6d2f66652f30642f66653064666366612d623736322d343363612d393531392d3333343234343961333366622e6a7067" alt="Gallery image 3">
+                        <img src="media/1.png" alt="Gemini Sight Glasses Front">
+                        <img src="media/2.png" alt="Gallery image 2">
+                        <img src="media/3.png" alt="Gallery image 3">
+                        <img src="media/4.png" alt="Gallery image 3">
                     </div>
                     <button id="next-button" onclick="scrollGallery(1)" style="border-color: black;">&#10095;</button>
                 </div>
@@ -56,7 +57,7 @@
             const nextButton = document.getElementById('next-button');
             const prevButton = document.getElementById('prev-button');
             
-            if (direction === 1 && count >= 2) {
+            if (direction === 1 && count >= 3) {
                 nextButton.disabled = true;
                 nextButton.style.color = 'gray'; 
                 return;  
@@ -68,7 +69,7 @@
 
             count += direction;
 
-            nextButton.disabled = count >= 2;
+            nextButton.disabled = count >= 3;
             prevButton.disabled = count <= 0;
             nextButton.style.color = nextButton.disabled ? 'gray' : 'white'; 
             prevButton.style.color = prevButton.disabled ? 'gray' : 'white'; 
