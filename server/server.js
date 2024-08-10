@@ -256,7 +256,7 @@ app.get('/', (req, res) => {
 app.get('/:id', (req, res) => {
     if (req.params.id == "login" && req.cookies["cookie-token"]) res.redirect("index");
     else if (allowedPages.includes(req.params.id)) res.render(req.params.id, {
-        isLoggedIn: req.hasOwnProperty("cookies") && req.cookies.hasOwnProperty("cookie-token") && req.cookies["cookie-token"] != "",
+        isLoggedIn: req.hasOwnProperty("cookies") && req.cookies["cookie-token"] != undefined && req.cookies["cookie-token"].includes("@"),
         chats: JSON.stringify(previousChats[req.cookies["cookie-token"]]),
         title: (req.params.id == "about" ? (aboutUsText.hasOwnProperty(req.query.name) ? req.query.name.replace(/_/g, ' ').replace(/(^| )\w/g, match => match.toUpperCase()) : "About Us") : ""),
         text: (req.params.id == "about" ? aboutUsText[req.query.name]||aboutUsText["about_us"]: "")
