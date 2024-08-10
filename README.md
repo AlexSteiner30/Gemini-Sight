@@ -17,7 +17,7 @@
 </p>
 
 <h1 align="center">
-  <img src="resources/main.png?raw=true" style="height: 50%; width:50%; align:center">
+  <a href="https://www.youtube.com/watch?v=3fgh_0jgjEk"><img src="https://img.youtube.com/vi/3fgh_0jgjEk/maxresdefault.jpg" style="height: 50%; width:50%; align:center"></a>
 </h1>
 
 ## Competition
