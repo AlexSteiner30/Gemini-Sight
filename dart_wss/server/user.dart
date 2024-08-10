@@ -392,76 +392,119 @@ class User {
   }
 
   // Sheet
-  Future<void> get_sheet(String sheet) async {}
-
-  Future<String> get_sheet_id(String sheet_name) async {
+  Future<String> get_sheet_id(String sheetName) async {
     final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
     final drive.DriveApi driveApi = drive.DriveApi(httpClient);
 
-    final fileList = await driveApi.files.list(
-      q: "mimeType='application/vnd.google-apps.spreadsheet'",
-      spaces: 'drive',
-    );
+    try {
+      final fileList = await driveApi.files.list(
+        q: "mimeType='application/vnd.google-apps.spreadsheet'",
+        spaces: 'drive',
+      );
 
-    String? fileId;
-
-    for (var i = 0; i < fileList.files!.length; i++) {
-      if (fileList.files![i].name!.toLowerCase().contains(sheet_name)) {
-        fileId = fileList.files![i].id!;
+      if (fileList.files != null && fileList.files!.isNotEmpty) {
+        for (var file in fileList.files!) {
+          if (file.name?.toLowerCase().contains(sheetName.toLowerCase()) ??
+              false) {
+            return file.id!;
+          }
+        }
       }
-    }
 
-    return fileId ?? '404';
+      return '404';
+    } catch (e) {
+      print('Error getting sheet ID: $e');
+      return '404';
+    }
   }
 
-  Future<void> write_sheet(String sheet_name, String values) async {
+  Future<void> write_sheet(String sheetName, String values) async {
     final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
     final sheetsApi = sheets.SheetsApi(httpClient);
 
-    String sheet = await get_sheet_id(sheet_name);
-    sheet = sheet.trim();
+    try {
+      String sheetId = await get_sheet_id(sheetName);
+      sheetId = sheetId.trim();
 
-    if (sheet == '404') {
-      final createResponse = await sheetsApi.spreadsheets.create(
+      if (sheetId == '404') {
+        final createResponse = await sheetsApi.spreadsheets.create(
           sheets.Spreadsheet(
-              properties: sheets.SpreadsheetProperties(title: sheet_name)));
-      sheet = createResponse.spreadsheetId!;
+            properties: sheets.SpreadsheetProperties(title: sheetName),
+          ),
+        );
+        sheetId = createResponse.spreadsheetId!;
+      }
+
+      values = await process(
+        values,
+        "Process it as an array with rows and columns and return the result in this format only. No additional text or explanation, just return the array.",
+      );
+      values = values.replaceAll('```', '').trim();
+
+      if (values.endsWith(',')) {
+        values = values.substring(0, values.length - 1);
+      }
+
+      List<List<String>> parsedArray = values
+          .split('\n')
+          .map((line) => line
+              .replaceAll('[', '')
+              .replaceAll(']', '')
+              .split(',')
+              .map((item) => item.trim())
+              .toList())
+          .toList();
+
+      var appendRequest = sheets.BatchUpdateValuesRequest.fromJson({
+        'valueInputOption': 'RAW',
+        'data': [
+          {
+            'range': 'Sheet1',
+            'majorDimension': 'ROWS',
+            'values': parsedArray,
+          },
+        ],
+      });
+
+      await sheetsApi.spreadsheets.values.batchUpdate(
+        appendRequest,
+        sheetId,
+      );
+    } catch (e) {
+      print('Error writing to sheet: $e');
     }
+  }
 
-    values = await process(values,
-        "Process it as an array with rows and columns and return the result in this format only. No additional text or explanation, just return the array.");
-    values = values.replaceAll('```', '');
+  Future<String> get_sheet(String sheetName) async {
+    final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+    final sheetsApi = sheets.SheetsApi(httpClient);
 
-    values = values.trim();
-    if (values.endsWith(',')) {
-      values = values.substring(0, values.length - 1);
+    try {
+      String sheetId = await get_sheet_id(sheetName);
+      sheetId = sheetId.trim();
+
+      if (sheetId == '404') {
+        return 'Sheet not found';
+      }
+
+      String range = 'Sheet1';
+      sheets.ValueRange response =
+          await sheetsApi.spreadsheets.values.get(sheetId, range);
+
+      if (response.values == null || response.values!.isEmpty) {
+        return 'No data found in the sheet.';
+      }
+
+      StringBuffer buffer = StringBuffer();
+      for (var row in response.values!) {
+        buffer.writeln(row.join(','));
+      }
+
+      return buffer.toString().trim();
+    } catch (e) {
+      print('Error fetching sheet content: $e');
+      return 'Error fetching sheet content: $e';
     }
-
-    List<List<String>> parsedArray = values
-        .split('\n')
-        .map((line) => line
-            .replaceAll('[', '')
-            .replaceAll(']', '')
-            .split(',')
-            .map((item) => item.trim())
-            .toList())
-        .toList();
-
-    var appendRequest = sheets.BatchUpdateValuesRequest.fromJson({
-      'valueInputOption': 'RAW',
-      'data': [
-        {
-          'range': 'Sheet1',
-          'majorDimension': 'ROWS',
-          'values': [parsedArray],
-        },
-      ],
-    });
-
-    await sheetsApi.spreadsheets.values.batchUpdate(
-      appendRequest,
-      sheet,
-    );
   }
 
   // Drive
