@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://gemini.google.com"><img src="resources/logo.png?raw=true#gh-light-mode-only" alt="Gemini Sight" width="800"></a>
+  <a href="https://gemini.google.com"><img src="resources/logo.png?raw=true#gh-light-mode-only" alt="Gemini Sight" width="600"></a>
 </h1>
 
 <h4 align="center">AI-powered smart glasses connected to your Google interface, entry for the <a href="https://ai.google.dev/competition" target="_blank">Gemini API Competition</a>.</h4>
@@ -17,7 +17,7 @@
 </p>
 
 <h1 align="center">
-  <img src="resources/main.png?raw=true" style="height: 50%; width:50%; align:center">
+  <a href="https://www.youtube.com/watch?v=3fgh_0jgjEk"><img src="https://img.youtube.com/vi/3fgh_0jgjEk/maxresdefault.jpg" style="height: 70%; width:70%; align:center"></a>
 </h1>
 
 ## Competition
