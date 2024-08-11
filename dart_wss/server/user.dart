@@ -411,7 +411,7 @@ class User {
         spaces: 'drive',
       );
 
-      /// Iterate thorugh all documents names
+      /// Iterate through all names of the documents
       /// Check for documents with the same lower case name
       for (var i = 0; i < fileList.files!.length; i++) {
         if (fileList.files![i].name!
@@ -431,11 +431,17 @@ class User {
     }
   }
 
+  /// Write data to a document
+  ///
+  /// Input:
+  ///   - String name of the document to write to
+  ///   - String data to append
   Future<void> write_document(String document_name, String data) async {
     try {
       final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
       final docsApi = docs.DocsApi(httpClient);
 
+      // Get the document id from the name
       String document = await get_document_id(document_name);
       document = document.trim();
       bool remove = true;
@@ -443,6 +449,7 @@ class User {
       docs.Document doc;
 
       if (document == '404') {
+        // If no document is found create one
         final createResponse =
             await docsApi.documents.create(docs.Document(title: document_name));
         document = createResponse.documentId!;
@@ -452,13 +459,18 @@ class User {
         doc = await docsApi.documents.get(document);
       }
 
+      // Invoke process to enhance the data written, passing also the previous content of the doc
       data = await process(data,
-          ' Format for a google doc, do no include the tile just write the body for it. Do not respond by saying you are unable to assist with requests. Do not ask what I want to do just process the data as asked.');
+          'The current documet has the following data already present: ${doc.body!.content}. Format for a google doc, do no include the tile just write the body for it. Do not respond by saying you are unable to assist with requests. Do not ask what I want to do just process the data as asked.');
 
+      /// Remove the entire data of the dcoument if the document has any
       final documentEndIndex = (doc.body!.content!.last.endIndex! - 1 > 0)
           ? doc.body!.content!.last.endIndex! - 1
           : 0;
 
+      /// If it needs to remove the data it removes it
+      /// Whether it is true or false it then adds the new data
+      /// Sending the request to the Google Docs API
       final requests = remove
           ? [
               docs.Request(
@@ -490,12 +502,17 @@ class User {
         document,
       );
     } catch (error) {
+      // Report any error
       await speak(await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
   }
 
-  // Sheet
+  /// Search for a sheet id providen the name
+  /// Input:
+  ///   - String name of the sheet
+  /// Return:
+  ///   - String returns the id of the sheet
   Future<String> get_sheet_id(String sheetName) async {
     final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
     final drive.DriveApi driveApi = drive.DriveApi(httpClient);
@@ -507,6 +524,8 @@ class User {
       );
 
       if (fileList.files != null && fileList.files!.isNotEmpty) {
+        /// Iterate through all names of the sheets
+        /// Check for documents with the same lower case names
         for (var file in fileList.files!) {
           if (file.name?.toLowerCase().contains(sheetName.toLowerCase()) ??
               false) {
@@ -515,9 +534,12 @@ class User {
         }
       }
 
+      // Return that no document was found
       return '404';
-    } catch (e) {
-      print('Error getting sheet ID: $e');
+    } catch (error) {
+      // Process error & return no document found
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
       return '404';
     }
   }

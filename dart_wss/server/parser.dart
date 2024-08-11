@@ -4,22 +4,39 @@ class Parser {
   Map<String, Function> functionRegistry;
   Parser({required this.functionRegistry});
 
+  /// Dispatcher, excute function with args
+  ///
+  /// Input:
+  ///   - String name of the function
+  ///   - List<dynamic> args, can be for e.g. string, int or other functions
+  ///
+  /// Returns:
+  ///   - Dynamic, e.g. function result or null
   Future<dynamic> dispatcher(String functionName, List<dynamic> args) async {
     if (functionRegistry.containsKey(functionName)) {
+      // If funtion is found in the Map of the users function, look at wss.dart and user.dart
       Function function = functionRegistry[functionName]!;
-      return await Function.apply(function, args);
+      return await Function.apply(
+          function, args); // Return & apply function with arks
     } else {
       print('Function not found: $functionName');
       return null;
     }
   }
 
+  /// Parse input and exectue it
+  ///
+  /// Input:
+  ///   - String input to parse and execute -> e.g. [functions here]
   Future<void> parseAndExecute(String input) async {
     try {
+      // Gemini sometimes generate its response with [], other times it doesnt, check for it and remove it in case
       if (input.startsWith('[') && input.endsWith(']')) {
         input = input.substring(1, input.length - 1);
       }
 
+      /// Subdivide the input in smaller problems
+      /// Parse each problem at the the time
       List<String> calls = _splitCalls(input);
 
       for (String call in calls) {
@@ -31,6 +48,12 @@ class Parser {
     }
   }
 
+  /// Split commands
+  ///
+  /// Intput:
+  ///   - String input commands -> e.g. command1()¬command2()
+  /// Returns:
+  ///   - List<String> calls to be performed arranged respectuflly
   List<String> _splitCalls(String input) {
     try {
       List<String> calls = [];
@@ -38,11 +61,18 @@ class Parser {
       StringBuffer currentCall = StringBuffer();
 
       for (int i = 0; i < input.length; i++) {
+        // Input encounters ( -> start nested
         if (input[i] == '(') {
           nestedLevel++;
-        } else if (input[i] == ')') {
+        }
+        // Input encounters ) -> close nested
+        else if (input[i] == ')') {
           nestedLevel--;
-        } else if (input[i] == '¬' && nestedLevel == 0) {
+        }
+
+        /// When layer level is 0 hence no more args are passed ) closed and the command is finished given ¬
+        /// Add the function name to the calls
+        else if (input[i] == '¬' && nestedLevel == 0) {
           calls.add(currentCall.toString());
           currentCall.clear();
           continue;
@@ -61,8 +91,16 @@ class Parser {
     }
   }
 
+  /// Parse a function -> function name and args
+  ///
+  /// Input:
+  ///   - String function input
+  ///
+  /// Returns:
+  ///   - Dynamic -> dispatcher or null
   Future<dynamic> _parseFunction(String input) async {
     try {
+      /// Get function name, stop when in strin encounter (
       int index = 0;
       while (index < input.length && input[index] != '(') {
         index++;
@@ -74,6 +112,8 @@ class Parser {
 
       String functionName = input.substring(0, index).trim();
       index++;
+
+      /// Get Args
 
       List<dynamic> args = [];
       StringBuffer currentArg = StringBuffer();
@@ -151,6 +191,10 @@ class Parser {
     }
   }
 
+  /// Function called when js ws send command list
+  ///
+  /// Input:
+  ///   - String input commands -> e.g [speak(|...|)¬send_email(|...|)]
   Future<void> parse(String input) async {
     parseAndExecute(input);
   }

@@ -64,7 +64,7 @@ Glasses::~Glasses()
 }
 */
 
-int Glasses::predict(int16_t* input_buffer) {
+bool Glasses::predict(int16_t* input_buffer) {
     TfLiteTensor* input_tensor = m_interpreter->input(0);
 
     int input_size = input_tensor->bytes / sizeof(float);
@@ -92,5 +92,5 @@ int Glasses::predict(int16_t* input_buffer) {
         }
     }
 
-    return max_index;
+    return max_index == 1 && max_value > 0.85;
 }

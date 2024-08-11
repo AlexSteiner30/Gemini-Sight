@@ -5,14 +5,8 @@ String blind_message;
 
 void Glasses::get_wake_word(){
     glasses.current_state = glasses.wake_word;
-
-    int prediction = glasses.predict(glasses.get_speech_command());
-    while(prediction != 1){
-        prediction = glasses.predict(glasses.get_speech_command());
-        Serial.println(prediction);
-    }
-
-    Serial.println("Hey Gemini");
+    
+    while(!glasses.predict(glasses.get_speech_command())){}
 
     glasses.record_microphone(false);
 }
