@@ -180,9 +180,10 @@ MESSAGING_SENDER_ID="YOUR MESSAGING SENDER ID"
 APP_ID="YOUR APP ID"
 MEASUREMENT_ID="YOUR MEASUREMENT ID"
 PAYLOAD="YOUR PAYLOAD"
+QUERY_PAYLOAD="YOUR QUERY PAYLOAD"
 ```
 
-Copy and paste the payload from this [Google Doc](https://docs.google.com/document/d/1vSDI1GnhkzvIxU8-Ivmz65zpxOH9fXzmfSPuA8jI8OY/edit?usp=sharing).
+Copy and paste the payload and the query payload from this [Google Doc](https://docs.google.com/document/d/1vSDI1GnhkzvIxU8-Ivmz65zpxOH9fXzmfSPuA8jI8OY/edit?usp=sharing).
 
 To start the websocket server, run the following:
 
