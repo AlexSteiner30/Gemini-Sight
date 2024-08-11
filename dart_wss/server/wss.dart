@@ -100,7 +100,12 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
 
     ws.listen((message) async {
       if (message is String) {
+        // The message has to be an auth key
         if (devices[message] == null) {
+          /// Create a new user give the received auth key
+          /// - get refresh key
+          /// - display name
+          /// - reset refreh key expiration timer
           user.authentication_key = message;
           user.refresh_key = await get_refresh_token(message);
           user.expiration =
@@ -110,15 +115,21 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
           final entry = <String, User>{message: user};
           devices.addEntries(entry.entries);
         } else if (devices[message] != null) {
+          // Occurs when glasses disconnect and reconnect, hence device already exists
           user = devices[message.toString()]!;
         }
       } else if (message is List<int>) {
+        // Bites are commands
         if (user.expiration.isBefore(DateTime.now())) {
+          // Regeneraed headers if refresh key expired (50 minutes)
           user.auth_headers =
               await generate_headers(user.authentication_key, user.refresh_key);
           user.expiration = DateTime.now().add(const Duration(minutes: 50));
         }
 
+        /// Message Syntax command|auth_key|additional_bytes
+        /// Identify delimeters to split up bites message
+        /// Command and auth_key are necessary additional_bytes only in some commands
         int firstDelimiterIndex = message.indexOf('|'.codeUnitAt(0));
         int secondDelimiterIndex =
             message.indexOf('|'.codeUnitAt(0), firstDelimiterIndex + 1);
@@ -134,6 +145,7 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
             message.sublist(firstDelimiterIndex + 1, secondDelimiterIndex - 1));
 
         if (access_key == user.authentication_key) {
+          // Process commands
           switch (command) {
             case 'error':
               await user.speak(
@@ -149,7 +161,8 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
                   .speech_to_text(message.sublist(secondDelimiterIndex + 1)));
               break;
             case 'listen':
-              user.listening_data = message.sublist(secondDelimiterIndex + 1);
+              user.listening_data = message.sublist(secondDelimiterIndex +
+                  1); // update listening data, continue with listen() function
             case 'play':
               user.ws.add(message);
             case 'take_picture':
