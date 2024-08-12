@@ -8,7 +8,6 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const crypto = require("crypto");
 const { initializeApp } = require("firebase/app");
 const firestore = require("firebase/firestore");
-const { generate } = require("playht");
 
 const aboutUsText = {
     about_us: `
