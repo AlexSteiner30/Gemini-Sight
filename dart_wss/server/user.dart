@@ -633,18 +633,20 @@ class User {
     }
   }
 
-  // Drive
+  /// Upload file to Gemini Sight Media drive folder
+  ///
+  /// Input:
+  ///   - String file name
+  ///   - List<int> bytes of the file
   Future<void> drive_push_file(String fileName, List<int> data) async {
     final httpClient = GoogleAPIClient(auth_headers);
     final driveApi = drive.DriveApi(httpClient);
 
-    //final decodedBytes = base64Decode(data);
-    print('file pushed');
     final media = drive.Media(Stream.value(data), data.length);
 
-    var folder = await folderExistsInDrive(driveApi, 'Gemin-Eye Media');
+    var folder = await folderExistsInDrive(driveApi, 'Gemini Sight Media');
     var folderId = folder?.id ??
-        (await createFolderInDrive(driveApi, 'Gemin-Eye Media')).id;
+        (await createFolderInDrive(driveApi, 'Gemini Sight Media')).id;
 
     var fileToUpload = drive.File()
       ..name = fileName
@@ -653,6 +655,13 @@ class User {
     await driveApi.files.create(fileToUpload, uploadMedia: media);
   }
 
+  /// Check whether drive folder already exists or not
+  ///
+  /// Input:
+  ///   - drive.DriveAPi authenticated Drive Api
+  ///   - String folder name
+  /// Returns:
+  ///   - drive.File? drive folder
   Future<drive.File?> folderExistsInDrive(
       drive.DriveApi driveApi, String folderName) async {
     var response = await driveApi.files.list(
@@ -661,6 +670,11 @@ class User {
     return response.files?.isNotEmpty == true ? response.files!.first : null;
   }
 
+  /// Create drive folder
+  ///
+  /// Input:
+  ///   - drive.DriveAPi authenticated Drive Api
+  ///   - String folder name
   Future<drive.File> createFolderInDrive(
       drive.DriveApi driveApi, String folderName) async {
     var folder = drive.File()
@@ -670,7 +684,11 @@ class User {
     return await driveApi.files.create(folder);
   }
 
-  // GPS
+  /// Get Google Maps by making authenticated request to js ws
+  ///
+  /// Input:
+  ///   - String origin
+  ///   - String destination
   Future<void> get_directions(String origin, String destination) async {
     // ignore: unused_local_variable
     bool arrived = false;
@@ -688,6 +706,13 @@ class User {
     await subscription.cancel();
   }
 
+  /// Get places from context, a location a query
+  /// Authenticated request to js ws
+  ///
+  /// Input:
+  ///   - String query, research parameters e.g. Restaurant
+  ///   - String location, if location is near request glasses latitue and longitude, otherwise e.g. a city
+  ///   - String context for the research
   Future<String> get_place(
       String query, String location, String context) async {
     try {
@@ -728,11 +753,16 @@ class User {
     }
   }
 
+  /// Start recording speed
   Future<void> record_speed() async {
     temp_speed = '';
     recording_speed = true;
   }
 
+  /// Stop recording speak process data with the given task
+  ///
+  /// Input:
+  ///   - String task, what to do with the recorded speed
   Future<String> stop_speed(String task) async {
     recording_speed = false;
 
@@ -744,14 +774,24 @@ class User {
 
   Future<void> stop_route() async {}
 
-  // Youtube
+  /// Play Youtube Music song
+  ///
+  /// Input:
+  ///   - String song name
   Future<void> play_song(String song) async {
     await socket.connection.firstWhere((state) => state is Connected);
     socket.send('stream_song¬$authentication_key¬$song');
   }
 
-  // Phone
+  /// Get phone contact
+  ///
+  /// Input:
+  ///   - String contact name
+  /// Returns:
+  ///   - String contact phone number
   Future<String> contacts(String name) async {
+    /// Authenticated requesto to glasses
+    /// Forwared to the app via ble
     ws.add('contacts¬$authentication_key');
     while (contact_name == '') {}
 
@@ -761,13 +801,20 @@ class User {
     return contact_name_temp;
   }
 
+  /// Call phone number
+  ///
+  /// Input:
+  ///   - String phone number
   Future<void> call(String phone_number) async {
     if (phone_number
             .contains("I coudn't find any matching phone number with") ||
         phone_number.contains("I coudn't find any matching contact with") ||
-        phone_number == 'Please grant me permission to access your contacts') {
+        phone_number == 'Please grant me permission to access your contacts' ||
+        phone_number == 'Bluetooth is not connected') {
       await speak(phone_number);
     } else {
+      /// Authenticated requesto to glasses
+      /// Forwared to the app via ble
       ws.add('call¬$authentication_key¬$phone_number');
       while (!called) {}
 
@@ -778,13 +825,21 @@ class User {
     }
   }
 
+  /// Text phone number
+  ///
+  /// Input:
+  ///   - String phone number
+  ///   - String message to send
   Future<void> text(String phone_number, String message) async {
     if (phone_number
             .contains("I coudn't find any matching phone number with") ||
         phone_number.contains("I coudn't find any matching contact with") ||
-        phone_number == 'Please grant me permission to access your contacts') {
+        phone_number == 'Please grant me permission to access your contacts' ||
+        phone_number == 'Bluetooth is not connected') {
       await speak(phone_number);
     } else {
+      /// Authenticated requesto to glasses
+      /// Forwared to the app via ble
       ws.add('text¬$authentication_key¬$phone_number¬message');
       while (!texted) {}
 
@@ -794,7 +849,10 @@ class User {
     }
   }
 
-  // Calendar
+  /// Get calendar events
+  ///
+  /// Returns:
+  ///   - String details about all the calendar events
   Future<String> get_calendar_events() async {
     try {
       final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
@@ -1181,11 +1239,18 @@ class User {
     }
   }
 
+  /// Reply to email
+  ///
+  /// Input:
+  ///   - String reply email subject
+  ///   - String reply text
   Future<void> reply_email(String emailSubject, String replyText) async {
     try {
       final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
       gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
+      /// Search for email with subject
+      /// Stop if no email was found
       var query = 'subject:"$emailSubject"';
       var searchResults =
           await gmailAPI.users.messages.list('me', maxResults: 500, q: query);
@@ -1195,6 +1260,7 @@ class User {
         return;
       }
 
+      // Iterate through last 500 emails
       if (searchResults.messages != null) {
         for (var message in searchResults.messages!) {
           var msg = await gmailAPI.users.messages.get('me', message.id!);
@@ -1215,6 +1281,7 @@ class User {
             return;
           }
 
+          // Email body
           if (subject
               .toLowerCase()
               .contains(emailSubject.trim().toLowerCase())) {
@@ -1237,6 +1304,7 @@ $replyText
               ..raw = encodedEmail
               ..threadId = message.threadId;
 
+            // Ask for email approval
             final bool approved = await approve(
                 "Would you like me to reply to the email with the subject '$subject' from '$from' with the following message: $replyText?");
 
@@ -1247,24 +1315,34 @@ $replyText
         }
       }
     } catch (error) {
+      // Report any error
       await speak(await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
       return;
     }
   }
 
+  /// Send email
+  ///
+  /// Inputs:
+  ///   - String email adress of the receiver
+  ///   - String email subjcect
+  ///   - String email body
+  ///   - String context of how the email should be written
   Future<void> send_email(
       String to, String subject, String body, String context) async {
     try {
       final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
       gmail.GmailApi gmailAPI = gmail.GmailApi(httpClient);
 
+      // Check for email address
       final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
       if (!emailRegex.hasMatch(to)) {
         await speak('Invalid email address');
         return;
       }
 
+      // Email body
       body = await process(body,
           'Sender (me): ${displayName} Receiver: $to Subject: $subject $context dont include the subject in the email');
 
@@ -1281,6 +1359,7 @@ $body
 
       var message = gmail.Message()..raw = encodedEmail;
 
+      // Ask for email approval
       final bool approved = await approve(
           "Would you like me to send an email with the subject '$subject' to '$to' containing the following message: $body?");
 
@@ -1288,6 +1367,7 @@ $body
         await gmailAPI.users.messages.send(message, 'me');
       }
     } catch (error) {
+      // Report error
       await speak(await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }

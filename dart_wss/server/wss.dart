@@ -151,6 +151,9 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
               await user.speak(
                   ascii.decode(message.sublist(0, secondDelimiterIndex + 1)));
               break;
+            case 'ble_error':
+              user.contact_name == "Bluetooth is not connected";
+              break;
             case 'blind':
               user.blind_support =
                   ascii.decode(message.sublist(0, secondDelimiterIndex + 1)) ==

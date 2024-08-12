@@ -96,5 +96,14 @@ void Glasses::send_ble(char* payload) {
     if (deviceConnected) {
       pCharacteristic->setValue((uint8_t*)payload, strlen(payload));
       pCharacteristic->notify();
+    }else{
+      String data = "ble_error|" + String(AUTH_KEY) + "|";
+      size_t size = data.length();
+      uint8_t* buffer = new uint8_t[size];
+
+      memcpy(buffer, data.c_str(), size);
+      client.sendBIN(buffer, size);
+
+      delete[] buffer;
     }
 }
