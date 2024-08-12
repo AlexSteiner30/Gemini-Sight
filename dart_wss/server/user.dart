@@ -251,8 +251,8 @@ class User {
     return await speech_to_text(listening_data_temp);
   }
 
-  ///
-  ///
+  /// Check for any event comming up in the next 10 minutes
+  /// If found remind user
   Future<void> _reminder() async {
     Map<String, DateTime> already_reminded_events = {};
     while (true) {
@@ -261,7 +261,6 @@ class User {
         calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
 
         var calendarList = await calendarAPI.calendarList.list();
-        String complete_information = '';
 
         if (calendarList.items != null) {
           for (var cal in calendarList.items!) {
@@ -270,7 +269,7 @@ class User {
               for (var event in events.items!) {
                 if (event.start!.dateTime!.difference(DateTime.now()) <
                         const Duration(minutes: 10) &&
-                    already_reminded_events[event.summary] != null) {
+                    already_reminded_events[event.summary] == null) {
                   String information = '';
 
                   information += 'Event Summary: ${event.summary} ';
@@ -286,7 +285,20 @@ class User {
                       'Event Attendees: ${event.attendees?.map((attendee) => attendee.email).join(', ') ?? 'No attendees'} ';
                   information += '\n';
 
-                  complete_information = complete_information + information;
+                  await speak(await process(
+                      "Write a reminder that in ten minutes I have an event",
+                      information));
+
+                  already_reminded_events.addEntries([
+                    MapEntry(event.summary ?? '',
+                        event.start!.dateTime ?? DateTime.now()),
+                  ]);
+                }
+                // Remove event if start time is smaller than current time
+                else if (already_reminded_events[event.summary] != null &&
+                    event.start!.dateTime!.difference(DateTime.now()) <
+                        const Duration(minutes: 0)) {
+                  already_reminded_events.remove(event.summary);
                 }
               }
             }
