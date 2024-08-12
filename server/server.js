@@ -267,8 +267,6 @@ function generateUUID() {
     return `${hexBytes[0]}${hexBytes[1]}${hexBytes[2]}${hexBytes[3]}-${hexBytes[4]}${hexBytes[5]}-${hexBytes[6]}${hexBytes[7]}-${hexBytes[8]}${hexBytes[9]}-${hexBytes[10]}${hexBytes[11]}${hexBytes[12]}${hexBytes[13]}${hexBytes[14]}${hexBytes[15]}`;
 }
 
-console.log(generateUUID());
-
 app.get('/', (req, res) => {
     res.redirect('index');
 });
