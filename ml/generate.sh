@@ -2,7 +2,7 @@
 
 voices=("Alex" "Daniel" "Fred" "Karen" "Moira" "Rishi" "Samantha" "Tessa" "Veena" "Victoria")
 
-output_dir="./data/gemma"
+output_dir="./data/gemini"
 mkdir -p $output_dir
 
 random_float() {
@@ -23,10 +23,13 @@ do
 
     filename="${output_dir}/recording_${i}_${voice}_vol${volume}_pitch${pitch}_rate${rate}.wav"
 
-    say -v "$voice" -r "$rate" "[[volm ${volume}]] [[pbas ${pitch}]] Gemma" -o "${filename%.wav}.aiff"
+    # Generate AIFF file using say command
+    say -v "$voice" -r "$rate" "[[volm ${volume}]] [[pbas ${pitch}]] Hey Gemini" -o "${filename%.wav}.aiff"
 
-    ffmpeg -i "${filename%.wav}.aiff" -acodec pcm_s16le -ac 1 "$filename"
+    # Convert AIFF to WAV with desired sample rate and bit depth
+    ffmpeg -i "${filename%.wav}.aiff" -ar 16000 -acodec pcm_s16le -ac 1 "$filename"
 
+    # Remove the intermediate AIFF file
     rm "${filename%.wav}.aiff"
 
     echo "Generated recording $i with voice $voice, volume $volume, pitch $pitch, and rate $rate"
