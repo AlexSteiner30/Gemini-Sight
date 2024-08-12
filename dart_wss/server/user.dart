@@ -1165,7 +1165,7 @@ class User {
     }
   }
 
-  // Tasks
+  /// Get tasks that are not copleted yet
   Future<String> get_tasks() async {
     try {
       final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
@@ -1174,6 +1174,7 @@ class User {
       var taskLists = await tasksAPI.tasklists.list();
       String complete_information = '';
 
+      // Iterate through the all tasks
       if (taskLists.items != null) {
         for (var taskList in taskLists.items!) {
           var tasks = await tasksAPI.tasks.list(taskList.id!);
@@ -1198,11 +1199,18 @@ class User {
           ? complete_information
           : 'you do not have any calendar events';
     } catch (error) {
+      // Report error
       return (await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
   }
 
+  /// Add a new task
+  ///
+  /// Parameters:
+  ///   - String task title
+  ///   - String due time
+  ///   - String any additional notes
   Future<void> add_task(String title, String due, String notes) async {
     try {
       final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
@@ -1217,11 +1225,16 @@ class User {
 
       await tasksAPI.tasks.insert(newTask, taskLists.items![0].id!);
     } catch (error) {
+      // Report problem
       await speak(await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
   }
 
+  /// Delete a task
+  ///
+  /// Parameters:
+  ///   - String name of the task to delete
   Future<void> delete_task(String taskName) async {
     try {
       final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
@@ -1233,6 +1246,7 @@ class User {
       if (tasksResult.items != null) {
         for (var task in tasksResult.items!) {
           if (task.title!.contains(taskName)) {
+            // Ask for a approval to delete task
             final bool approved = await approve(
                 "Would you like me to delete the task '${task.title!}'?");
 
@@ -1244,11 +1258,20 @@ class User {
         }
       }
     } catch (error) {
+      // Report error
       await speak(await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
   }
 
+  /// Update a task
+  ///
+  /// Parameters:
+  ///   - String task name to update
+  ///   - String new task name
+  ///   - String new notes
+  ///   - String new due date
+  ///   - String new status (completed or not)
   Future<void> update_task(String taskName, String newTitle, String newNotes,
       String newDue, String newStatus) async {
     try {
@@ -1260,6 +1283,7 @@ class User {
       if (tasksResult.items != null) {
         for (var task in tasksResult.items!) {
           if (task.title!.contains(taskName)) {
+            // Check if args are passed
             if (newTitle.trim() != "''") task.title = newTitle;
             if (newNotes.trim() != "''") task.notes = newNotes;
             if (newDue.trim() != "''") {
@@ -1267,6 +1291,7 @@ class User {
             }
             if (newStatus.trim() != "''") task.status = newStatus;
 
+            // Update task
             await tasksAPI.tasks
                 .update(task, taskLists.items![0].id!, task.id!);
             break;
@@ -1274,6 +1299,7 @@ class User {
         }
       }
     } catch (error) {
+      // Report Error
       await speak(await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
