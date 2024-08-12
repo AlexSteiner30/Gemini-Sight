@@ -2,6 +2,13 @@ const yts = require("yt-search");
 const ytdl = require('ytdl-core');
 
 class Stream{
+    /**
+     * Send via ws chunks of bites (pcm) of the song found with the query
+     * 
+     * @param {String} query 
+     * @param {*} ws 
+     * @param {String} access_key 
+     */
     async stream_song(query, ws, access_key){
         const videos = (await yts(query)).videos
 

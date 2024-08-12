@@ -10,6 +10,16 @@ class Audio {
         this.path = path;
     }
 
+    /**
+     * Create PCM values (16Hz) from text using Google's TTS
+     * The return generated values chunk by chunk to the ws client
+     * 
+     * @param {String} input 
+     * @param {String} key 
+     * @param {int} i 
+     * @param {String} uuid 
+     * @param {*} ws 
+     */
     async pcm(input, key, i, uuid, ws) {
         const path = `${this.path}${key}/${uuid}_${i}.wav`;
 

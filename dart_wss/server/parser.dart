@@ -114,6 +114,9 @@ class Parser {
       index++;
 
       /// Get Args
+      /// Nested level between the two parethensis
+      /// When it finds ) parse the argument if the nested elvel is 0
+      /// Parse argument also when ¬ is encountered which stands for , meaning the second argument
 
       List<dynamic> args = [];
       StringBuffer currentArg = StringBuffer();
@@ -149,6 +152,16 @@ class Parser {
     }
   }
 
+  /// Parse arguments
+  ///
+  /// Input:
+  ///   - String non parsed argument
+  /// Returns:
+  ///   - Dynamic nothing or passed argument
+  ///
+  /// ^ is used to concatenate the strings (substitution to +)
+  /// ( argument has a function therefore parse the function
+  /// | used for a string -> e.g. |Hello World| = "Hello World"
   Future<dynamic> _parseArgument(String arg) async {
     try {
       arg = arg.trim();
@@ -168,8 +181,20 @@ class Parser {
     }
   }
 
+  /// Evalute Concatenation
+  ///
+  /// Input:
+  ///   - String expression
+  ///
+  /// Returns:
+  ///   - String concatenated string
   Future<String> _evaluateConcatenation(String expression) async {
     try {
+      /// Concatenates a string, splitting by the concatenation symbol ^
+      /// Iterates throught the items
+      /// If the current itme contains ( it is a function therefore parse it
+      /// If it is between || it is a String
+      /// Append every part to a string and return it as a concatenated string
       List<String> parts = expression.split('^');
       StringBuffer result = StringBuffer();
 

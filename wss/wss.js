@@ -35,15 +35,20 @@ if (cluster.isMaster) {
         const access_key = messageParts[1];
 
         ws.access_key = access_key;
-
+        
+        /*
+        Check whether the Map session already has an active sessions with the new connected ws 
+        If there is no active connection create one initiliazing a new session
+        */
         if(!sessions.get(access_key)){
           let new_session = new Session(access_key, db, maps, audio, ai, stream, ws);
           sessions.set(access_key, new_session)
         }
 
-        if(await db.find('access_key', access_key)){
+        if(await db.find('access_key', access_key)){ // Make sure access key is in DB for authenticated request 
           const active_session = sessions.get(access_key);
-
+          
+          // Process command
           switch (command) {
             case 'first_time': active_session.first_time(messageParts); break;
             case 'ble_id': active_session.ble_id(messageParts); break;
@@ -62,14 +67,15 @@ if (cluster.isMaster) {
             case 'send_data': active_session.send_data(messageParts); break;
           }
         }else{
-          if(command == "authentication"){
+          if(command == "authentication"){ // if request is not authenticated check whether it is the first msg passing the auth key
             if(messageParts.length == 2){
+              //Verify token and email to return access key
               const idToken = messageParts[1];
               const email = await auth.verifyIdToken(idToken);
               const user = await db.find('email', email);
               ws.send(user ? user.access_key : '');
             }
-          }else{
+          }else{ // Invalid request
             console.log('Request is not authenticated');
             ws.send('Request is not authenticated');
             ws.close();

@@ -24,6 +24,13 @@ class Database {
     console.log('Firebase Database connected!');
   }
 
+  /**
+   * Find a certain firebase document in the db give the filter and the value
+   * 
+   * @param {String} filter 
+   * @param {String} value 
+   * @returns firebase docs or null 
+   */
   async find(filter, value) {
     try {
       const collectionRef = collection(this.db, 'orders');
