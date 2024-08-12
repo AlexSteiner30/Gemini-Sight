@@ -4,6 +4,9 @@
 #define CAMERA_MODEL_XIAO_ESP32S3 
 #include "camera_pins.h"
 
+/**
+ * Initialize camera
+ */
 void Glasses::setup_camera() {
   Serial.begin(115200);
   Serial.setDebugOutput(true);
@@ -52,6 +55,9 @@ void Glasses::setup_camera() {
   }
 }
 
+/**
+ * Take picture and send over to dart ws
+*/
 void Glasses::take_picture(){
   camera_fb_t *fb = NULL;
   esp_err_t res = ESP_OK;
@@ -81,6 +87,10 @@ void Glasses::take_picture(){
   esp_camera_fb_return(fb);    
 }
 
+/** 
+ * Record video, send frames to dart ws while is_recording
+ * Then stop recording and send stop message to dart ws
+*/
 void Glasses::record_video() {
   camera_fb_t *fb = NULL;
   esp_err_t res = ESP_OK;

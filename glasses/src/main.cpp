@@ -3,6 +3,10 @@
 Glasses glasses;
 String blind_message;
 
+/** 
+ * Listen and wait for wake work "Hey Gemini"
+ * If found start recording microphone
+*/
 void Glasses::get_wake_word(){
     glasses.current_state = glasses.wake_word;
     
@@ -31,6 +35,12 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 			break;
 
 		case WStype_CONNECTED:
+            /*
+            Glasses connected to dart ws
+            Send auth key to authenticate device
+            Send whether there is blidn support or not
+            Start wake word
+            */
 			Serial.println("[WSc] Connected to url: /ws");
             glasses.client.sendTXT(glasses.AUTH_KEY);
 
@@ -47,6 +57,11 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 			break;
 
 		case WStype_TEXT:
+            /*
+            Process received text
+            First verify auth key
+            Then if authenticated execute the tasks
+            */
             if(message_parts[1] == glasses.AUTH_KEY){
                 if(message_parts[0] == "listen"){
                     glasses.record_microphone(true);
@@ -87,9 +102,9 @@ void setup() {
     Serial.begin(115200);
     Serial.println();
 
+    // Initialize components
     pinMode(A0, INPUT);
     SPIFFS.begin();
-
     glasses.setup_tf();
     glasses.setup_microphone();
     glasses.setup_camera();
@@ -109,6 +124,7 @@ void setup() {
 
     Serial.println("Device Started!");
 
+    // Try to connect device to WiFi and dart ws 
     if(glasses.read_string("ssid") != "error" && glasses.read_string("password") != "error")
         glasses.connect_wifi(glasses.read_string("ssid").c_str(), glasses.read_string("password").c_str());
     else

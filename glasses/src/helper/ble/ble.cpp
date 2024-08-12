@@ -19,6 +19,10 @@ class MyServerCallbacks : public BLEServerCallbacks {
   }
 };
 
+/**
+ * Setup BleDevice and Server
+ * Create Characteristic & Callbacks
+ */
 void Glasses::setup_ble() {
   BLEDevice::init("Gemini Sight Glasses");
   BLEServer *pServer = BLEDevice::createServer();
@@ -40,9 +44,13 @@ void Glasses::setup_ble() {
   BLEDevice::startAdvertising();
 }
 
+/**
+ * Process received Ble Data
+ * 
+ * @param data string received
+ */
 void Glasses::process_ble_data(std::string data){
     vector<string> message_parts = split(data.c_str(), "|");
-    Serial.println(data.c_str());
 
     if (message_parts[0] == "authentication_key" && message_parts.size() == 2) {
       AUTH_KEY = message_parts[1].c_str();
@@ -57,7 +65,7 @@ void Glasses::process_ble_data(std::string data){
       send_ble((char*)ble_data.c_str());
     } else if(message_parts[0] == "blind" && message_parts[1] == AUTH_KEY && message_parts.size() == 3){
       save_string("blind", message_parts[2]);
-    } else {
+    } else { // if the message isn't any of the above the ble received is mirrored to the dart ws 
       size_t size = data.length();
       uint8_t* buffer = new uint8_t[size];
 
@@ -68,6 +76,9 @@ void Glasses::process_ble_data(std::string data){
     }
 }
 
+/**
+ * On message received by the BLE clienet connected
+ */
 void Glasses::onWrite(BLECharacteristic *pCharacteristic) {
     std::string data = pCharacteristic->getValue();
         
@@ -76,6 +87,11 @@ void Glasses::onWrite(BLECharacteristic *pCharacteristic) {
     }
 }
 
+/**
+ * Send message to Bluethoot
+ * 
+ * @param payload message to send
+ */
 void Glasses::send_ble(char* payload) {
     if (deviceConnected) {
       pCharacteristic->setValue((uint8_t*)payload, strlen(payload));

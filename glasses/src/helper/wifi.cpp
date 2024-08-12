@@ -1,5 +1,11 @@
 #include "glasses.hpp"
 
+/**
+ * Connect device to WiFi, only WPA2-Enterprise and WPA3-Enterprise are supported
+ * 
+ * @param ssid ssid
+ * @param password password
+*/
 void Glasses::connect_wifi(const char* ssid, const char* password){
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);

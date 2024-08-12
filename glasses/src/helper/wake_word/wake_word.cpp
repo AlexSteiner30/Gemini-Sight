@@ -5,6 +5,12 @@ const int kArenaSize = 70000;
 const int FRAME_SIZE = 512;
 const int NUM_FRAMES = 16000 / FRAME_SIZE;
 
+/**
+ * Setup TensorFlow Lite Micro
+ * Allocate memory 
+ * Create Model
+ * Input and Output dimensions 
+ */
 void Glasses::setup_tf()
 {
     m_error_reporter = new tflite::MicroErrorReporter();
@@ -64,6 +70,12 @@ Glasses::~Glasses()
 }
 */
 
+/**
+ * Predict Wake Word
+ * 
+ * @param input_buffer 16Hz audio buffer
+ * @return true when class is 1 hence "Hey Gemini" and confidence is above 85% 
+ */
 bool Glasses::predict(int16_t* input_buffer) {
     TfLiteTensor* input_tensor = m_interpreter->input(0);
 
