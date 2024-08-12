@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 
@@ -113,6 +114,8 @@ void handleWebSocket(WebSocket ws, HttpRequest request) {
           user.displayName = await get_display_name(message);
 
           final entry = <String, User>{message: user};
+
+          await Isolate.spawn(user.reminder, '');
           devices.addEntries(entry.entries);
         } else if (devices[message] != null) {
           // Occurs when glasses disconnect and reconnect, hence device already exists

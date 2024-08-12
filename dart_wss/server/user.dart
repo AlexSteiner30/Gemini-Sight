@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:googleapis/reseller/v1.dart';
 import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/gmail/v1.dart' as gmail;
@@ -248,6 +249,58 @@ class User {
 
     /// Process bytes to String
     return await speech_to_text(listening_data_temp);
+  }
+
+  ///
+  ///
+  Future<void> _reminder() async {
+    Map<String, DateTime> already_reminded_events = {};
+    while (true) {
+      try {
+        final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
+        calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
+
+        var calendarList = await calendarAPI.calendarList.list();
+        String complete_information = '';
+
+        if (calendarList.items != null) {
+          for (var cal in calendarList.items!) {
+            var events = await calendarAPI.events.list(cal.id!);
+            if (events.items != null) {
+              for (var event in events.items!) {
+                if (event.start!.dateTime!.difference(DateTime.now()) <
+                        const Duration(minutes: 10) &&
+                    already_reminded_events[event.summary] != null) {
+                  String information = '';
+
+                  information += 'Event Summary: ${event.summary} ';
+                  information +=
+                      'Event Description: ${event.description ?? 'No description'} ';
+                  information +=
+                      'Event Start: ${DateFormat('yyyy-MM-dd – kk:mm').format(event.start!.dateTime!)}\n';
+                  information +=
+                      'Event End: ${event.end != null ? DateFormat('yyyy-MM-dd – kk:mm').format(event.end!.dateTime!) : 'No end time'} ';
+                  information +=
+                      'Event Location: ${event.location ?? 'No location'} ';
+                  information +=
+                      'Event Attendees: ${event.attendees?.map((attendee) => attendee.email).join(', ') ?? 'No attendees'} ';
+                  information += '\n';
+
+                  complete_information = complete_information + information;
+                }
+              }
+            }
+          }
+        }
+      } catch (error) {
+        print(error);
+      }
+    }
+  }
+
+  /// Execute reminder
+  void reminder(String _) {
+    _reminder();
   }
 
   /// Take a picture with the glasses camera
@@ -544,11 +597,18 @@ class User {
     }
   }
 
+  /// Write Google Sheet
+  ///
+  /// Input:
+  ///   - String sheet name
+  ///   - String values to write
   Future<void> write_sheet(String sheetName, String values) async {
     final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
     final sheetsApi = sheets.SheetsApi(httpClient);
 
     try {
+      /// Check if sheet exists
+      /// If not create one
       String sheetId = await get_sheet_id(sheetName);
       sheetId = sheetId.trim();
 
@@ -561,6 +621,7 @@ class User {
         sheetId = createResponse.spreadsheetId!;
       }
 
+      // Process values in columns and rows format
       values = await process(
         values,
         "Process it as an array with rows and columns and return the result in this format only. No additional text or explanation, just return the array.",
@@ -571,6 +632,7 @@ class User {
         values = values.substring(0, values.length - 1);
       }
 
+      // Parse values
       List<List<String>> parsedArray = values
           .split('\n')
           .map((line) => line
@@ -581,6 +643,7 @@ class User {
               .toList())
           .toList();
 
+      // Append Values
       var appendRequest = sheets.BatchUpdateValuesRequest.fromJson({
         'valueInputOption': 'RAW',
         'data': [
@@ -596,16 +659,23 @@ class User {
         appendRequest,
         sheetId,
       );
-    } catch (e) {
-      print('Error writing to sheet: $e');
+    } catch (error) {
+      // Report error
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
   }
 
+  /// Get Sheet content
+  ///
+  /// Input:
+  ///   - Sheet Name
   Future<String> get_sheet(String sheetName) async {
     final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
     final sheetsApi = sheets.SheetsApi(httpClient);
 
     try {
+      // Find sheet id by name
       String sheetId = await get_sheet_id(sheetName);
       sheetId = sheetId.trim();
 
@@ -621,15 +691,18 @@ class User {
         return 'No data found in the sheet.';
       }
 
+      // Return values
       StringBuffer buffer = StringBuffer();
       for (var row in response.values!) {
         buffer.writeln(row.join(','));
       }
 
       return buffer.toString().trim();
-    } catch (e) {
-      print('Error fetching sheet content: $e');
-      return 'Error fetching sheet content: $e';
+    } catch (error) {
+      // Report error
+      await speak(await process("$error",
+          ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
+      return 'Error in fetching sheet';
     }
   }
 
@@ -898,6 +971,16 @@ class User {
     }
   }
 
+  /// Add calendar event
+  ///
+  /// Input:
+  ///   - String event name
+  ///   - String event date start
+  ///   - String event date end
+  ///   - String description
+  ///   - String event location
+  ///   - String email of the the attendees -> email1, email2
+  ///   - String googl meet url if present
   Future<void> add_calendar_event(String title, String start, String end,
       String description, String location, String emails, String meet) async {
     try {
@@ -905,11 +988,14 @@ class User {
       calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
       var eventLists = await calendarAPI.calendarList.list();
 
+      // Add ettendees split by ,
       List<calendar.EventAttendee> attendees = [];
 
       for (var i = 0; i < emails.split(',').length; i++) {
         attendees.add(calendar.EventAttendee(email: emails.split(',')[i]));
       }
+
+      // Create event
       var newEvent = calendar.Event()
         ..summary = title
         ..start = calendar.EventDateTime(date: DateTime.parse(start.trim()))
@@ -937,11 +1023,16 @@ class User {
       await calendarAPI.events.insert(newEvent, eventLists.items![0].id!,
           conferenceDataVersion: meet.trim() == "true" ? 1 : 0);
     } catch (error) {
+      // Report error
       await speak(await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
   }
 
+  /// Delete calendar event
+  ///
+  /// Input:
+  ///   - String event name to delete
   Future<void> delete_calendar_event(String event_name) async {
     try {
       final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
@@ -952,6 +1043,7 @@ class User {
       if (eventResult.items != null) {
         for (var event in eventResult.items!) {
           if (event.summary!.contains(event_name)) {
+            // Ask for approval
             final bool approved = await approve(
                 "Would you like me to delete the calendar event '${event.summary!}'?");
 
@@ -964,6 +1056,7 @@ class User {
         }
       }
     } catch (error) {
+      // Report error
       await speak(await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
