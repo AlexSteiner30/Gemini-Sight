@@ -169,6 +169,9 @@ class _DeviceSettingsState extends State<DeviceSettings> {
     );
   }
 
+  /// Connect Glasses to WiFi
+  ///
+  /// Send credentials via BLE
   void _connectToWifi() {
     write_data(
         'wifi|$authentication_key|${ssidController.text}|${passwordController.text}');

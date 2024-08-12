@@ -67,7 +67,7 @@ class User {
       required this.expiration});
 
   /// Make request to Google Speech to Text API
-  /// Input:
+  /// Parameters:
   ///   - List<int> byte_input (16Hz sent from microphone via ws)
   /// Returns:
   ///  - String response if successful else error
@@ -106,7 +106,7 @@ class User {
 
   /// Process input given a context
   /// Send a request to JS ws, and return the ouput with Gemini
-  /// Input:
+  /// Parameters:
   ///   - String input (e.g. some data)
   ///   - String context (e.g. how the the data needs to be processed)
   /// Returns:
@@ -131,7 +131,7 @@ class User {
   }
 
   // Send data to the JS ws
-  /// Input:
+  /// Parameters:
   ///   - String data to send to the ws
   /// Error Handeling:
   ///   - If the data is error the Glasses will report it to the user
@@ -188,7 +188,7 @@ class User {
   /// Output speach to text to the glasses
   /// Function is called whether an error occurs, information needs to be told or when the parse processes it
   /// Performs an authenticated request to the JS ws and forwards the result to the Glasses via the open ws communication
-  /// Input:
+  /// Parameters:
   ///   - String data that needs to be spoken
   Future<void> speak(String data) async {
     await socket.connection.firstWhere((state) => state is Connected);
@@ -208,7 +208,7 @@ class User {
 
   /// Wait some seconds where the application pauses
   /// e.g. Hey Gemini, wait 10 seconds and take a picture
-  /// Input:
+  /// Parameters:
   ///   - String seconds that need to be waited, string that then is process into an integer
   Future<void> wait(String seconds) async {
     await Future.delayed(Duration(seconds: int.tryParse(seconds)!));
@@ -217,7 +217,7 @@ class User {
   /// Request the user whether Gemini can procede with a delicated action
   /// e.g. sending emails
   /// The function process invokes the listen() function and processes its output
-  /// Input:
+  /// Parameters:
   ///   - String context that needs to be improved
   /// Returns:
   ///   - Bool whether the actions is approved by tge user or not
@@ -229,7 +229,7 @@ class User {
 
   /// Function used to listen to input from their microphone
   /// Used whend valuable data is missing
-  /// Input:
+  /// Parameters:
   ///   - String data that needs to be speaked (e.g. In order to send an email you need to provide the receiver's email addres)
   /// Return:
   ///   - String new information gotten from the users microphone
@@ -316,7 +316,7 @@ class User {
   }
 
   /// Take a picture with the glasses camera
-  /// Input:
+  /// Parameters:
   ///   - String task what needs to be done with the picture (e.g. analyize it)
   ///   - If not input is provide then the picture will simply be saved to the Google Drive Folder
   Future<void> take_picture(String? task) async {
@@ -371,7 +371,7 @@ class User {
   }
 
   /// Stop recording a video
-  /// Input:
+  /// Parameters:
   ///   - String task what needs to be done with the video (e.g. analyize it)
   ///   - If not input is provide then the video will simply be saved to the Google Drive Folder
   Future<void> stop_recording(String? task) async {
@@ -421,7 +421,7 @@ class User {
   }
 
   /// Change volume
-  /// Input:
+  /// Parameters:
   ///   - String volume from 0 to 100
   ///
   /// Forward authenticated request to glasses via open ws communication
@@ -430,7 +430,7 @@ class User {
   }
 
   /// Get content of a google docs
-  /// Input:
+  /// Parameters:
   ///   - String document id
   /// Returns:
   ///   - String conentent of the document
@@ -462,7 +462,7 @@ class User {
   }
 
   /// Search for a doucement id providen the name
-  /// Input:
+  /// Parameters:
   ///   - String name of the document
   /// Return:
   ///   - String returns the id of the doucment
@@ -498,7 +498,7 @@ class User {
 
   /// Write data to a document
   ///
-  /// Input:
+  /// Parameters:
   ///   - String name of the document to write to
   ///   - String data to append
   Future<void> write_document(String document_name, String data) async {
@@ -574,7 +574,7 @@ class User {
   }
 
   /// Search for a sheet id providen the name
-  /// Input:
+  /// Parameters:
   ///   - String name of the sheet
   /// Return:
   ///   - String returns the id of the sheet
@@ -611,7 +611,7 @@ class User {
 
   /// Write Google Sheet
   ///
-  /// Input:
+  /// Parameters:
   ///   - String sheet name
   ///   - String values to write
   Future<void> write_sheet(String sheetName, String values) async {
@@ -680,7 +680,7 @@ class User {
 
   /// Get Sheet content
   ///
-  /// Input:
+  /// Parameters:
   ///   - Sheet Name
   Future<String> get_sheet(String sheetName) async {
     final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
@@ -720,7 +720,7 @@ class User {
 
   /// Upload file to Gemini Sight Media drive folder
   ///
-  /// Input:
+  /// Parameters:
   ///   - String file name
   ///   - List<int> bytes of the file
   Future<void> drive_push_file(String fileName, List<int> data) async {
@@ -742,7 +742,7 @@ class User {
 
   /// Check whether drive folder already exists or not
   ///
-  /// Input:
+  /// Parameters:
   ///   - drive.DriveAPi authenticated Drive Api
   ///   - String folder name
   /// Returns:
@@ -757,7 +757,7 @@ class User {
 
   /// Create drive folder
   ///
-  /// Input:
+  /// Parameters:
   ///   - drive.DriveAPi authenticated Drive Api
   ///   - String folder name
   Future<drive.File> createFolderInDrive(
@@ -771,7 +771,7 @@ class User {
 
   /// Get Google Maps by making authenticated request to js ws
   ///
-  /// Input:
+  /// Parameters:
   ///   - String origin
   ///   - String destination
   Future<void> get_directions(String origin, String destination) async {
@@ -794,7 +794,7 @@ class User {
   /// Get places from context, a location a query
   /// Authenticated request to js ws
   ///
-  /// Input:
+  /// Parameters:
   ///   - String query, research parameters e.g. Restaurant
   ///   - String location, if location is near request glasses latitue and longitude, otherwise e.g. a city
   ///   - String context for the research
@@ -846,7 +846,7 @@ class User {
 
   /// Stop recording speak process data with the given task
   ///
-  /// Input:
+  /// Parameters:
   ///   - String task, what to do with the recorded speed
   Future<String> stop_speed(String task) async {
     recording_speed = false;
@@ -861,7 +861,7 @@ class User {
 
   /// Play Youtube Music song
   ///
-  /// Input:
+  /// Parameters:
   ///   - String song name
   Future<void> play_song(String song) async {
     await socket.connection.firstWhere((state) => state is Connected);
@@ -870,7 +870,7 @@ class User {
 
   /// Get phone contact
   ///
-  /// Input:
+  /// Parameters:
   ///   - String contact name
   /// Returns:
   ///   - String contact phone number
@@ -888,12 +888,12 @@ class User {
 
   /// Call phone number
   ///
-  /// Input:
+  /// Parameters:
   ///   - String phone number
   Future<void> call(String phone_number) async {
     if (phone_number
-            .contains("I coudn't find any matching phone number with") ||
-        phone_number.contains("I coudn't find any matching contact with") ||
+            .contains("I couldn't find any matching phone number with") ||
+        phone_number.contains("I couldn't find any matching contact with") ||
         phone_number == 'Please grant me permission to access your contacts' ||
         phone_number == 'Bluetooth is not connected') {
       await speak(phone_number);
@@ -912,13 +912,13 @@ class User {
 
   /// Text phone number
   ///
-  /// Input:
+  /// Parameters:
   ///   - String phone number
   ///   - String message to send
   Future<void> text(String phone_number, String message) async {
     if (phone_number
-            .contains("I coudn't find any matching phone number with") ||
-        phone_number.contains("I coudn't find any matching contact with") ||
+            .contains("I couldn't find any matching phone number with") ||
+        phone_number.contains("I couldn't find any matching contact with") ||
         phone_number == 'Please grant me permission to access your contacts' ||
         phone_number == 'Bluetooth is not connected') {
       await speak(phone_number);
@@ -985,7 +985,7 @@ class User {
 
   /// Add calendar event
   ///
-  /// Input:
+  /// Parameters:
   ///   - String event name
   ///   - String event date start
   ///   - String event date end
@@ -1043,7 +1043,7 @@ class User {
 
   /// Delete calendar event
   ///
-  /// Input:
+  /// Parameters:
   ///   - String event name to delete
   Future<void> delete_calendar_event(String event_name) async {
     try {
@@ -1074,6 +1074,18 @@ class User {
     }
   }
 
+  /// Update a calendar event
+  ///
+  /// Parameters:
+  ///   - String event name
+  ///   - String new event name to assign
+  ///   - String new start date
+  ///   - String new end date
+  ///   - String new description
+  ///   - String new location of the event
+  ///   - String new status of the even (completed or not)
+  ///   - String new attendees to add / remove -> email1, email2
+  ///   - String new google meet url if present
   Future<void> update_calendar_event(
       String event_name,
       String new_name,
@@ -1089,12 +1101,14 @@ class User {
       calendar.CalendarApi calendarAPI = calendar.CalendarApi(httpClient);
       var eventLists = await calendarAPI.calendarList.list();
 
+      // Parse attendees emails
       List<calendar.EventAttendee> attendees = [];
 
       for (var i = 0; i < new_emails.split(',').length; i++) {
         attendees.add(calendar.EventAttendee(email: new_emails.split(',')[i]));
       }
 
+      // Find event and update values that are not empty
       var eventResult = await calendarAPI.events.list(eventLists.items![0].id!);
       if (eventResult.items != null) {
         for (var event in eventResult.items!) {
@@ -1120,8 +1134,9 @@ class User {
               }
               event.attendees = attendees;
             }
-            if (new_description.trim() != "''")
+            if (new_description.trim() != "''") {
               event.description = new_description;
+            }
             if (new_location.trim() != "''") event.location = new_location;
 
             event.conferenceData = new_meet.trim() == "true"
@@ -1135,6 +1150,7 @@ class User {
                   )
                 : null;
 
+            // Update calendar event
             await calendarAPI.events.update(
                 event, eventLists.items![0].id!, event.id!,
                 conferenceDataVersion: new_meet.trim() == "true" ? 1 : 0);
@@ -1143,6 +1159,7 @@ class User {
         }
       }
     } catch (error) {
+      // Report error
       await speak(await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
@@ -1262,7 +1279,12 @@ class User {
     }
   }
 
-  // Gmail
+  /// Read Emails content
+  ///
+  /// Parameters:
+  ///   - Srting amount of emails to read in the inbox
+  /// Returns:
+  ///   - String contents of the emails
   Future<String> read_email(String count) async {
     try {
       final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
@@ -1270,9 +1292,11 @@ class User {
 
       String information = '';
 
+      // Search "count" unread emails
       var messagesResponse = await gmailAPI.users.messages
           .list('me', maxResults: int.tryParse(count), q: 'is:unread');
 
+      // Iterate throught them add add information
       if (messagesResponse.messages != null) {
         for (var message in messagesResponse.messages!) {
           var msg = await gmailAPI.users.messages.get('me', message.id!);
@@ -1298,11 +1322,18 @@ class User {
         return 'No email was found';
       }
     } catch (error) {
+      // Process error
       return (await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
   }
 
+  /// Search Email
+  ///
+  /// Parameters:
+  ///   - String email query parametres
+  /// Returns:
+  ///   - String return email content if found
   Future<String> search_emails(String query) async {
     try {
       final GoogleAPIClient httpClient = GoogleAPIClient(auth_headers);
@@ -1312,6 +1343,7 @@ class User {
 
       String emailInfos = '';
 
+      // Email found add information and return it
       if (messagesResponse.messages != null) {
         for (var message in messagesResponse.messages!) {
           var msg = await gmailAPI.users.messages.get('me', message.id!);
@@ -1339,6 +1371,7 @@ class User {
         return 'No email wiht $query was found';
       }
     } catch (error) {
+      // Process error
       return (await process("$error",
           ' in one sentence state the problem and instruct solution in only one short sentence no formatting'));
     }
@@ -1346,7 +1379,7 @@ class User {
 
   /// Reply to email
   ///
-  /// Input:
+  /// Parameters:
   ///   - String reply email subject
   ///   - String reply text
   Future<void> reply_email(String emailSubject, String replyText) async {
@@ -1429,7 +1462,7 @@ $replyText
 
   /// Send email
   ///
-  /// Inputs:
+  /// Parameters:
   ///   - String email adress of the receiver
   ///   - String email subjcect
   ///   - String email body

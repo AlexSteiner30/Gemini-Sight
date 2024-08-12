@@ -8,6 +8,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const crypto = require("crypto");
 const { initializeApp } = require("firebase/app");
 const firestore = require("firebase/firestore");
+const { generate } = require("playht");
 
 const aboutUsText = {
     about_us: `
@@ -255,7 +256,18 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(cookieParser());
 
-const randomHex = n => Array(n).fill(0).map(() => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('');
+function generateUUID() {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    
+    const hexBytes = Array.from(bytes).map(byte => byte.toString(16).padStart(2, '0'));
+    return `${hexBytes[0]}${hexBytes[1]}${hexBytes[2]}${hexBytes[3]}-${hexBytes[4]}${hexBytes[5]}-${hexBytes[6]}${hexBytes[7]}-${hexBytes[8]}${hexBytes[9]}-${hexBytes[10]}${hexBytes[11]}${hexBytes[12]}${hexBytes[13]}${hexBytes[14]}${hexBytes[15]}`;
+}
+
+console.log(generateUUID());
 
 app.get('/', (req, res) => {
     res.redirect('index');
@@ -344,7 +356,7 @@ app.post('/order', bodyparser.urlencoded({ extended: true }), async (req, res) =
             model: 0.1,
             query: "",
             refresh_key: "",
-            ble_id: randomHex(4) + '-' + randomHex(4) + '-' + randomHex(4) + '-' + randomHex(4) + '-' + randomHex(12)
+            ble_id: generateUUID()
         }).then(_ => {
             res.send(`Your Glasses will be shipped to ${req.body.address} as soon as possible`)
         });

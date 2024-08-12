@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 bool wifi = false;
 
+/// Check whether glasses is online or not
 Future<void> is_online() async {
   final prefs = await SharedPreferences.getInstance();
   final String? ipAddress = prefs.getString('ip');

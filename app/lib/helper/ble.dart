@@ -11,11 +11,15 @@ bool ble = false;
 int volume = 0;
 int battery = 0;
 
+/// Scans for nearby Bluetooth devices and attempts to connect to the device with a specific ID.
+///
+/// The scan lasts for 5 seconds. If the device with the matching ID is found, it initiates a connection.
 Future<void> scan_devices() async {
   FlutterBlue flutterBlue = FlutterBlue.instance;
 
   flutterBlue.startScan(timeout: const Duration(seconds: 5));
 
+  // Listen for scan results.
   flutterBlue.scanResults.listen((results) async {
     for (ScanResult result in results) {
       if (result.device.id.id == ble_id) {
@@ -29,6 +33,10 @@ Future<void> scan_devices() async {
   flutterBlue.stopScan();
 }
 
+/// Connects to a given Bluetooth device and sets up notifications for a specific characteristic.
+///
+/// Parameters:
+///   - BluetoothDevice device: The device to connect to.
 Future<void> connect_device(BluetoothDevice device) async {
   try {
     await device.connect();
@@ -44,11 +52,12 @@ Future<void> connect_device(BluetoothDevice device) async {
       }
     });
 
+    // Discover services offered by the device.
     List<BluetoothService> services = await device.discoverServices();
     for (BluetoothService service in services) {
       for (BluetoothCharacteristic characteristic in service.characteristics) {
-        if (characteristic.uuid.toString() ==
-            "beb5483e-36e1-4688-b7f5-ea07361b26a8") {
+        if (characteristic.uuid.toString() == ble_id) {
+          // Check if the characteristic UUID matches the target UUID. Unique
           targetCharacteristic = characteristic;
 
           await characteristic.setNotifyValue(true);
@@ -63,6 +72,10 @@ Future<void> connect_device(BluetoothDevice device) async {
   }
 }
 
+/// Processes incoming data from the Bluetooth device and performs actions based on the command.
+///
+/// Parameters:
+///   - List<int> data: The data received from the Bluetooth device.
 void read_data(List<int> data) async {
   String dataString = ascii.decode(data);
   List<String> dataParts = dataString.split('|');
@@ -72,6 +85,8 @@ void read_data(List<int> data) async {
     String authKey = dataParts[1];
 
     if (authKey == authentication_key) {
+      // Check if the authentication key matches.
+      // Execute commands
       switch (command) {
         case 'ip':
           if (dataParts.length == 3) {
@@ -99,6 +114,10 @@ void read_data(List<int> data) async {
   }
 }
 
+/// Sends data to the connected Bluetooth device by writing it to the target characteristic.
+///
+/// Parameters:
+///   - String data: The data to send.
 Future<void> write_data(String data) async {
   if (targetCharacteristic != null) {
     await targetCharacteristic?.write(data.codeUnits);

@@ -16,7 +16,7 @@ import 'package:http/io_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 
-// ignore: non_constant_identifier_names
+// Global Strings
 String authentication_key = '';
 String ble_id = '';
 
@@ -52,6 +52,7 @@ class _SignInPageState extends State<SignInPage> {
     super.initState();
   }
 
+  /// Login to Google and then verify account
   Future<void> _login() async {
     try {
       final GoogleSignInAccount? account = await _googleSignIn.signIn();
@@ -66,13 +67,19 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
+  /// Verify Google Account
+  /// Check whether user bough the glasses or not
+  ///
+  /// Parameters
+  ///   - String auth code for verification
+  ///   - GoogleSignInAccount user account he signed in with
   Future<void> _verifyAuthentication(
       String? authCode, GoogleSignInAccount? account) async {
     final prefs = await SharedPreferences.getInstance();
     final completer = Completer<String>();
     await socket.connection.firstWhere((state) => state is Connected);
 
-    socket.send('authentication¬$authCode');
+    socket.send('authentication¬$authCode'); // js ws request w authcode
 
     final subscription = socket.messages.listen((response) {
       completer.complete(response);
@@ -84,12 +91,14 @@ class _SignInPageState extends State<SignInPage> {
     authentication_key = result;
 
     if (authentication_key.isEmpty) {
+      // No authentication key was sent back -> user didnt buy glasses, no login
       await _googleSignIn.signOut();
       _showDialog('Authentication failed',
           'Please log in with an account that has purchased the Gemini Sight Glasses.');
       return;
     }
 
+    // Authentication was successful
     await _handleServerAuthCode(account!.serverAuthCode!);
     await _handleFirstTimeLogin(account, prefs);
 
@@ -104,6 +113,7 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
+  /// Request to js ws auth code
   Future<void> _handleServerAuthCode(String serverAuthCode) async {
     final completer = Completer<String>();
     await socket.connection.firstWhere((state) => state is Connected);
@@ -118,6 +128,9 @@ class _SignInPageState extends State<SignInPage> {
     await subscription.cancel();
   }
 
+  /// Handle first time login for user
+  /// Start query to learn on data
+  /// Change first_time in db
   Future<void> _handleFirstTimeLogin(
       GoogleSignInAccount? account, SharedPreferences prefs) async {
     final completer = Completer<String>();

@@ -29,12 +29,15 @@ class _SplashScreenState extends State<SplashScreen> {
     _navigateToLogin();
   }
 
+  /// Load Google Login
   _navigateToLogin() async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool('blind_support') == null) {
+      //  Setup blind support
       await prefs.setBool('blind_support', false);
     }
     if ((prefs.getBool('logged') ?? false)) {
+      // Not first time user logged in
       final GoogleSignIn _googleSignIn =
           GoogleSignIn(clientId: CLIENT_ID, scopes: [
         calendar.CalendarApi.calendarScope,
@@ -47,19 +50,23 @@ class _SplashScreenState extends State<SplashScreen> {
         sheets.SheetsApi.spreadsheetsScope,
       ]);
 
-      account = await _googleSignIn.signInSilently();
+      account =
+          await _googleSignIn.signInSilently(); // Signin Silently -> No pop up
 
       final GoogleSignInAuthentication auth = await account!.authentication;
 
+      // Get BLE characterstics UUID and Auth Key
       List<String> initial_data = await get_initial_data(auth);
       authentication_key = initial_data[0];
       ble_id = initial_data[1];
 
       final prefs = await SharedPreferences.getInstance();
 
+      // Check Device Connection
       await scan_devices();
       await is_online();
 
+      // Load Device Page
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -68,6 +75,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 blind_support: prefs.getBool('blind_support') ?? false)),
       );
     } else {
+      // First time -> signin Page
       Navigator.pushReplacement(
         // ignore: use_build_context_synchronously
         context,
