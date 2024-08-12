@@ -1,6 +1,6 @@
 #include "glasses.hpp"
 
-const int kArenaSize = 70000;
+const int kArenaSize = 90000;
 
 const int FRAME_SIZE = 512;
 const int NUM_FRAMES = 16000 / FRAME_SIZE;
