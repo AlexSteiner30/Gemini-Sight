@@ -135,3 +135,4 @@ dist
 ml/data/*/*.wav
 wss/audio/*/*.wav
 .DS_Store
+ml/piper-sample-generator/

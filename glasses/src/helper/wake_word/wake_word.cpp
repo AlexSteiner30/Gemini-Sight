@@ -35,6 +35,8 @@ void Glasses::setup_tf()
     m_resolver = new tflite::MicroMutableOpResolver<9>();
     m_resolver->AddConv2D();
     m_resolver->AddMaxPool2D();
+    m_resolver->AddConv2D();
+    m_resolver->AddMaxPool2D();
     m_resolver->AddFullyConnected();
     m_resolver->AddMul();
     m_resolver->AddAdd();
@@ -74,7 +76,7 @@ Glasses::~Glasses()
  * Predict Wake Word
  * 
  * @param input_buffer 16Hz audio buffer
- * @return true when class is 1 hence "Hey Gemini" and confidence is above 85% 
+ * @return true when class is 2 hence "Hey Gemini" and confidence is above 95% 
  */
 bool Glasses::predict(int16_t* input_buffer) {
     TfLiteTensor* input_tensor = m_interpreter->input(0);
@@ -104,5 +106,5 @@ bool Glasses::predict(int16_t* input_buffer) {
         }
     }
 
-    return max_index == 1 && max_value > 0.85;
+    return max_index == 2 && max_value > 0.95;
 }

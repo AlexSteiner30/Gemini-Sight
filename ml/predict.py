@@ -1,46 +1,41 @@
-import tensorflow as tf
-import numpy as np
-import os
+import pathlib
 import librosa
+import numpy as np
+import tensorflow as tf
+from keras.models import load_model
 from sklearn.preprocessing import LabelEncoder
 
-train_dir = 'data'
-labels = os.listdir(train_dir)
-all_label = []
+SAMPLE_RATE = 16000
 
-for label in labels:
-    print(label)
-    waves = [f for f in os.listdir(os.path.join(train_dir, label)) if f.endswith('.wav')]
-    for wav in waves:
-        samples, sample_rate = librosa.load(os.path.join(train_dir, label, wav), sr=16000)
-        samples = librosa.resample(samples, orig_sr=sample_rate, target_sr=16000)
-        if len(samples) == 16000:
-            all_label.append(label)
+def load_audio(file_path):
+    samples, _ = librosa.load(file_path, sr=SAMPLE_RATE)
+    if len(samples) > SAMPLE_RATE:
+        samples = samples[:SAMPLE_RATE]
+    elif len(samples) < SAMPLE_RATE:
+        samples = np.pad(samples, (0, max(0, SAMPLE_RATE - len(samples))), "constant")
+    return np.array(samples).reshape(-1, SAMPLE_RATE, 1)
 
-le = LabelEncoder()
-y = le.fit_transform(all_label)
-classes = list(le.classes_)
-print(classes)
-
-tflite_model_path = 'model.tflite'
-
-interpreter = tf.lite.Interpreter(model_path=tflite_model_path)
-interpreter.allocate_tensors()
-
-input_details = interpreter.get_input_details()
-output_details = interpreter.get_output_details()
-
-def predict(audio):
-    interpreter.set_tensor(input_details[0]['index'], audio.reshape(1, 16000, 1).astype(np.float32))
-    interpreter.invoke()
-    prob = interpreter.get_tensor(output_details[0]['index'])
+def predict(model, audio, classes):
+    prob = model.predict(audio.reshape(1, SAMPLE_RATE, 1))
+    print(prob[0][1])
     index = np.argmax(prob[0])
-    print(index)
-    print(prob)
     return classes[index], prob[0][index]
 
-test, sample_rate = librosa.load('test_gemini.wav', sr=16000)
-test = librosa.resample(test, orig_sr=sample_rate, target_sr=16000)
-test = np.array(test).reshape(-1, 16000, 1)
+def load_classes(train_dir):
+    labels = sorted([label.name for label in train_dir.iterdir() if label.is_dir()])
+    le = LabelEncoder()
+    le.fit(labels)
+    return le.classes_
 
-print(predict(test))
+TRAIN_DIR = pathlib.Path('data')
+classes = load_classes(TRAIN_DIR)
+
+# Load the pre-trained model
+model = load_model('model.keras')
+
+# Load and preprocess the test audio
+test_audio = load_audio('test.wav')
+
+# Make a prediction
+predicted_class, confidence = predict(model, test_audio, classes)
+print(f"Predicted Class: {predicted_class}, Confidence: {confidence}")

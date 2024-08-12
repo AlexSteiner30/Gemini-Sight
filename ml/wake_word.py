@@ -14,15 +14,21 @@ SAMPLE_RATE = 16000
 def load_audio_files(train_dir):
     all_wave = []
     all_label = []
-    labels = [label for label in train_dir.iterdir() if label.is_dir()]
     
+    # Sort labels to ensure consistent order
+    labels = sorted([label for label in train_dir.iterdir() if label.is_dir()])
+
     for label in labels:
         waves = list(label.glob('*.wav'))
         for wav in waves:
             samples, _ = librosa.load(wav, sr=SAMPLE_RATE)
-            if len(samples) == SAMPLE_RATE:
-                all_wave.append(samples)
-                all_label.append(label.name)
+            if len(samples) > SAMPLE_RATE:
+                samples = samples[:SAMPLE_RATE]
+            elif len(samples) < SAMPLE_RATE:
+                samples = np.pad(samples, (0, max(0, SAMPLE_RATE - len(samples))), "constant")
+
+            all_wave.append(samples)
+            all_label.append(label.name)
     
     return np.array(all_wave).reshape(-1, SAMPLE_RATE, 1), all_label
 
@@ -49,7 +55,7 @@ def build_model(input_shape, num_classes):
     return model
 
 def train_model(model, x_tr, y_tr, x_val, y_val):
-    history = model.fit(x_tr, y_tr, epochs=200, batch_size=32, validation_data=(x_val, y_val))
+    history = model.fit(x_tr, y_tr, epochs=100, batch_size=32, validation_data=(x_val, y_val))
     return history
 
 def predict(model, audio, classes):
@@ -57,18 +63,19 @@ def predict(model, audio, classes):
     index = np.argmax(prob[0])
     return classes[index], prob[0][index]
 
+# Load and preprocess the data
 all_wave, all_label = load_audio_files(TRAIN_DIR)
 y_categorical, classes = prepare_labels(all_label)
-
+print(classes)
+# Split the data into training and validation sets
 x_tr, x_val, y_tr, y_val = train_test_split(all_wave, y_categorical, stratify=all_label, test_size=0.2, random_state=777, shuffle=True)
 
+# Build and summarize the model
 model = build_model((SAMPLE_RATE, 1), len(classes))
 model.summary()
 
+# Train the model
 history = train_model(model, x_tr, y_tr, x_val, y_val)
 
-test, _ = librosa.load('test.wav', sr=SAMPLE_RATE)
-test = np.array(test).reshape(-1, SAMPLE_RATE, 1)
-
+# Save the model and make a prediction
 model.save('model.keras')
-print(predict(model, test, classes))
